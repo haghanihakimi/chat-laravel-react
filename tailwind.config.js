@@ -13,8 +13,8 @@ module.exports = {
 
   theme: {
     screens: {
-      x2sm: '280px',
-      xsm: '480px',
+      xxs: '280px',
+      xs: '480px',
       sm: '640px',
       md: '768px',
       lg: '976px',
@@ -74,13 +74,6 @@ module.exports = {
       '7xl': '5rem',
     },
     extend: {
-      spacing: {
-        '128': '32rem',
-        '144': '36rem',
-      },
-      borderRadius: {
-        'rounded': '3px',
-      },
       keyframes: {
         fadeInBounce: {
           '0%': { opacity: '0', transform: 'scale(0.95, 0.95)' },
@@ -88,35 +81,14 @@ module.exports = {
           '75%': { opacity: '1.0', transform: 'scale(1.05, 1.05)' },
           '100%': { opacity: '1.0', transform: 'scale(1.00, 1.00)' },
         },
-        fadeHomeHero: {
-          '0%': { transform: 'translateY(-70%)' },
-          '100%': { transform: 'translateY(-40%)' },
-        }
       },
       animation: {
         'fadeInBounce': 'fadeInBounce 300ms ease-in 0ms 1 alternate',
-        'fadeHomeHero': 'fadeHomeHero 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0ms 1 alternate',
       },
       boxShadow: {
         'xsm-spread': 'rgba(0, 0, 0, 0.1) 0px 1px 2px 0px',
         'sm-spread': 'rgba(0, 0, 0, 0.05) 0px 0px 3px 1px',
         'md-spread': 'rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px',
-      },
-      backgroundImage: {
-        'homeHeroImage': "url('https://mdbootstrap.com/img/new/textures/full/142.jpg')",
-      },
-      backgroundPosition: {
-        'p-0': '0%',
-        'p-10': '10%',
-        'p-20': '20%',
-        'p-30': '30%',
-        'p-40': '40%',
-        'p-50': '50%',
-        'p-60': '60%',
-        'p-70': '70%',
-        'p-80': '80%',
-        'p-90': '90%',
-        'p-100': '100%',
       },
       display: ["group-hover", "group-focus"],
     }

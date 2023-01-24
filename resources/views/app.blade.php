@@ -3,12 +3,12 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>{{ env('APP_NAME') }}</title>
         @routes
-        @vite(['resources/css/app.css', 'resources/js/app.jsx'])
         @inertiaHead
     </head>
     <body class="antialiased">
         @inertia
+        @vite(['resources/css/app.scss', 'resources/js/app.jsx'])
     </body>
 </html>

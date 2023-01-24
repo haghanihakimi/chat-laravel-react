@@ -6,9 +6,11 @@ import Login from '../Pages/Login'
 export default function({}) {
 
   return (
-    <>
-      <Login />
-    </>
+    <Layout title={'Login'} body={
+        <>
+            <h1 className='text-sm'>LOGIN</h1>
+        </>
+    }/>
   );
 } 
 

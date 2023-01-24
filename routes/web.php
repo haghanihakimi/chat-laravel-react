@@ -9,3 +9,6 @@ Route::middleware(['guest'])->group(function () {
         Route::get('/home', 'index')->name('home');
     });
 });
+
+//Authentication Routes
+require __DIR__.'/auth.php';
