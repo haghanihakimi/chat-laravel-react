@@ -8,7 +8,7 @@ export default function({}) {
   return (
     <Layout title={'Login'} body={
         <>
-            <h1 className='text-sm'>LOGIN</h1>
+          {/*  */}
         </>
     }/>
   );

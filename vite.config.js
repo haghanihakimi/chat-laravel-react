@@ -4,13 +4,21 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
     plugins: [
-        laravel({
-            input: [
-                'resources/css/app.scss',
-                'resources/js/app.jsx',
-            ],
-            refresh: true,
-        }),
+        laravel([
+            'resources/css/app.css',
+            'resources/js/app.jsx',
+        ]),
+        {
+            name: 'jsx',
+            handleHotUpdate({file, server}) {
+                if(file.endsWith('.jsx')) {
+                    server.ws.send({
+                        type: 'full-reload',
+                        path: '*', 
+                    });
+                }
+            }
+        },
         react(),
     ],
 });
