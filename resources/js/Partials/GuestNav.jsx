@@ -17,7 +17,7 @@ export default function({}) {
 
     return (
         <>
-            <nav className='w-screen select-none relative z-50 px-4 md:py-2 sm:px-4 sm:py-2 border-b border-black border-opacity-10 transition duration-200 dark:border-milky-white dark:border-opacity-10'>
+            <nav className='w-screen select-none relative z-50 px-4 md:py-2 sm:px-4 sm:py-2 border-b border-black border-opacity-10 transition duration-200 dark:border-milky-white dark:border-opacity-5'>
                 <div className='w-full relative flex flex-row gap-0 justify-between items-center'>
                     {/* Logo section */}
                     <div className='w-fit h-12 shrink-0'>

@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
+    "./node_modules/tw-elements/dist/js/**/*.js",
     "./resources/**/*.blade.php",
     "./resources/**/*.js",
     "./resources/**/*.jsx",
@@ -72,5 +73,7 @@ module.exports = {
       display: ["group-hover", "group-focus"],
     }
   },
-  plugins: [],
+  plugins: [
+    require('tw-elements/dist/plugin')
+  ],
 }
