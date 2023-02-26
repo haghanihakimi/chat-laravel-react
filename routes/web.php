@@ -12,3 +12,5 @@ Route::middleware(['guest'])->group(function () {
 
 //Authentication Routes
 require __DIR__.'/auth.php';
+//Conversations Routes
+require __DIR__.'/conversation.php';

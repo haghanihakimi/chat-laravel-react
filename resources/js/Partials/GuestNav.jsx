@@ -1,7 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import Layout from '../Layouts/General'
 import route from 'ziggy-js';
-import Login from '../Pages/Login'
 import { useSelector, useDispatch } from 'react-redux';
 import { setTheme } from '../store/theme';
 import { HiBars3BottomRight as Menu, HiBars3CenterLeft as OpenMenu, HiMoon as DarkMode, HiSun as LightMode } from "react-icons/hi2";
@@ -12,7 +11,6 @@ export default function({}) {
     const theme = useSelector((state) => state.theme.value)
     const dispatch = useDispatch()
     let [data, setData] = useState({
-        menu: false,
     })
 
     return (
@@ -32,18 +30,9 @@ export default function({}) {
                         onClick={() => theme === "white" ? dispatch(setTheme('dark')) : dispatch(setTheme('white')) }>
                             {theme === 'white' ? <DarkMode className='w-7 h-7 text-black animate-fadeInBounce dark:text-milky-white' /> : <LightMode className='w-6 h-6 text-black animate-fadeInBounce dark:text-milky-white' />}
                         </button>
-                        <button className='w-fit h-fit'>
-                            <Menu className='w-8 h-8 text-black transition duration-200 dark:text-milky-white' />
-                        </button>
                     </div>
                 </div>
             </nav>
-            {
-                data.menu ? 
-                <div className='w-full h-screen fixed z-40 top-0 right-0 max-w-lg bg-red'>
-                    {/*  */}
-                </div> : ''
-            }
         </>
     );
 } 
