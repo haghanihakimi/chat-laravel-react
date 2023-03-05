@@ -12,11 +12,11 @@ export default function({}) {
 
     return(
         <>
-            <div className="w-full max-w-xs h-screen select-none fixed top-0 left-[70px] overflow-auto z-20 bg-white border-r border-black border-opacity-10 shadow-lg dark:bg-black dark:border-milky-white dark:border-opacity-10 dark:hover:text-warm-blue">
+            <div className="w-full max-w-xs h-screen select-none relative top-0 overflow-auto z-20 bg-white border-r border-black border-opacity-10 shadow-lg dark:bg-black dark:border-milky-white dark:border-opacity-10 dark:hover:text-warm-blue">
                 {/* Contacts list container */}
                 <div className="w-full h-auto relative flex flex-col">
                     {/* List header */}
-                    <div className="w-full relative top-0 left-0 z-10 bg-white border-b border-black border-opacity-5 dark:border-milky-white dark:border-opacity-10 dark:bg-milky-white dark:bg-opacity-10">
+                    <div className="w-full h-14 flex items-center justify-center relative top-0 left-0 z-10 bg-white border-b border-black border-opacity-10 dark:border-milky-white dark:border-opacity-10 dark:bg-milky-white dark:bg-opacity-10">
                         <div className="text-sm font-medium text-center text-gray-500 dark:text-gray-400">
                             <ul className="flex flex-wrap -mb-px">
                                 <li>

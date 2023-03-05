@@ -9,7 +9,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.jsx'])
         @inertiaHead
     </head>
-    <body class="w-screen p-0 m-0 bg-milky-white dark:bg-dark">
+    <body class="w-screen h-screen p-0 m-0 bg-milky-white dark:bg-dark">
         @inertia
     </body>
 </html>

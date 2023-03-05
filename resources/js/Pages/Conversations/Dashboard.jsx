@@ -1,6 +1,3 @@
-import { divide } from 'lodash'
-import { HiBars2 } from 'react-icons/hi2'
-import { useSelector } from 'react-redux'
 import Layout from '../../Layouts/Main'
 
 export default function({}) {
@@ -8,8 +5,10 @@ export default function({}) {
     return (
         <>
             <Layout title='Dashboard' body={
-                <div className='w-screen h-screen relative z-10'>
-                    {/*  */}
+                <div className='w-full h-screen flex justify-center items-center relative z-10'>
+                    <h1 className='w-fit text-xl text-black text-opacity-75 font-semibold tracking-wider dark:text-milky-white dark:text-opacity-75 m-auto'>
+                        Select a chat or start a new conversation...
+                    </h1>
                 </div>
             }/>
         </>
