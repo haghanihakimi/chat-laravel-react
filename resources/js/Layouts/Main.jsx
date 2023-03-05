@@ -5,9 +5,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getTheme, setTheme } from '../store/theme';
 import Nav from '../Partials/MainNav';
 import LeftSidebar from '../Partials/LeftSidebar';
+import MessagesPane from '../Partials/MessagesPane'
+import ContactsPane from '../Partials/ContactsPane';
 
 export default function({title, body}) {
   const auth = useSelector((state) => state.auth)
+  const messages = useSelector((state) => state.messages)
+  const contacts = useSelector((state) => state.contacts)
   const dispatch = useDispatch()
   const [data, setData] = useState({
     smallScreen: false,
@@ -27,14 +31,15 @@ export default function({title, body}) {
         }
     }
     window.addEventListener('resize', checkSmallScreen)
+    window.addEventListener('load', checkSmallScreen)
 
     return() =>{
       if (auth.loggedIn) {
         router.visit(route('messages'))
       }
-      dispatch(setTheme('dark'))
       dispatch(getTheme())
       window.removeEventListener('resize', checkSmallScreen)
+      window.removeEventListener('load', checkSmallScreen)
     }
   })
   return (
@@ -42,10 +47,12 @@ export default function({title, body}) {
       <Head title={title} />
       <div className='w-screen relative flex flex-col'>
         {
-            data.smallScreen ? <Nav /> : ''
+            data.smallScreen ? <Nav className="xxxl:visible xxl:visible xl:visible lg:visible md:visible sm:invisible xs:invisible xsm:invisible" /> : ''
         }
         <div className='w-full relative flex flex-row gap-0 flex-nowrap'>
-            <LeftSidebar />
+            {!data.smallScreen ? <LeftSidebar className="xxxl:visible xxl:visible xl:visible lg:visible md:invisible sm:invisible xs:invisible xsm:invisible" /> : ''}
+            { messages.pane ? <MessagesPane /> : '' }
+            { contacts.pane ? <ContactsPane /> : '' }
             {body}
         </div>
       </div>

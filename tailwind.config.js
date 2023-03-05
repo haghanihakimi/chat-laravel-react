@@ -1,6 +1,9 @@
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
+    "./src/**/*.{html,js}",
     "./node_modules/tw-elements/dist/js/**/*.js",
     "./resources/**/*.blade.php",
     "./resources/**/*.js",
@@ -21,7 +24,7 @@ module.exports = {
     colors: {
       transparent: 'transparent',
       'dark-blue': '#011f44',
-      'blue': '#0059bf',
+      'blue': '#006ce0',
       'yellow': '#ffce4e',
       'warm-blue': '#107ad8',
       'black': '#0c172c',
@@ -57,7 +60,7 @@ module.exports = {
           '50%': { opacity: '0.5', transform: 'scale(1.00, 1.00)' },
           '75%': { opacity: '1.0', transform: 'scale(1.05, 1.05)' },
           '100%': { opacity: '1.0', transform: 'scale(1.00, 1.00)' },
-        },
+        }
       },
       animation: {
         'fadeInBounce': 'fadeInBounce 200ms ease-in 0ms 1 alternate',
