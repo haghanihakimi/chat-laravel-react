@@ -9,3 +9,9 @@ html,body {
     width: 100%;
     height: 100%;
 }
+#message p[placeholder]:empty:before {
+    content: attr(placeholder);
+}
+#message p[placeholder]:empty:focus:before {
+    content: "";
+}

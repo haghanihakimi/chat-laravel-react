@@ -12,7 +12,7 @@ export default function({}) {
 
     return(
         <>
-            <div className="w-full max-w-xs h-screen select-none relative top-0 overflow-auto z-20 bg-white border-r border-black border-opacity-10 shadow-lg dark:bg-black dark:border-milky-white dark:border-opacity-10 dark:hover:text-warm-blue">
+            <div className="w-full max-w-xs h-screen select-none relative top-0 overflow-auto z-20 bg-white border-r border-black border-opacity-10 shadow-md dark:bg-black dark:border-milky-white dark:border-opacity-10 dark:hover:text-warm-blue">
                 {/* Contacts list container */}
                 <div className="w-full h-auto relative flex flex-col">
                     {/* List header */}

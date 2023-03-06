@@ -5,7 +5,7 @@ import ChatMenu from "./ChatMenu"
 export default function({}) {
     return(
         <>
-            <div className="w-full max-w-xs h-screen select-none relative overflow-auto overflow-x-hidden z-20 bg-white border-r border-black border-opacity-10 shadow-lg dark:bg-black dark:border-milky-white dark:border-opacity-10">
+            <div className="w-full max-w-xs h-screen select-none relative overflow-auto overflow-x-hidden z-20 bg-white border-r border-black border-opacity-10 shadow-md dark:bg-black dark:border-milky-white dark:border-opacity-10">
                 {/* Chats list container */}
                 <div className="w-full h-auto flex flex-col">
                     <h2 className="w-full h-14 text-base font-semibold flex items-center justify-center tracking-wider text-black text-center dark:text-milky-white border-b border-black border-opacity-10 dark:border-milky-white dark:border-opacity-5">
