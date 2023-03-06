@@ -81,24 +81,25 @@ export default function({}) {
                             {/* message texts view */}
                             <div className='w-full h-full bg-transparent px-2 py-4 overflow-auto'>
                                 
-                                
-                                <div className="flex items-end justify-start mb-4">
-                                    <img className="w-6 h-6 mr-1 rounded-full" src="https://via.placeholder.com/50" alt="User Avatar"/>
-                                    <div className="flex flex-col items-end bg-blue p-4 rounded-lg">
-                                        <p className="text-sm text-white">Hi! How can I help you?</p>
-                                        <span className="text-xs text-white">12:05 pm</span>
-                                    </div>
-                                </div>
-                                <div className="flex items-end justify-end mb-4">
-                                    <div className="flex flex-col items-start bg-black bg-opacity-20 p-4 rounded-lg">
+                                <div className="flex items-end justify-end flex-row-reverse gap-2">
+                                    <div className="flex flex-col items-start bg-black bg-opacity-20 p-4 rounded-tr-lg rounded-tl-lg rounded-br-lg">
                                         <p className="text-sm">Hello there!</p>
                                         <span className="text-xs text-gray-600">12:00 pm</span>
                                     </div>
                                     <img className="w-6 h-6 ml-1 rounded-full" src="https://via.placeholder.com/50" alt="User Avatar"/>
                                 </div>
+                                <div className="flex items-end justify-start flex-row-reverse gap-2">
+                                    <img className="w-6 h-6 mr-1 rounded-full" src="https://via.placeholder.com/50" alt="User Avatar"/>
+                                    <div className="flex flex-col items-end bg-blue p-4 rounded-tr-lg rounded-tl-lg rounded-bl-lg">
+                                        <p className="text-sm text-white">Hi! How can I help you?</p>
+                                        <span className="text-xs text-white">12:05 pm</span>
+                                    </div>
+                                </div>
 
                             </div>
-                            <div className='w-full h-fit p-2 relative p-0 m-0 flex flex-row gap-2 justify-between items-end'>
+
+                            {/* Chat Input container */}
+                            <div className='w-full h-fit p-4 relative p-0 m-0 flex flex-row gap-2 justify-between items-end'>
                                 <div 
                                     contentEditable="true" 
                                     suppressContentEditableWarning={true}
@@ -113,6 +114,7 @@ export default function({}) {
                                     className="w-full px-4 py-3 bottom-0 bg-white left-0 rounded-xl shadow-lg text-base text-black font-medium tracking-wide outline-none border border-black border-opacity-10 ring-transparent ring-4 focus:ring-blue focus:ring-2 dark:border-milky-white dark:text-milky-white dark:border-opacity-10 dark:bg-black dark:focus:bg-dark-blue focus:outline-none focus:ring-0 overflow-auto">
                                     <p className='text-black before:text-black before:text-opacity-50 dark:text-milky-white dark:before:text-milky-white dark:before:text-opacity-50' placeholder='Type Message...'></p>
                                 </div>
+                                {/* Send button */}
                                 {
                                     data.enableSend ? 
                                     <div className='w-12 h-12 rounded-full bg-white animate-fadeInBounce dark:bg-dark-blue'>
