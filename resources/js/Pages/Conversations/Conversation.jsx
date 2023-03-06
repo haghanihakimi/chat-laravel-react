@@ -29,10 +29,10 @@ export default function({}) {
             setData({
                 enableSend: false
             })
-            message.innerHTML = "<p class='text-black before:text-black before:text-opacity-50 dark:text-milky-white dark:before:text-milky-white dark:before:text-opacity-50' placeholder='Type Message...'></p>"
+            message.innerHTML = "<p class='cursor-text text-black before:text-black before:text-opacity-50 dark:text-milky-white dark:before:text-milky-white dark:before:text-opacity-50' placeholder='Type Message...'></p>"
         }
-        if (message.innerHTML === '<p class="text-black before:text-black before:text-opacity-50 dark:text-milky-white dark:before:text-milky-white dark:before:text-opacity-50" placeholder="Type Message..."><br></p>') {
-            message.innerHTML = "<p class='text-black before:text-black before:text-opacity-50 dark:text-milky-white dark:before:text-milky-white dark:before:text-opacity-50' placeholder='Type Message...'></p>"
+        if (message.innerHTML === '<p class="cursor-text text-black before:text-black before:text-opacity-50 dark:text-milky-white dark:before:text-milky-white dark:before:text-opacity-50" placeholder="Type Message..."><br></p>') {
+            message.innerHTML = "<p class='cursor-text text-black before:text-black before:text-opacity-50 dark:text-milky-white dark:before:text-milky-white dark:before:text-opacity-50' placeholder='Type Message...'></p>"
             setData({
                 enableSend: false
             })
@@ -79,40 +79,46 @@ export default function({}) {
                     <div className='w-full h-full pt-14 bg-transparent relative z-20'>
                         <div className='w-full h-full relative flex flex-col justify-between items-center'>
                             {/* message texts view */}
-                            <div className='w-full h-full bg-transparent px-2 py-4 overflow-auto'>
+                            <div className='w-full h-full bg-transparent px-2 py-4 overflow-auto flex flex-col gap-6'>
                                 
-                                <div className="flex items-end justify-end flex-row-reverse gap-2">
-                                    <div className="flex flex-col items-start bg-black bg-opacity-20 p-4 rounded-tr-lg rounded-tl-lg rounded-br-lg">
+                                <div className="select-text flex items-end justify-end flex-row-reverse gap-2">
+                                    <div className="max-w-[50%] flex flex-col items-start bg-black bg-opacity-10 p-2 shadow-lg border border-black border-opacity-5 rounded-tr-lg rounded-tl-lg rounded-br-lg dark:border-milky-white dark:border-opacity-10 dark:bg-black dark:text-milky-white">
                                         <p className="text-sm">Hello there!</p>
-                                        <span className="text-xs text-gray-600">12:00 pm</span>
+                                        <span className="text-xs text-black font-semibold tracking-wide text-opacity-80 dark:text-milky-white dark:text-opacity-80">12:00 pm</span>
                                     </div>
-                                    <img className="w-6 h-6 ml-1 rounded-full" src="https://via.placeholder.com/50" alt="User Avatar"/>
+                                    <img 
+                                    className="w-6 h-6 ml-1 rounded-full" 
+                                    src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
+                                    alt="User Avatar"/>
                                 </div>
-                                <div className="flex items-end justify-start flex-row-reverse gap-2">
-                                    <img className="w-6 h-6 mr-1 rounded-full" src="https://via.placeholder.com/50" alt="User Avatar"/>
-                                    <div className="flex flex-col items-end bg-blue p-4 rounded-tr-lg rounded-tl-lg rounded-bl-lg">
+                                <div className="select-text flex items-end justify-start flex-row-reverse gap-2">
+                                    <img 
+                                    className="w-6 h-6 mr-1 rounded-full" 
+                                    src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
+                                    alt="User Avatar"/>
+                                    <div className="max-w-[55%] flex flex-col items-end bg-blue p-2 shadow-lg rounded-tr-lg rounded-tl-lg rounded-bl-lg">
                                         <p className="text-sm text-white">Hi! How can I help you?</p>
-                                        <span className="text-xs text-white">12:05 pm</span>
+                                        <span className="text-xs text-white font-semibold tracking-wide text-opacity-90">12:05 pm</span>
                                     </div>
                                 </div>
 
                             </div>
 
                             {/* Chat Input container */}
-                            <div className='w-full h-fit p-4 relative p-0 m-0 flex flex-row gap-2 justify-between items-end'>
+                            <div className='peer-focus:p-0 w-full h-fit p-4 relative p-0 m-0 flex flex-row gap-2 justify-between items-end'>
                                 <div 
-                                    contentEditable="true" 
-                                    suppressContentEditableWarning={true}
-                                    role="textbox" 
-                                    spellCheck="true" 
-                                    tabIndex="0"
-                                    id='message'
-                                    onInput={() => { adjust() }}
-                                    onKeyDown={lockEnter}
-                                    style={{padding: '12px !important'}}
-                                    ref={chatRef}
-                                    className="w-full px-4 py-3 bottom-0 bg-white left-0 rounded-xl shadow-lg text-base text-black font-medium tracking-wide outline-none border border-black border-opacity-10 ring-transparent ring-4 focus:ring-blue focus:ring-2 dark:border-milky-white dark:text-milky-white dark:border-opacity-10 dark:bg-black dark:focus:bg-dark-blue focus:outline-none focus:ring-0 overflow-auto">
-                                    <p className='text-black before:text-black before:text-opacity-50 dark:text-milky-white dark:before:text-milky-white dark:before:text-opacity-50' placeholder='Type Message...'></p>
+                                contentEditable="true" 
+                                suppressContentEditableWarning={true}
+                                role="textbox" 
+                                spellCheck="true" 
+                                tabIndex="0"
+                                id='message'
+                                onInput={() => { adjust() }}
+                                onKeyDown={lockEnter}
+                                style={{padding: '12px !important'}}
+                                ref={chatRef}
+                                className="peer w-full px-4 py-3 bottom-0 bg-white left-0 rounded-xl shadow-lg text-base text-black font-medium tracking-wide outline-none border border-black border-opacity-10 ring-transparent ring-4 focus:ring-blue focus:ring-2 dark:border-milky-white dark:text-milky-white dark:border-opacity-10 dark:bg-black dark:focus:bg-dark-blue focus:outline-none focus:ring-0 overflow-auto">
+                                    <p className='cursor-text text-black before:text-black before:text-opacity-50 dark:text-milky-white dark:before:text-milky-white dark:before:text-opacity-50' placeholder='Type Message...'></p>
                                 </div>
                                 {/* Send button */}
                                 {
