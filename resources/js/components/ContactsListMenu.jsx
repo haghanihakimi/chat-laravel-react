@@ -2,7 +2,9 @@ import { Link } from "@inertiajs/react"
 import route from "ziggy-js"
 import { 
     HiEllipsisHorizontal as Menu,
-    HiOutlineTrash as OutlineTrash,
+    HiOutlineUserPlus as Follow,
+    HiOutlineChatBubbleLeft as Message,
+    HiXMark as Cancel,
     HiNoSymbol as Block,
     HiOutlineUserMinus as OutlineUnfollow
 } from "react-icons/hi2";
@@ -42,6 +44,33 @@ export default function({}) {
                 {
                     data.menu ? 
                     <div ref={wrapper} className="min-w-[140px] h-auto bg-white border border-black border-opacity-10 absolute rounded shadow-lg top-7 right-0 flex flex-col gap-0 dark:border-milky-white dark:border-opacity-10 dark:bg-dark-blue">
+                        <button 
+                        type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
+                            <span className="my-auto relative">
+                                <Follow className="w-4 h-4 text-green my-auto" />
+                            </span>
+                            <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
+                                Follow
+                            </span>
+                        </button>
+                        <button 
+                        type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
+                            <span className="my-auto relative">
+                                <Cancel className="w-4 h-4 text-orange my-auto" />
+                            </span>
+                            <span className="text-left text-xs font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
+                                Cancel Request
+                            </span>
+                        </button>
+                        <button 
+                        type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
+                            <span className="my-auto relative">
+                                <Message className="w-4 h-4 text-blue my-auto" />
+                            </span>
+                            <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
+                                Message
+                            </span>
+                        </button>
                         <button 
                         type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
                             <span className="my-auto relative">

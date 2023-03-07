@@ -1,16 +1,19 @@
 import { Link } from "@inertiajs/react"
 import route from "ziggy-js"
-import ChatMenu from "./ChatMenu"
+import ContactsMenu from './ContactsListMenu'
 
 export default function({}) {
     return(
         <>
             <div className="w-full max-w-xs h-screen select-none relative overflow-auto overflow-x-hidden z-20 bg-white border-r border-black border-opacity-10 shadow-md dark:bg-black dark:border-milky-white dark:border-opacity-10">
-                {/* Chats list container */}
+                {/* Searchbar & results container */}
                 <div className="w-full h-auto flex flex-col">
-                    <h2 className="w-full h-14 text-base font-semibold flex items-center justify-center tracking-wider text-black text-center dark:text-milky-white border-b border-black border-opacity-10 dark:border-milky-white dark:border-opacity-5">
-                        Conversations
-                    </h2>
+                    <div className="w-full h-14 p-2 border-b border-black border-opacity-5 dark:border-milky-white dark:border-opacity-5">
+                        <input type="text"
+                        placeholder="Search Contacts..."
+                        autoFocus
+                        className="w-full h-full px-4 py-2 border border-black border-opacity-5 shadow-sm rounded transition duration-150 ring-8 bg-white ring-transparent text-base text-black font-medium tracking-wide outline-none focus:outline-none focus:ring-blue focus:ring-2 dark:text-milky-white dark:bg-dark-blue dark:border-milky-white dark:border-opacity-5" />
+                    </div>
                     <div className="block border-b border-black border-opacity-5 last:border-none dark:border-milky-white dark:border-opacity-10">
                         <div className="w-full flex flex-row gap-0 pr-2 bg-milky-white transition duration-150 hover:bg-black hover:bg-opacity-10 dark:bg-dark dark:hover:bg-red">
                             <Link href="#" className="w-full px-4 py-2 flex flex-row gap-0">
@@ -25,13 +28,10 @@ export default function({}) {
                                     <strong className="w-full max-w-[200px] inline-block text-sm font-semibold tracking-wide truncate text-black dark:text-milky-white">
                                         User Name
                                     </strong>
-                                    <span className="text-xs text-black text-opacity-50 -translate-y-1 dark:text-milky-white dark:text-opacity-50">
-                                        active 2 hrs ago
-                                    </span>
                                 </div>
                             </Link>
                             <div className="w-fit h-full inline-flex justify-center items-center relative rounded-full my-auto">
-                                <ChatMenu />
+                                <ContactsMenu />
                             </div>
                         </div>
                     </div>

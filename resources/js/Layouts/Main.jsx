@@ -3,15 +3,17 @@ import { useEffect, useState } from 'react';
 import route from 'ziggy-js';
 import { useSelector, useDispatch } from 'react-redux';
 import { getTheme, setTheme } from '../store/theme';
-import Nav from '../Partials/MainNav';
-import LeftSidebar from '../Partials/LeftSidebar';
-import MessagesPane from '../Partials/MessagesPane'
-import ContactsPane from '../Partials/ContactsPane';
+import Nav from '../components/MainNav';
+import LeftSidebar from '../components/LeftSidebar';
+import MessagesPane from '../components/MessagesPane'
+import ContactsPane from '../components/ContactsPane';
+import SearchPane from '../components/SearchPane';
 
 export default function({title, body}) {
   const auth = useSelector((state) => state.auth)
   const messages = useSelector((state) => state.messages)
   const contacts = useSelector((state) => state.contacts)
+  const search = useSelector((state) => state.search)
   const dispatch = useDispatch()
   const [data, setData] = useState({
     smallScreen: false,
@@ -53,6 +55,7 @@ export default function({title, body}) {
             {!data.smallScreen ? <LeftSidebar className="xxxl:visible xxl:visible xl:visible lg:visible md:invisible sm:invisible xs:invisible xsm:invisible" /> : ''}
             { messages.pane ? <MessagesPane /> : '' }
             { contacts.pane ? <ContactsPane /> : '' }
+            { search.pane ? <SearchPane /> : '' }
             {body}
         </div>
       </div>

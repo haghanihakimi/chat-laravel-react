@@ -4,6 +4,7 @@ import themeSlice from './theme'
 import registrationSlice from './registration'
 import messagesSlice from './messages'
 import contactsSlice from './contacts'
+import searchSlice from './search'
 
 export default configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export default configureStore({
     registration: registrationSlice,
     messages: messagesSlice,
     contacts: contactsSlice,
+    search: searchSlice,
   },
 })

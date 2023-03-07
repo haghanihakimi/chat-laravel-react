@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import route from 'ziggy-js';
 import { useSelector, useDispatch } from 'react-redux';
 import { getTheme, setTheme } from '../store/theme';
-import Nav from '../Partials/GuestNav';
+import Nav from '../components/GuestNav';
 
 export default function({title, body}) {
   const auth = useSelector((state) => state.auth)
