@@ -112,14 +112,14 @@ export default function({}) {
                                         <span className="text-xs text-black font-semibold tracking-wide text-opacity-80 dark:text-milky-white dark:text-opacity-80">12:00 pm</span>
                                     </div>
                                     <img 
-                                    className="w-6 h-6 ml-1 rounded-full shadow-lg" 
+                                    className="w-4 h-4 ml-1 rounded-full shadow-lg" 
                                     src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
                                     alt="User Avatar"/>
                                 </div>
                                 {/* Sender chat bubble */}
                                 <div className="select-text flex items-end justify-start flex-row-reverse gap-2">
                                     <img 
-                                    className="w-6 h-6 mr-1 rounded-full shadow-lg" 
+                                    className="w-4 h-4 mr-1 rounded-full shadow-lg" 
                                     src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
                                     alt="User Avatar"/>
                                     <div className="max-w-[55%] flex flex-col items-end bg-blue p-2 shadow-lg rounded-tr-lg rounded-tl-lg rounded-bl-lg">

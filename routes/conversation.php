@@ -14,6 +14,6 @@ Route::middleware(['guest'])->group(function() {
      * Message Routes
      */
     Route::controller(MessagesController::class)->group(function() {
-        Route::get('/message/{message_id}', 'index')->whereNumber('message_id')->name('messages.view');
+        Route::get('/message/{message_id}', 'index')->where('message_id', 'numeric')->name('messages.view');
     });
 });

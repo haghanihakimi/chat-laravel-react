@@ -9,7 +9,7 @@ use Inertia\Inertia;
 
 class MessagesController extends Controller
 {
-    public function index() {
+    public function index($message_id) {
         return Inertia::render('Conversations/Conversation');
     }
 }

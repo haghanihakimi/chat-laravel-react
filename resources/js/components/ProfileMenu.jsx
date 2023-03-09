@@ -34,39 +34,21 @@ export default function({}) {
             <div className="w-8 h-8 rounded-full relative shrink-0 select-none">
                 <button 
                 ref={wrapper}
-                onClick={() => setData({menu: true})}
+                onClick={() => setData({menu: data.menu ? false : true})}
                 type="button" 
-                className="w-full h-full rounded-full flex justify-center items-center">
-                    <Menu className="w-6 h-6 text-black dark:text-milky-white" />
+                className="w-8 h-8 flex justify-center items-center">
+                    <Menu className="w-5 h-5 text-milky-white" />
                 </button>
                 {
                     data.menu ? 
-                    <div ref={wrapper} className="min-w-[140px] h-auto bg-white border border-black border-opacity-10 absolute rounded shadow-lg top-9 right-1 flex flex-col gap-0 dark:border-milky-white dark:border-opacity-10 dark:bg-dark-blue">
-                        <button 
-                        type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
-                            <span className="my-auto relative">
-                                <OutlineTrash className="w-4 h-4 text-red my-auto" />
-                            </span>
-                            <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
-                                Delete Chat
-                            </span>
-                        </button>
-                        <button 
-                        type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
-                            <span className="my-auto relative">
-                                <OutlineUnfollow className="w-4 h-4 text-orange my-auto" />
-                            </span>
-                            <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
-                                Unfollow
-                            </span>
-                        </button>
+                    <div ref={wrapper} className="min-w-[120px] h-auto bg-white border border-black border-opacity-10 absolute rounded shadow-lg top-9 -right-1 flex flex-col gap-0 dark:border-milky-white dark:border-opacity-10 dark:bg-dark-blue">
                         <button 
                         type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
                             <span className="my-auto relative">
                                 <Block className="w-4 h-4 text-orange my-auto" />
                             </span>
                             <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
-                                Block User
+                                Block
                             </span>
                         </button>
                     </div>

@@ -5,6 +5,7 @@ import registrationSlice from './registration'
 import messagesSlice from './messages'
 import contactsSlice from './contacts'
 import searchSlice from './search'
+import alertsSlice from './alerts'
 
 export default configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export default configureStore({
     messages: messagesSlice,
     contacts: contactsSlice,
     search: searchSlice,
+    alerts: alertsSlice,
   },
 })

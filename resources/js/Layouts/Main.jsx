@@ -8,12 +8,14 @@ import LeftSidebar from '../components/LeftSidebar';
 import MessagesPane from '../components/MessagesPane'
 import ContactsPane from '../components/ContactsPane';
 import SearchPane from '../components/SearchPane';
+import Alerts from '../Partials/Alerts';
 
 export default function({title, body}) {
   const auth = useSelector((state) => state.auth)
   const messages = useSelector((state) => state.messages)
   const contacts = useSelector((state) => state.contacts)
   const search = useSelector((state) => state.search)
+  const alerts = useSelector((state) => state.alerts)
   const dispatch = useDispatch()
   const [data, setData] = useState({
     smallScreen: false,
@@ -56,6 +58,7 @@ export default function({title, body}) {
             { messages.pane ? <MessagesPane /> : '' }
             { contacts.pane ? <ContactsPane /> : '' }
             { search.pane ? <SearchPane /> : '' }
+            { alerts.options.status ? <Alerts /> : '' }
             {body}
         </div>
       </div>
