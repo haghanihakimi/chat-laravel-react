@@ -1,8 +1,36 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link, useForm,  } from '@inertiajs/react';
 import Layout from '../../Layouts/General'
 import route from 'ziggy-js';
+import { setAuth } from '../../store/auth';
+import { useDispatch } from 'react-redux';
 
-export default function({}) {
+export default function({csrf}) {
+  const dispatch = useDispatch()
+  const { data, setData, post, processing, errors, transform } = useForm({
+    email: '',
+    username: '',
+    password: '',
+    remember: false,
+    _token: csrf
+  })
+
+  transform((data) => ({
+    ...data,
+    username: data.email,
+    remember: data.remember ? true : false,
+  }))
+
+  const login = () => {
+      if (!processing) {
+        post(route('signin'), {
+          onSuccess: () => {
+            // dispatch(setAuth('login'))
+          }
+        })
+        console.log(errors)
+      }
+  }
+
 
   return (
     <Layout title={'Login'} body={
@@ -18,7 +46,7 @@ export default function({}) {
                   alt="Sample image" />
               </div>
               <div className="mb-12 md:mb-0 md:w-8/12 lg:w-5/12 xl:w-5/12">
-                <form>
+                <form onSubmit={ e => { e.preventDefault();login(); } }>
                   <div
                     className="flex flex-row items-center justify-center lg:justify-start">
                     <p className="mb-0 mr-4 text-lg text-black dark:text-milky-white">Sign in with</p>
@@ -81,10 +109,13 @@ export default function({}) {
                     type="text"
                     className="w-full min-h-[45px] max-h-[45px] p-2 rounded text-black text-medium font-medium tracking-wide bg-milky-white border border-black border-opacity-10 ring-transparent transition duration-150 ease-in ring-[5px] outline-none focus:ring-warm-blue focus:ring-2 dark:text-milky-white dark:bg-dark-blue dark:border-milky-white dark:border-opacity-10"
                     id="email_address"
-                    placeholder="Email address"
+                    placeholder="Email/Username"
                     spellCheck="false"
                     autoFocus
-                    autoComplete="true" />
+                    autoComplete="true" 
+                    value={data.email}
+                    onInput={ e => { setData('email', e.target.value) } }
+                    />
                   </div>
 
                   <div className="relative mb-6">
@@ -94,16 +125,32 @@ export default function({}) {
                     id="password"
                     placeholder="Password"
                     spellCheck="false"
-                    autoComplete="false" />
+                    autoComplete="false" 
+                    value={data.password}
+                    onInput={e => { setData('password', e.target.value) }}
+                    />
                   </div>
+
+                  {
+                    errors.email || errors.password || errors.username
+                    ?
+                    <div className='w-full relative flex flex-col'>
+                      <p className='w-full text-sm font-semibold text-red px-1 pb-2'>
+                        {errors.email || errors.password}
+                      </p>
+                    </div>
+                    : ''
+                  }
 
                   <div className="mb-6 flex items-center justify-between">
                     <div className="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem]">
                       <input
                         className="relative float-left mt-[0.15rem] mr-[6px] -ml-[1.5rem] h-[1.125rem] w-[1.125rem] appearance-none rounded-[0.25rem] border-[0.125rem] border-solid border-[rgba(0,0,0,0.25)] bg-milky-white before:pointer-events-none before:absolute before:h-[0.875rem] before:w-[0.875rem] before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] checked:border-warm-blue checked:bg-warm-blue checked:before:opacity-[0.16] checked:after:absolute checked:after:ml-[0.25rem] checked:after:-mt-px checked:after:block checked:after:h-[0.8125rem] checked:after:w-[0.375rem] checked:after:rotate-45 checked:after:border-[0.125rem] checked:after:border-t-0 checked:after:border-l-0 checked:after:border-solid checked:after:border-milky-white checked:after:bg-transparent checked:after:content-[''] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:transition-[border-color_0.2s] focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] focus:after:absolute focus:after:z-[1] focus:after:block focus:after:h-[0.875rem] focus:after:w-[0.875rem] focus:after:rounded-[0.125rem] focus:after:bg-milky-white focus:after:content-[''] checked:focus:border-warm-blue checked:focus:bg-warm-blue checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:after:ml-[0.25rem] checked:focus:after:-mt-px checked:focus:after:h-[0.8125rem] checked:focus:after:w-[0.375rem] checked:focus:after:rotate-45 checked:focus:after:rounded-none checked:focus:after:border-[0.125rem] checked:focus:after:border-t-0 checked:focus:after:border-l-0 checked:focus:after:border-solid checked:focus:after:border-milky-white checked:focus:after:bg-transparent"
                         type="checkbox"
-                        value=""
-                        id="exampleCheck2" />
+                        value={data.remember}
+                        id="exampleCheck2" 
+                        onChange={e => setData('remember', e.target.value)}
+                        />
                       <label
                         className="inline-block pl-[0.15rem] text-black text-medium font-medium tracking-wide dark:text-milky-white hover:cursor-pointer"
                         htmlFor="exampleCheck2">
@@ -115,7 +162,7 @@ export default function({}) {
 
                   <div className="text-center lg:text-left">
                     <button
-                      type="button"
+                      type="submit"
                       className="inline-block rounded text-base font-semibold tracking-wider text-white bg-warm-blue px-7 pt-3 pb-2.5 text-sm font-medium uppercase leading-normal text-milky-white shadow-lg transition duration-150 ease-in-out hover:bg-blue"
                       data-te-ripple-init
                       data-te-ripple-color="light">

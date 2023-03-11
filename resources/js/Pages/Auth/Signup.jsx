@@ -1,14 +1,31 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import Layout from '../../Layouts/General'
 import route from 'ziggy-js';
-import { useSelector, useDispatch } from 'react-redux';
-import { setForm } from '../../store/registration';
 import { HiCheckCircle as Checkbox } from "react-icons/hi";
+import { useDispatch } from 'react-redux';
+import { setAuth } from '../../store/auth';
 
 
-export default function({}) {
-    const formInputs = useSelector((state) => state.registration.form);
+export default function({flash}) {
     const dispatch = useDispatch()
+    const { data, setData, post, processing, errors } = useForm({
+        first_name: '',
+        surname: '',
+        username: '',
+        email: '',
+        password: '',
+        gender: 'female'
+    })
+
+    const register = () => {
+        if (!processing) {
+            post(route('account.create'), {
+                onSuccess: () => {
+                    // dispatch(setAuth('login'))
+                }
+            })
+        }
+    }
 
     return (
         <Layout title={'Sign Up'} body={
@@ -58,7 +75,14 @@ export default function({}) {
                                 </div>
                             </div>
                             <div className="w-full max-w-[480px] mb-12 md:mb-0 px-4">
-                                <form method='post'>
+                                <form method='post' onSubmit={ e => { e.preventDefault();register(); } }>
+                                    {
+                                        flash && flash.message
+                                        ? <p className='text-sm text-red tracking-wide font-semibold px-1 py-2 dark:text-orange'>
+                                            {flash.message}
+                                        </p>
+                                        : ''
+                                    }
                                     <div className="my-4 mb-10 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-black before:border-opacity-30 before:dark:border-milky-white before:dark:border-opacity-30 after:mt-0.5 after:flex-1 after:border-t after:border-black after:border-opacity-30 after:dark:border-milky-white after:dark:border-opacity-30">
                                         <p className="mx-4 mb-0 text-black text-center text-base tracking-wider font-semibold dark:text-milky-white">
                                             Create Account
@@ -73,23 +97,37 @@ export default function({}) {
                                                 type="text"
                                                 className="w-full min-w-[160px] min-h-[45px] max-h-[45px] p-2 rounded text-black text-medium font-medium tracking-wide bg-milky-white border border-black border-opacity-10 ring-transparent transition duration-150 ease-in ring-[5px] outline-none focus:ring-warm-blue focus:ring-2 dark:text-milky-white dark:bg-dark-blue dark:border-milky-white dark:border-opacity-10"
                                                 id="firstname"
-                                                value={formInputs.fname}
+                                                value={data.first_name}
                                                 placeholder="First Name"
                                                 spellCheck="false"
                                                 autoFocus
                                                 autoComplete="true"
-                                                onInput={e => dispatch(setForm({ input: 'fname', entry: e.target.value })) } />
+                                                onInput={e => { setData('first_name', e.target.value) } } />
+                                                {
+                                                    errors.first_name
+                                                    ? <p className='text-sm text-red tracking-wide font-semibold px-1 py-2 dark:text-orange'>
+                                                        {errors.first_name}
+                                                    </p>
+                                                    : ''
+                                                }
                                             </div>
                                             <div className="w-full shink-0 relative min-w-[160px] flex-1">
                                                 <input
                                                 type="text"
-                                                value={formInputs.sname}
+                                                value={data.surname}
                                                 className="w-full min-h-[45px] max-h-[45px] p-2 rounded text-black text-medium font-medium tracking-wide bg-milky-white border border-black border-opacity-10 ring-transparent transition duration-150 ease-in ring-[5px] outline-none focus:ring-warm-blue focus:ring-2 dark:text-milky-white dark:bg-dark-blue dark:border-milky-white dark:border-opacity-10"
                                                 placeholder="Surname"
                                                 spellCheck="false"
                                                 autoComplete="false"
-                                                onInput={e => dispatch(setForm({ input: 'sname', entry: e.target.value })) }
+                                                onInput={e => setData('surname', e.target.value) }
                                                 />
+                                                {
+                                                    errors.surname
+                                                    ? <p className='text-sm text-red tracking-wide font-semibold px-1 py-2 dark:text-orange'>
+                                                        {errors.surname}
+                                                    </p>
+                                                    : ''
+                                                }
                                             </div>
                                         </div>
 
@@ -99,23 +137,37 @@ export default function({}) {
                                                 <input
                                                 type="email"
                                                 className="w-full min-h-[45px] max-h-[45px] p-2 rounded text-black text-medium font-medium tracking-wide bg-milky-white border border-black border-opacity-10 ring-transparent transition duration-150 ease-in ring-[5px] outline-none focus:ring-warm-blue focus:ring-2 dark:text-milky-white dark:bg-dark-blue dark:border-milky-white dark:border-opacity-10"
-                                                value={formInputs.email}
+                                                value={data.email}
                                                 placeholder="Email"
                                                 spellCheck="false"
                                                 autoFocus
                                                 autoComplete="true"
-                                                onInput={e => dispatch(setForm({ input: 'email', entry: e.target.value })) } />
+                                                onInput={e => { setData('email', e.target.value) } } />
+                                                {
+                                                    errors.email
+                                                    ? <p className='text-sm text-red tracking-wide font-semibold px-1 py-2 dark:text-orange'>
+                                                        {errors.email}
+                                                    </p>
+                                                    : ''
+                                                }
                                             </div>
                                             <div className="w-full shink-0 relative min-w-[160px] flex-1">
                                                 <input
                                                 type="password"
                                                 className="w-full min-h-[45px] max-h-[45px] p-2 rounded text-black text-medium font-medium tracking-wide bg-milky-white border border-black border-opacity-10 ring-transparent transition duration-150 ease-in ring-[5px] outline-none focus:ring-warm-blue focus:ring-2 dark:text-milky-white dark:bg-dark-blue dark:border-milky-white dark:border-opacity-10"
-                                                value={formInputs.password}
+                                                value={data.password}
                                                 placeholder="Password"
                                                 spellCheck="false"
                                                 autoComplete="false"
-                                                onInput={e => dispatch(setForm({ input: 'password', entry: e.target.value })) }
+                                                onInput={e => { setData('password', e.target.value) } }
                                                 />
+                                                {
+                                                    errors.password
+                                                    ? <p className='text-sm text-red tracking-wide font-semibold px-1 py-2 dark:text-orange'>
+                                                        {errors.password}
+                                                    </p>
+                                                    : ''
+                                                }
                                             </div>
                                         </div>
 
@@ -124,26 +176,40 @@ export default function({}) {
                                             <input
                                             type="text"
                                             className="w-full min-h-[45px] max-h-[45px] p-2 rounded text-black text-medium font-medium tracking-wide bg-milky-white border border-black border-opacity-10 ring-transparent transition duration-150 ease-in ring-[5px] outline-none focus:ring-warm-blue focus:ring-2 dark:text-milky-white dark:bg-dark-blue dark:border-milky-white dark:border-opacity-10"
-                                            value={formInputs.username}
+                                            value={data.username}
                                             placeholder="Username"
                                             spellCheck="false"
                                             autoFocus
                                             autoComplete="true"
-                                            onInput={ e => dispatch(setForm({ input: 'username', entry: e.target.value })) } />
+                                            onInput={ e => { setData('username', e.target.value) } } 
+                                            />
+                                            {
+                                                errors.username
+                                                ? <p className='text-sm text-red tracking-wide font-semibold px-1 py-2 dark:text-orange'>
+                                                    {errors.username}
+                                                </p>
+                                                : ''
+                                            }
                                         </div>
                                         <div className="relative">
                                             <select 
-                                            onChange={ e => dispatch(setForm({ input: 'gender', entry: e.target.value })) }
+                                            onChange={ e => { setData('gender', e.target.value) } }
                                             className="w-full min-h-[45px] max-h-[45px] p-2 capitalize cursor-pointer rounded text-black text-medium font-medium tracking-wide bg-milky-white border border-black border-opacity-10 ring-transparent transition duration-150 ease-in ring-[5px] outline-none focus:ring-warm-blue focus:ring-2 dark:text-milky-white dark:bg-dark-blue dark:border-milky-white dark:border-opacity-10">
                                                 <option value="female">female</option>
                                                 <option value="male">male</option>
                                             </select>
+                                            {
+                                                errors.gender
+                                                ? <p className='text-sm text-red tracking-wide font-semibold px-1 py-2 dark:text-orange'>
+                                                    {errors.gender}
+                                                </p>
+                                                : ''
+                                            }
                                         </div>
 
                                         <div className="text-center lg:text-left">
                                             <button
-                                            onClick={() => nextLevel()}
-                                            type="button"
+                                            type="submit"
                                             className="group inline-flex justify-center items-center gap-0 rounded text-base font-semibold tracking-wider text-white bg-warm-blue px-7 pt-3 pb-2.5 text-sm   uppercase leading-normal text-milky-white shadow-lg transition duration-150 ease-in-out hover:bg-blue">
                                                 Sign Up
                                             </button>

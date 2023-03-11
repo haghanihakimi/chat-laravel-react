@@ -7,10 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Controllers\Auth\EmailVerification;
+use Illuminate\Support\Str;
 use App\Models\User;
 use Inertia\Inertia;
+
+use App\Events\TestEvent;
 
 class RegisterController extends Controller
 {
@@ -23,23 +24,23 @@ class RegisterController extends Controller
         $request->validate([
             'first_name' => ['required', 'string', 'min:2'],
             'surname' => ['required', 'string', 'min:2'],
+            'username' => ['required', 'string', 'unique:users', 'min:5'],
             'email' => ['required', 'email', 'unique:users', 'min:10'],
-            'password' => ['required', 'string', 'min:6']
+            'password' => ['required', 'string', 'min:6'],
+            'gender' => ['required', 'string', 'max:6', 'in:female,male'],
         ]);
         $user = User::create([
-            'fname' => ucfirst(trans($request->first_name)),
-            'sname' => ucfirst(trans($request->surname)),
+            'firstname' => ucfirst(trans($request->first_name)),
+            'surname' => ucfirst(trans($request->surname)),
+            'username' => Str::lower($request->username),
             'email' => $request->email,
-            'email_verified_at' => null,
             'password' => Hash::make($request->password),
-            'default_password' => NULL,
+            'gender' => $request->gender,
         ]);
         if ($user) {
-            EmailVerification::sendLink(EmailVerification::url('verification.verify', $user), $user);
-            Auth::attempt($this->only('email', 'password'), 'on');
-            $loginRequest->session()->regenerate();
+            Auth::attempt($request->only('email', 'password'), 'on');
 
-            return redirect()->route('verification.notice');
+            return redirect()->route('conversations');
         }
         return back()->with('message', 'Registration failed. Please check all given information and try again.');
     }

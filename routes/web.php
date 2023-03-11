@@ -11,12 +11,12 @@ Route::middleware(['guest'])->group(function () {
     });
 });
 
-/**
- * Temporary guest route
- */
-Route::middleware(['guest'])->group(function () {
+// Settings & Profile routes
+Route::middleware(['auth'])->group(function () {
     Route::controller(ProfileController::class)->group(function() {
         Route::get('/user/{username}', 'viewProfile')->where('username', '[a-zA-Z0-9_]+')->name('profile.view');
+        Route::get('/account/settings', 'settingsView')->name('settings.view');
+        Route::patch('/account/save/settings', 'save')->name('settings.save');
     });
 });
 

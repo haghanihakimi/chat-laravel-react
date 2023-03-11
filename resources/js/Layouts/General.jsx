@@ -9,20 +9,25 @@ export default function({title, body}) {
   const auth = useSelector((state) => state.auth)
   const dispatch = useDispatch()
   useEffect(() => {
+    if (auth.loggedIn) { // This page is only for UNAUTHENTICATED then IF user is not logged in
+      router.visit(route('conversations')) // then redirect to dashboard page.
+    }
     return() =>{
-      if (auth.loggedIn) {
-        router.visit(route('messages'))
-      }
       dispatch(getTheme())
     }
   })
   return (
     <>
       <Head title={title} />
-      <div className='w-screen relative'>
-        <Nav />
-        {body}
-      </div>
+      {
+        !auth.loggedIn
+        ? 
+        <div className='w-screen relative'>
+          <Nav />
+          {body}
+        </div>
+        : router.visit(route('conversations'))
+      }
     </>
   );
 } 

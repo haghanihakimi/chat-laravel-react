@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 
 // Conversation routes
-Route::middleware(['guest'])->group(function() {
+Route::middleware(['auth'])->group(function() {
     Route::controller(Dashboard::class)->group(function () {
         Route::get('/messages', 'index')->name('conversations');
     });
@@ -14,6 +14,6 @@ Route::middleware(['guest'])->group(function() {
      * Message Routes
      */
     Route::controller(MessagesController::class)->group(function() {
-        Route::get('/message/{message_id}', 'index')->where('message_id', 'numeric')->name('messages.view');
+        Route::get('/message/{message_id}', 'index')->where('message_id', '[a-zA-Z0-9_]+')->name('messages.view');
     });
 });
