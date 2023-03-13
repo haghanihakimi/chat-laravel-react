@@ -22,8 +22,11 @@ class User extends Authenticatable
         'surname',
         'username',
         'email',
+        'email_verified_at',
+        'phone',
         'password',
         'gender',
+        'privacy',
     ];
 
     /**
@@ -44,4 +47,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function media_forms() {
+        return $this->hasMany(MediaForm::class, 'user_id');
+    }
 }

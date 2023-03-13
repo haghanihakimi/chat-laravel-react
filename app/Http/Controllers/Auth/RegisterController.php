@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Models\User;
+use Carbon\Carbon;
 use Inertia\Inertia;
 
 use App\Events\TestEvent;
@@ -34,6 +35,7 @@ class RegisterController extends Controller
             'surname' => ucfirst(trans($request->surname)),
             'username' => Str::lower($request->username),
             'email' => $request->email,
+            'email_verified_at' => now(),
             'password' => Hash::make($request->password),
             'gender' => $request->gender,
         ]);

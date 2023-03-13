@@ -16,7 +16,9 @@ class AuthenticateController extends Controller
     // protected $middleware = ['auth'];
 
     public function index () {
-        return Inertia::render('Auth/Login');
+        return Inertia::render('Auth/Login', [
+            'auth' => Auth::guard('web')->check(),
+        ]);
     }
 
     /**

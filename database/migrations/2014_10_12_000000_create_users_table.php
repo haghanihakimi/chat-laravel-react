@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone')->nullable();
             $table->string('gender');
+            $table->boolean('privacy')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });
