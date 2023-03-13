@@ -16,7 +16,9 @@ Route::middleware(['auth'])->group(function () {
     Route::controller(ProfileController::class)->group(function() {
         Route::get('/user/{username}', 'viewProfile')->where('username', '[a-zA-Z0-9_]+')->name('profile.view');
         Route::get('/account/settings', 'settingsView')->name('settings.view');
-        Route::post('/account/save/settings', 'save')->name('settings.save');
+        Route::post('/account/save/settings/general', 'saveNames')->name('settings.save.names');
+        Route::post('/account/save/settings/privacy', 'saveEmail')->name('settings.save.email');
+        Route::post('/account/save/settings/security', 'savePassword')->name('settings.save.password');
     });
 });
 

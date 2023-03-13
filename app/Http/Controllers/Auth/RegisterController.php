@@ -31,7 +31,7 @@ class RegisterController extends Controller
             'gender' => ['required', 'string', 'max:6', 'in:female,male'],
         ]);
         $user = User::create([
-            'firstname' => ucfirst(trans($request->first_name)),
+            'first_name' => ucfirst(trans($request->first_name)),
             'surname' => ucfirst(trans($request->surname)),
             'username' => Str::lower($request->username),
             'email' => $request->email,
