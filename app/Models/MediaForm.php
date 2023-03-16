@@ -19,6 +19,7 @@ class MediaForm extends Model
         'message_id',
         'media_type',
         'media_path',
+        'is_active',
     ];
 
     public function users() {

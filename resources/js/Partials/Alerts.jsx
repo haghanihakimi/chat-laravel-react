@@ -15,7 +15,7 @@ export default function({}) {
                 className='bg-blue text-white text-base font-semibold tracking-wide rounded shadow-md px-4 py-2 flex flex-row gap-2 justify-between items-center'
                 onClick={() => { dispatch(btnConfirm()) }}>
                     <span>
-                        {button.type}
+                        {button.text}
                     </span>
                     {
                         alerts.options.loading
@@ -30,14 +30,14 @@ export default function({}) {
                 type="button" 
                 className='bg-black bg-opacity-20 text-black text-base font-semibold tracking-wide rounded shadow-md px-4 py-2 flex flex-row gap-2 justify-between items-center'
                 onClick={() => { dispatch(btnCancel()) }}>
-                    {button.type}
+                    {button.text}
                 </button>
             case 'OK':
                 return <button key={button.type} 
                 type="button" 
                 className='bg-blue text-white text-base font-semibold tracking-wide rounded shadow-md px-4 py-2 flex flex-row gap-2 justify-between items-center'
                 onClick={() => { dispatch(btnOK()) }}>
-                    {button.type}
+                    {button.text}
                 </button>
             case 'Delete':
                 return <button key={button.type} 
@@ -45,7 +45,7 @@ export default function({}) {
                 className='bg-red text-white text-base font-semibold tracking-wide rounded shadow-md px-4 py-2 flex flex-row gap-2 justify-between items-center'
                 onClick={() => { dispatch(btnOK()) }}>
                     <span>
-                        {button.type}
+                        {button.text}
                     </span>
                     {
                         alerts.options.loading

@@ -29,8 +29,8 @@ Route::controller(EmailVerification::class)->group(function () {
 //Password Reset routes
 Route::controller(PasswordResetController::class)->group(function () {
     Route::get('/forgotten/account', 'recoverAccountView')->middleware(['guest'])->name('forgotten.account');
-    Route::get('/reset-password/{token}', 'resetPasswordView')->name('password.reset');
-    Route::post('/reset-password', 'resetPassword')->name('password.update');
+    Route::get('/reset-password/{token}', 'resetPasswordView')->middleware(['throttle:2,1'])->name('password.reset');
+    Route::post('/reset-password', 'resetPassword')->middleware(['throttle:2,1'])->name('password.update');
     Route::post('/forgot-password', 'passwordResetRequest')->middleware(['throttle:6,1'])->name('password.email');
-    Route::post('/fogotten/account/receive/link', 'receiveResetPassword')->name('recover.account.email');
+    Route::post('/fogotten/account/receive/link', 'receiveResetPassword')->middleware(['throttle:6,1'])->name('recover.account.email');
 });

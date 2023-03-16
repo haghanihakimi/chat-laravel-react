@@ -140,7 +140,6 @@ export default function({flash}) {
                                                 value={data.email}
                                                 placeholder="Email"
                                                 spellCheck="false"
-                                                autoFocus
                                                 autoComplete="true"
                                                 onInput={e => { setData('email', e.target.value) } } />
                                                 {
@@ -179,7 +178,6 @@ export default function({flash}) {
                                             value={data.username}
                                             placeholder="Username"
                                             spellCheck="false"
-                                            autoFocus
                                             autoComplete="true"
                                             onInput={ e => { setData('username', e.target.value) } } 
                                             />

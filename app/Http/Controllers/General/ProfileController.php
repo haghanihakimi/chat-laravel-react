@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Models\MediaForm;
 use Carbon\Carbon;
 use Inertia\Inertia;
 
@@ -26,7 +27,7 @@ class ProfileController extends Controller
         $user = User::find(Auth::guard('web')->user()->id);
         return Inertia::render('User/Settings', [
             'user' => $user,
-            'image' => $user->media_forms()->where('media_type', 'profile')->get(),
+            'image' => $user->media_forms()->where('media_type', 'profile')->where('is_active', true)->get(),
         ]);
     }
 
@@ -106,5 +107,29 @@ class ProfileController extends Controller
         return back()->with(['message' => 
             ['settings_password' => 'Current password is incorrect. Please check your current password and try again.']
         ]);
+    }
+
+    public function uploadProfileImage(Request $request) {
+        try {
+            $request->validate([
+                'imageFile' => ['required', 'mimes:jpg,png,jpeg,webp', 'max: 2000']
+            ]);
+            $user = User::find(Auth::guard('web')->user()->id);
+            $image = '';
+            $uploading = $request->file('imageFile')->storeAs(
+                'public/users/profile-images/'.$user->id, $image = $request->file('imageFile')->hashName()
+            );
+            $user->media_forms()->where('media_type', 'profile')->where('is_active', true)->update(['is_active' => false]);
+            MediaForm::create([
+                'user_id' => $user->id,
+                'message_id' => NULL,
+                'media_type' => 'profile',
+                'media_path' => '/storage/users/profile-images/'.$user->id.'/'.$image,
+                'is_active' => true,
+            ]);
+            return back()->with(['message' => ['image_upload_success' => 'Your profile image successfully updated.']]);
+        } catch(\Exception $e) {
+            return back()->with(['message' => ['image_upload_failure' => 'OOPS! Sorry, something went wrong with updating your profile image.']]);
+        }
     }
 }
