@@ -8,4 +8,24 @@ use Illuminate\Database\Eloquent\Model;
 class Block extends Model
 {
     use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'user_id',
+        'blocked_user_id',
+    ];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'blocked_user_id');
+    }
+
+    public function blockedUsers()
+    {
+        return $this->belongsToMany(User::class, 'block_user', 'block_id', 'user_id');
+    }
 }

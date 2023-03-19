@@ -23,6 +23,13 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
+// User Search routes
+Route::middleware(['auth'])->group(function() {
+    Route::controller(ProfileController::class)->group(function () {
+        Route::get('/search/account', 'searchUsers')->name('user.search');
+    });
+});
+
 //Authentication Routes
 require __DIR__.'/auth.php';
 //Conversations Routes

@@ -51,4 +51,20 @@ class User extends Authenticatable
     public function media_forms() {
         return $this->hasMany(MediaForm::class, 'user_id');
     }
+
+    public function blocks()
+    {
+        return $this->belongsToMany(Block::class, 'blocked_user_id', 'id');
+    }
+
+    public function blockedBy()
+    {
+        return $this->belongsToMany(Block::class, 'block_user', 'user_id', 'block_id');
+    }
+
+    public function scopeSearch ($query, $input) {
+        return $query->where('first_name', 'LIKE', '%' .$input. '%')
+        ->orWhere('surname', 'LIKE', '%' .$input. '%')
+        ->orWhere('username', 'LIKE', '%' .$input. '%');
+    }
 }

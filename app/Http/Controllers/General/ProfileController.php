@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Str;
+use App\Http\Requests\ProfileRequests as Abilities;
 use App\Models\User;
 use App\Models\MediaForm;
 use Carbon\Carbon;
@@ -18,9 +19,22 @@ use Inertia\Inertia;
 class ProfileController extends Controller
 {
     public function viewProfile($username) {
-        return Inertia::render('User/Profile', [
-            'user' => 'Sarah'
-        ]);
+        if (Auth::guard('web')->user()->username !== $username) {
+            $user = User::where('username', $username)->select('id', 'first_name', 'surname', 'username', 'privacy')->first();
+            return Inertia::render('User/Profile', [
+                'user' => $user,
+                'image' => $user->media_forms()->where('media_type', 'profile')->where('is_active', true)->get(),
+                'abilities' => [
+                    'view' => true,
+                    'follow' => true,
+                    'unfollow' => true,
+                    'message' => true,
+                    'block' => Abilities::blockedBy($username),
+                    'unblock' => true,
+                ],
+            ]);
+        }
+        return redirect()->route('settings.view');
     }
 
     public function settingsView(){
@@ -131,5 +145,16 @@ class ProfileController extends Controller
         } catch(\Exception $e) {
             return back()->with(['message' => ['image_upload_failure' => 'OOPS! Sorry, something went wrong with updating your profile image.']]);
         }
+    }
+
+    public function searchUsers(Request $request) {
+        $search = User::search($request->input('keywords'))->where('id', '!=', Auth::guard('web')->user()->id)
+        ->select('id', 'first_name', 'surname', 'username')
+        ->with(['media_forms' => function($query) {
+            $query->where('media_type', 'profile')->where('is_active', true)
+            ->select('user_id', 'media_path');
+        }])->get();
+        
+        return response()->json($search);
     }
 }

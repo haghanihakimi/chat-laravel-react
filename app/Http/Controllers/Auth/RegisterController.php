@@ -25,11 +25,15 @@ class RegisterController extends Controller
         $request->validate([
             'first_name' => ['required', 'string', 'min:2'],
             'surname' => ['required', 'string', 'min:2'],
-            'username' => ['required', 'string', 'unique:users', 'min:5'],
+            'username' => ['required', 'string', 'regex:/^[a-zA-Z0-9_]+$/', 'unique:users', 'min:5'],
             'email' => ['required', 'email', 'unique:users', 'min:10'],
             'password' => ['required', 'string', 'min:6'],
             'gender' => ['required', 'string', 'max:6', 'in:female,male'],
+        ],[
+            'username.regex' => "The username format is invalid. Only numbers, letters A-Z and underscore allowed.",
+            'username.min' => "Your username should be minimum 5 characters."
         ]);
+
         $user = User::create([
             'first_name' => ucfirst(trans($request->first_name)),
             'surname' => ucfirst(trans($request->surname)),
@@ -39,11 +43,13 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
             'gender' => $request->gender,
         ]);
+
         if ($user) {
             Auth::attempt($request->only('email', 'password'), 'on');
 
             return redirect()->route('conversations');
         }
+        
         return back()->with('message', 'Registration failed. Please check all given information and try again.');
     }
 }
