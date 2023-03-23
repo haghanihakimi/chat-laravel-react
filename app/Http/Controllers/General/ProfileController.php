@@ -20,19 +20,24 @@ class ProfileController extends Controller
 {
     public function viewProfile($username) {
         if (Auth::guard('web')->user()->username !== $username) {
-            $user = User::where('username', $username)->select('id', 'first_name', 'surname', 'username', 'privacy')->first();
-            return Inertia::render('User/Profile', [
-                'user' => $user,
-                'image' => $user->media_forms()->where('media_type', 'profile')->where('is_active', true)->get(),
-                'abilities' => [
-                    'view' => true,
-                    'follow' => true,
-                    'unfollow' => true,
-                    'message' => true,
-                    'block' => Abilities::blockedBy($username),
-                    'unblock' => true,
-                ],
-            ]);
+            if(!Abilities::blockedBy($username)) {
+                $user = User::where('username', $username)->select('id', 'first_name', 'surname', 'username', 'privacy')->first();
+                if (!empty($user)) {
+                    return Inertia::render('User/Profile', [
+                        'user' => $user,
+                        'image' => $user->media_forms()->where('media_type', 'profile')->where('is_active', true)->get(),
+                        'abilities' => [
+                            'canFollow' => Abilities::canFollow($username), // Abilities::canBlock($username),
+                            'canUnfollow' => Abilities::canUnfollow($username),
+                            'canMessage' => Abilities::canBlock($username),
+                            'canBlock' => Abilities::canBlock($username),
+                            'canUnblock' => Abilities::canUnblock($username),
+                        ],
+                    ]);
+                }
+                return Inertia::render('Unavailable');
+            }
+            return Inertia::render('Unavailable');
         }
         return redirect()->route('settings.view');
     }
@@ -153,7 +158,7 @@ class ProfileController extends Controller
         ->with(['media_forms' => function($query) {
             $query->where('media_type', 'profile')->where('is_active', true)
             ->select('user_id', 'media_path');
-        }])->get();
+        }])->limit(15)->get();
         
         return response()->json($search);
     }

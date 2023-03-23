@@ -10,7 +10,7 @@ import ContactsPane from '../components/ContactsPane';
 import SearchPane from '../components/SearchPane';
 import Alerts from '../Partials/Alerts';
 
-export default function({title, body}) {
+export default function({title, body, abilities}) {
   const auth = useSelector((state) => state.auth)
   const messages = useSelector((state) => state.messages)
   const contacts = useSelector((state) => state.contacts)
@@ -58,9 +58,9 @@ export default function({title, body}) {
           }
           <div className='w-full h-screen relative flex flex-row gap-0 flex-nowrap'>
               {!data.smallScreen ? <LeftSidebar className="xxxl:visible xxl:visible xl:visible lg:visible md:invisible sm:invisible xs:invisible xsm:invisible" /> : ''}
-              { messages.pane ? <MessagesPane /> : '' }
-              { contacts.pane ? <ContactsPane /> : '' }
-              { search.pane ? <SearchPane /> : '' }
+              { messages.pane ? <MessagesPane abilities={abilities} /> : '' }
+              { contacts.pane ? <ContactsPane abilities={abilities} /> : '' }
+              { search.pane ? <SearchPane abilities={abilities} /> : '' }
               { alerts.options.status ? <Alerts /> : '' }
               {body}
           </div>

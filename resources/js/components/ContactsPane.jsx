@@ -6,7 +6,7 @@ import IncomeRequestsMenu from "./IncomeRequestsMenu"
 import SentRequests from "./SentRequests"
 import { setPaneList } from "../store/contacts"
 
-export default function({}) {
+export default function({abilities}) {
     const contacts = useSelector((state) => state.contacts)
     const dispatch = useDispatch()
 
@@ -70,7 +70,7 @@ export default function({}) {
                                         </div>
                                     </Link>
                                     <div className="w-fit h-full inline-flex justify-center items-center relative rounded-full my-auto">
-                                        <ContactsListMenu />
+                                        <ContactsListMenu abilities={abilities} />
                                     </div>
                                 </div>
                             </div>

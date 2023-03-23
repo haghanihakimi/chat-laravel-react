@@ -9,7 +9,7 @@ import {
     HiUser as User,
 } from "react-icons/hi2";
 
-export default function({}) {
+export default function({abilities}) {
         const [saerchData, setSearchData] = useState([])
         const [dataLoading, setDataLoading] = useState(false)
 
@@ -69,7 +69,7 @@ export default function({}) {
                                         </div>
                                     </Link>
                                     <div className="w-fit h-full inline-flex justify-center items-center relative rounded-full my-auto">
-                                        <ContactsMenu />
+                                        <ContactsMenu abilities={abilities} />
                                     </div>
                                 </div>
                             </div>

@@ -16,17 +16,62 @@ use Inertia\Inertia;
 class ProfileRequests
 {
     public static function blockedBy($username) {
-        $host = User::where('username', $username)->first(); //This is the loaded profile by current user
-        $blockedBy = $host->blockedBy; //This is situation if profile owner blocked the current user (the user who is viewing the profile)
+        $host = User::find(Auth::guard()->user()->id); //This is the loaded profile by current user
+        $blockedBy = $host->blockedBy;
+        $blockedBy = $host->blockedBy->map(function($item) {
+            return $item->blocked_user_id;
+        }); //This is situation if profile owner blocked the current user (the user who is viewing the profile)
 
-        return $blockedBy;
+        return in_array(Auth::guard()->user()->id, $blockedBy->toArray()) ? true : false;
     }
 
-    public static function blocked($username) {
+    public static function blockList($username) {
         $user_id = Auth::guard('web')->user()->id;
+        $host = User::where('username', $username)->first();
         $blocks = Block::where('user_id', $user_id)->where('blocked_user_id', $host->id)->first();
-        $blockedUsers = $blocks->blockedUsers;
+        $blockedUsers = !empty($blocks) ? $blocks->blockedUsers : [];
 
         return $blockedUsers;
+    }
+
+    public static function canBlock($username) {
+        $blocklist = self::blockList($username);
+        return empty($blocklist) ? true : false;
+    }
+
+    public static function canUnblock($username) {
+        $blocklist = self::blockList($username);
+        return empty($blocklist) ? true : false;
+    }
+
+    public static function followers() {
+        $user = User::find(Auth::guard('web')->user()->id);
+        $contacts = $user->followers;
+
+        return $contacts;
+    }
+
+    public static function followings() {
+        $user = User::find(Auth::guard('web')->user()->id);
+
+        return $user->followings;
+    }
+
+    public static function canFollow($username) {
+        $host = User::where('username', $username)->first();
+        if (!$host) {
+            return false;
+        }
+        $canFollow = static::followings()->where('id', $host->id)->pluck('pivot.status');
+        return $canFollow->contains('rejected') || empty(static::followings()->toArray()) ? true : false;
+    }
+
+    public static function canUnfollow($username) {
+        $host = User::where('username', $username)->first();
+        if (!$host) {
+            return false;
+        }
+        $canUnfollow = static::followings()->where('id', $host->id)->pluck('pivot.status');
+        return $canUnfollow->contains('accepted') ? true : false;
     }
 }

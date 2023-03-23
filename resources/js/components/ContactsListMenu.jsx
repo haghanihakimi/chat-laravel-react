@@ -10,7 +10,7 @@ import {
 } from "react-icons/hi2";
 import { useEffect, useRef, useState } from "react";
 
-export default function({}) {
+export default function({abilities}) {
     let [data, setData] = useState({
         menu: false,
     })
@@ -43,7 +43,7 @@ export default function({}) {
                 </button>
                 {
                     data.menu ? 
-                    <div ref={wrapper} className="min-w-[140px] h-auto bg-white border border-black border-opacity-10 absolute rounded shadow-lg top-9 right-1 flex flex-col gap-0 dark:border-milky-white dark:border-opacity-10 dark:bg-dark-blue">
+                    <div ref={wrapper} className="min-w-[140px] h-auto bg-white border border-black border-opacity-10 absolute rounded shadow-lg top-9 right-1 flex flex-col gap-0 z-10 dark:border-milky-white dark:border-opacity-10 dark:bg-dark-blue">
                         <button 
                         type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
                             <span className="my-auto relative">

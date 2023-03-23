@@ -4,11 +4,12 @@ import {
     HiEllipsisHorizontal as Menu,
     HiOutlineTrash as OutlineTrash,
     HiNoSymbol as Block,
+    HiOutlineUserPlus as Follow,
     HiOutlineUserMinus as OutlineUnfollow
 } from "react-icons/hi2";
 import { useEffect, useRef, useState } from "react";
 
-export default function({}) {
+export default function({abilities}) {
     let [data, setData] = useState({
         menu: false,
     })
@@ -51,15 +52,32 @@ export default function({}) {
                                 Delete Chat
                             </span>
                         </button>
-                        <button 
-                        type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
-                            <span className="my-auto relative">
-                                <OutlineUnfollow className="w-4 h-4 text-orange my-auto" />
-                            </span>
-                            <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
-                                Unfollow
-                            </span>
-                        </button>
+                        {
+                            abilities.canUnfollow
+                            ? <button 
+                            type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
+                                <span className="my-auto relative">
+                                    <OutlineUnfollow className="w-4 h-4 text-orange my-auto" />
+                                </span>
+                                <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
+                                    Unfollow
+                                </span>
+                            </button>
+                            : ''
+                        }
+                        {
+                            abilities.canFollow
+                            ? <button 
+                            type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
+                                <span className="my-auto relative">
+                                    <Follow className="w-4 h-4 text-orange my-auto" />
+                                </span>
+                                <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
+                                    Follow
+                                </span>
+                            </button>
+                            : ''
+                        }
                         <button 
                         type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
                             <span className="my-auto relative">

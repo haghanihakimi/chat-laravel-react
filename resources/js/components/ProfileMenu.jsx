@@ -8,7 +8,7 @@ import {
 } from "react-icons/hi2";
 import { useEffect, useRef, useState } from "react";
 
-export default function({}) {
+export default function({abilities}) {
     let [data, setData] = useState({
         menu: false,
     })
@@ -42,15 +42,27 @@ export default function({}) {
                 {
                     data.menu ? 
                     <div ref={wrapper} className="min-w-[120px] h-auto bg-white border border-black border-opacity-10 absolute rounded shadow-lg top-9 -right-1 flex flex-col gap-0 dark:border-milky-white dark:border-opacity-10 dark:bg-dark-blue">
-                        <button 
-                        type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
-                            <span className="my-auto relative">
-                                <Block className="w-4 h-4 text-orange my-auto" />
-                            </span>
-                            <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
-                                Block
-                            </span>
-                        </button>
+                        {
+                            abilities.canBlock
+                            ? <button 
+                                type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
+                                <span className="my-auto relative">
+                                    <Block className="w-4 h-4 text-orange my-auto" />
+                                </span>
+                                <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
+                                    Block
+                                </span>
+                            </button>
+                            : <button 
+                                type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
+                                <span className="my-auto relative">
+                                    <Block className="w-4 h-4 text-orange my-auto" />
+                                </span>
+                                <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
+                                    Unblock
+                                </span>
+                            </button>
+                        }
                     </div>
                     : ''
                 }

@@ -2,7 +2,7 @@ import { Link } from "@inertiajs/react"
 import route from "ziggy-js"
 import ChatMenu from "./ChatMenu"
 
-export default function({}) {
+export default function({abilities}) {
     return(
         <>
             <div className="w-full max-w-xs h-screen select-none relative overflow-auto overflow-x-hidden z-20 bg-white border-r border-black border-opacity-10 shadow-md dark:bg-black dark:border-milky-white dark:border-opacity-10">
@@ -31,7 +31,7 @@ export default function({}) {
                                 </div>
                             </Link>
                             <div className="w-fit h-full inline-flex justify-center items-center relative rounded-full my-auto">
-                                <ChatMenu />
+                                <ChatMenu abilities={abilities} />
                             </div>
                         </div>
                     </div>

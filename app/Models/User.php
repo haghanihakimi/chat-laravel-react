@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
@@ -59,7 +60,17 @@ class User extends Authenticatable
 
     public function blockedBy()
     {
-        return $this->belongsToMany(Block::class, 'block_user', 'user_id', 'block_id');
+        return $this->belongsToMany(Block::class, 'block_user', 'user_id', 'block_id',);
+    }
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, Contact::class, 'contact_id', 'user_id')->withPivot(['status', 'created_at', 'updated_at']);
+    }
+
+    public function followings()
+    {
+        return $this->belongsToMany(User::class, Contact::class, 'user_id', 'contact_id')->withPivot(['status', 'created_at', 'updated_at']);
     }
 
     public function scopeSearch ($query, $input) {
