@@ -8,14 +8,12 @@ import LeftSidebar from '../components/LeftSidebar';
 import MessagesPane from '../components/MessagesPane'
 import ContactsPane from '../components/ContactsPane';
 import SearchPane from '../components/SearchPane';
-import Alerts from '../Partials/Alerts';
 
-export default function({title, body, abilities}) {
+export default function({title, body, abilities, user}) {
   const auth = useSelector((state) => state.auth)
   const messages = useSelector((state) => state.messages)
   const contacts = useSelector((state) => state.contacts)
   const search = useSelector((state) => state.search)
-  const alerts = useSelector((state) => state.alerts)
   const dispatch = useDispatch()
   const [data, setData] = useState({
     smallScreen: false,
@@ -23,7 +21,10 @@ export default function({title, body, abilities}) {
 
 
   useEffect(() => {
-    function checkSmallScreen() {
+    // Echo.private(`user.${user.id}`).listen('.SendFollowRequest', (e) => {
+    //   console.log(e);
+    // });
+    const checkSmallScreen = () => {
         if (window.innerWidth <= 720) {
             setData({
                 smallScreen: true
@@ -61,7 +62,6 @@ export default function({title, body, abilities}) {
               { messages.pane ? <MessagesPane abilities={abilities} /> : '' }
               { contacts.pane ? <ContactsPane abilities={abilities} /> : '' }
               { search.pane ? <SearchPane abilities={abilities} /> : '' }
-              { alerts.options.status ? <Alerts /> : '' }
               {body}
           </div>
         </div>

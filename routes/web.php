@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\General\HomeController;
 use App\Http\Controllers\General\ProfileController;
+use App\Http\Controllers\General\ContactsController;
 
 Route::middleware(['guest'])->group(function () {
     Route::controller(HomeController::class)->group(function () {
@@ -27,6 +28,14 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function() {
     Route::controller(ProfileController::class)->group(function () {
         Route::get('/search/account', 'searchUsers')->name('user.search');
+    });
+});
+
+//Contacts Routes
+Route::middleware(['auth'])->group(function() {
+    Route::controller(ContactsController::class)->group(function () {
+        Route::post('/user/send/follow/request/{username}', 'sendFollowRequest')->name('send.follow.request');
+        Route::patch('/user/cancel/follow/request/{username}', 'cancelFollowRequest')->name('cancel.follow.request');
     });
 });
 

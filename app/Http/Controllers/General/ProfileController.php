@@ -29,9 +29,13 @@ class ProfileController extends Controller
                         'abilities' => [
                             'canFollow' => Abilities::canFollow($username), // Abilities::canBlock($username),
                             'canUnfollow' => Abilities::canUnfollow($username),
+                            'canCancelRequest' => Abilities::canCancelRequest($username),
                             'canMessage' => Abilities::canBlock($username),
                             'canBlock' => Abilities::canBlock($username),
                             'canUnblock' => Abilities::canUnblock($username),
+                            'canReject' => Abilities::canReject($username),
+                            'canAccept' => Abilities::canReject($username),
+                            'canMarkSpam' => Abilities::canReject($username),
                         ],
                     ]);
                 }

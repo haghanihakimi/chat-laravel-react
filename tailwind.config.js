@@ -74,7 +74,7 @@ module.exports = {
         }
       },
       animation: {
-        'fadeIn': 'fadeIn 200ms ease-in 0ms 1 alternate',
+        'fadeIn': 'fadeIn 120ms ease-in 0ms 1 alternate',
         'fadeInBounce': 'fadeInBounce 200ms ease-in 0ms 1 alternate',
         'alertFadeIn': 'alertFadeIn 200ms ease-in 0ms 1 alternate',
       },

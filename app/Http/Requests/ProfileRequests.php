@@ -62,8 +62,9 @@ class ProfileRequests
         if (!$host) {
             return false;
         }
+        $hostRequest = static::followers()->where('id', $host->id)->pluck('pivot.status');
         $canFollow = static::followings()->where('id', $host->id)->pluck('pivot.status');
-        return $canFollow->contains('rejected') || empty(static::followings()->toArray()) ? true : false;
+        return !$hostRequest->contains('pending') && ($canFollow->contains('rejected') || $canFollow->contains('cancelled') || empty(static::followings()->toArray())) ? true : false;
     }
 
     public static function canUnfollow($username) {
@@ -73,5 +74,23 @@ class ProfileRequests
         }
         $canUnfollow = static::followings()->where('id', $host->id)->pluck('pivot.status');
         return $canUnfollow->contains('accepted') ? true : false;
+    }
+
+    public static function canCancelRequest($username) {
+        $host = User::where('username', $username)->first();
+        if (!$host) {
+            return false;
+        }
+        $canUnfollow = static::followings()->where('id', $host->id)->pluck('pivot.status');
+        return $canUnfollow->contains('pending') ? true : false;
+    }
+
+    public static function canReject($username) {
+        $host = User::where('username', $username)->first();
+        if (!$host) {
+            return false;
+        }
+        $canReject = static::followers()->where('id', $host->id)->pluck('pivot.status');
+        return $canReject->contains('pending') ? true : false;
     }
 }

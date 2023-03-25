@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained("users")->onDelete('cascade');
             $table->foreignId('contact_id')->constrained("users")->onDelete('cascade');
-            $table->enum('status', ['accepted', 'rejected', 'spam']);
+            $table->enum('status', ['accepted', 'pending', 'rejected', 'cancelled', 'spam']);
             $table->timestamps();
             $table->unique(['user_id', 'contact_id']);
         });
