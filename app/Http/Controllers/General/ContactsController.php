@@ -40,10 +40,10 @@ class ContactsController extends Controller
             if ($host && $request) {
                 $request->status = 'cancelled';
                 $request->save();
-                return back()->with('message', ['followRequest' => "Follow request has been cancelled."]);
+                return back()->with('message', ['cancelRequest' => "Follow request has been cancelled."]);
             }
-            return back()->with('message', ['followRequest' => "Sending follow request to this user is temporarily unavailable. Please try again later."]);
+            return back()->with('message', ['cancelRequest' => "OOPS! Sorry, something went wrong with cancelling the request. Please try again later."]);
         }
-        return back()->with('message', ['followRequest' => "Sending follow request to this user is temporarily unavailable. Please try again later."]);
+        return back()->with('message', ['cancelRequest' => "OOPS! Sorry, something went wrong with cancelling the request. Please try again later."]);
     }
 }

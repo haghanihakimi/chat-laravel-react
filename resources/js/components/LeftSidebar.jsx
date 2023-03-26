@@ -1,6 +1,7 @@
 import { Link, useForm } from "@inertiajs/react";
 import route from "ziggy-js";
 import { useSelector, useDispatch } from 'react-redux';
+import Badge from '@mui/material/Badge';    
 import { setTheme } from '../store/theme';
 import { setPane as MessagesPane } from "../store/messages";
 import { setPane as ContactsPane } from "../store/contacts";
@@ -9,6 +10,10 @@ import { setAuth } from "../store/auth";
 import { 
     HiOutlineChatBubbleLeftRight as MessagesOuline,
     HiChatBubbleLeftRight as MessagesFill,
+    HiOutlineBell as BellOutline,
+    HiOutlineBellAlert as ActiveBellOutline,
+    HiBell as Bell,
+    HiBellAlert as ActiveBell,
     HiOutlineCog6Tooth as SettingsOutline,
     HiOutlineUsers as ContactsOutline,
     HiUsers as ContactsFill,
@@ -51,7 +56,7 @@ export default function({}) {
                 </div>
 
                 {/* Messages, contacts & dark mode icons */}
-                <div className="w-12 h-auto flex flex-col gap-2 my-auto">
+                <div className="w-12 h-auto select-none flex flex-col gap-2 my-auto">
                     {/* Messages */}
                     <div className="w-12 h-12 shrink-0 cursor-pointer relative group">
                         <button onClick={() => { dispatch(MessagesPane(messages.pane ? false : true)); dispatch(ContactsPane(false)); dispatch(SearchPane(false)); } } 
@@ -62,6 +67,26 @@ export default function({}) {
                                 <MessagesFill className={`w-7 h-7 ${messages.pane ? 'text-blue' : 'text-black dark:text-milky-white'}`} />
                                 :
                                 <MessagesOuline className="w-7 h-7 text-black dark:text-milky-white" />
+                            }
+                        </button>
+                        <span className="inline-block invisible opacity-0 transition duration-150 pointer-events-none w-fit h-fit px-2 py-1 translate-x-[50px] top-0 bottom-0 my-auto absolute rounded bg-white text-black text-sm font-medium shadow-lg border border-black border-opacity-10 dark:text-milky-white dark:bg-black dark:border-milky-white dark:border-opacity-10 group-hover:visible group-hover:opacity-100">
+                            Messages
+                        </span>
+                    </div>
+                    {/* Notifications */}
+                    <div className="w-12 h-12 shrink-0 cursor-pointer relative group">
+                        <button onClick={() => { dispatch(MessagesPane(messages.pane ? false : true)); dispatch(ContactsPane(false)); dispatch(SearchPane(false)); } } 
+                        type="button" 
+                        className="w-12 h-12 flex justify-center items-center">
+                            {
+                                messages.pane ?
+                                <Badge badgeContent={0} color="primary">
+                                    <Bell className={`w-7 h-7 ${messages.pane ? 'text-blue' : 'text-black dark:text-milky-white'}`} />
+                                </Badge>
+                                :
+                                <Badge badgeContent={4} color="primary">
+                                    <BellOutline className="w-7 h-7 text-black dark:text-milky-white" />
+                                </Badge>
                             }
                         </button>
                         <span className="inline-block invisible opacity-0 transition duration-150 pointer-events-none w-fit h-fit px-2 py-1 translate-x-[50px] top-0 bottom-0 my-auto absolute rounded bg-white text-black text-sm font-medium shadow-lg border border-black border-opacity-10 dark:text-milky-white dark:bg-black dark:border-milky-white dark:border-opacity-10 group-hover:visible group-hover:opacity-100">
@@ -109,7 +134,7 @@ export default function({}) {
                 </div>
 
                 {/* Signout & settings icons */}
-                <div className="w-12 h-auto flex flex-col gap-2 mb-0">
+                <div className="w-12 h-auto select-none flex flex-col gap-2 mb-0">
                     {/* Settings Icon */}
                     <div className="w-12 h-12 shrink-0 cursor-pointer relative group">
                         <Link href={route('settings.view')} className="w-12 h-12 flex justify-center items-center">
