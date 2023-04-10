@@ -16,7 +16,7 @@ import { createRef, useRef, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 
-export default ({user, image, flash}) => {
+export default ({user, auth, image, flash}) => {
     const [data, setData] = useState({
         alertVisible: false,
     })
@@ -110,7 +110,7 @@ export default ({user, image, flash}) => {
 
     return(
         <>
-            <Layout title={user.username} body={
+            <Layout title={user.username} auth={auth} body={
                 <div className="w-full h-full relative flex flex-col gap-0 z-10 select-none overflow-hidden">
                     <div className='w-full h-full overflow-auto relative flex flex-row gap-0 justify-center items-center'>
                         <div className='w-full max-w-sm h-auto bg-white flex flex-col mx-auto p-4 rounded-lg border border-black border-opacity-10 shadow-lg dark:border-milky-white dark:border-opacity-5 dark:bg-black'>

@@ -2,11 +2,12 @@ import { Link, useForm } from "@inertiajs/react";
 import route from "ziggy-js";
 import { useSelector, useDispatch } from 'react-redux';
 import Badge from '@mui/material/Badge';    
-import { setTheme } from '../store/theme';
-import { setPane as MessagesPane } from "../store/messages";
-import { setPane as ContactsPane } from "../store/contacts";
-import { setPane as SearchPane } from "../store/search";
-import { setAuth } from "../store/auth";
+import { setTheme } from '../store/reducers/theme';
+import { setPane as MessagesPane } from "../store/reducers/messages";
+import { setPane as NotificationsPane } from "../store/reducers/notifications"
+import { setPane as ContactsPane } from "../store/reducers/contacts";
+import { setPane as SearchPane } from "../store/reducers/search";
+import { setAuth } from "../store/reducers/auth";
 import { 
     HiOutlineChatBubbleLeftRight as MessagesOuline,
     HiChatBubbleLeftRight as MessagesFill,
@@ -28,6 +29,7 @@ import { SiTheconversation } from "react-icons/si";
 export default function({}) {
     const theme = useSelector((state) => state.theme.value)
     const messages = useSelector((state) => state.messages)
+    const notifications = useSelector((state) => state.notifications)
     const contacts = useSelector((state) => state.contacts)
     const search = useSelector((state) => state.search)
     const dispatch = useDispatch()
@@ -59,7 +61,7 @@ export default function({}) {
                 <div className="w-12 h-auto select-none flex flex-col gap-2 my-auto">
                     {/* Messages */}
                     <div className="w-12 h-12 shrink-0 cursor-pointer relative group">
-                        <button onClick={() => { dispatch(MessagesPane(messages.pane ? false : true)); dispatch(ContactsPane(false)); dispatch(SearchPane(false)); } } 
+                        <button onClick={() => { dispatch(MessagesPane(messages.pane ? false : true)); dispatch(NotificationsPane(false)); dispatch(ContactsPane(false)); dispatch(SearchPane(false)); } } 
                         type="button" 
                         className="w-12 h-12 flex justify-center items-center">
                             {
@@ -75,19 +77,17 @@ export default function({}) {
                     </div>
                     {/* Notifications */}
                     <div className="w-12 h-12 shrink-0 cursor-pointer relative group">
-                        <button onClick={() => { dispatch(MessagesPane(messages.pane ? false : true)); dispatch(ContactsPane(false)); dispatch(SearchPane(false)); } } 
+                        <button onClick={() => { dispatch(NotificationsPane(notifications.pane ? false : true)); dispatch(ContactsPane(false)); dispatch(MessagesPane(false)); dispatch(SearchPane(false)); } } 
                         type="button" 
                         className="w-12 h-12 flex justify-center items-center">
-                            {
-                                messages.pane ?
-                                <Badge badgeContent={0} color="primary">
-                                    <Bell className={`w-7 h-7 ${messages.pane ? 'text-blue' : 'text-black dark:text-milky-white'}`} />
-                                </Badge>
-                                :
-                                <Badge badgeContent={4} color="primary">
+                            <Badge badgeContent={0} color="primary">
+                                {
+                                    notifications.pane ?
+                                    <Bell className={`w-7 h-7 ${notifications.pane ? 'text-blue' : 'text-black dark:text-milky-white'}`} />
+                                    :
                                     <BellOutline className="w-7 h-7 text-black dark:text-milky-white" />
-                                </Badge>
-                            }
+                                }
+                            </Badge>
                         </button>
                         <span className="inline-block invisible opacity-0 transition duration-150 pointer-events-none w-fit h-fit px-2 py-1 translate-x-[50px] top-0 bottom-0 my-auto absolute rounded bg-white text-black text-sm font-medium shadow-lg border border-black border-opacity-10 dark:text-milky-white dark:bg-black dark:border-milky-white dark:border-opacity-10 group-hover:visible group-hover:opacity-100">
                             Messages
@@ -96,7 +96,7 @@ export default function({}) {
                     {/* Contacts */}
                     <div className="w-12 h-12 shrink-0 cursor-pointer relative group">
                         <button 
-                        onClick={() => { dispatch(ContactsPane(contacts.pane ? false : true)); dispatch(MessagesPane(false)); dispatch(SearchPane(false)) } } 
+                        onClick={() => { dispatch(ContactsPane(contacts.pane ? false : true)); dispatch(MessagesPane(false)); dispatch(NotificationsPane(false)); dispatch(SearchPane(false)) } } 
                         type="button" 
                         className="w-12 h-12 flex justify-center items-center">
                             {
@@ -113,7 +113,7 @@ export default function({}) {
                     <div className="w-12 h-12 shrink-0 cursor-pointer relative group">
                         <button 
                         type="button"
-                        onClick={() => {dispatch(SearchPane(search.pane ? false : true)); dispatch(MessagesPane(false)); dispatch(ContactsPane(false))} } 
+                        onClick={() => {dispatch(SearchPane(search.pane ? false : true)); dispatch(MessagesPane(false)); dispatch(NotificationsPane(false)); dispatch(ContactsPane(false))} } 
                         className="w-12 h-12 flex justify-center items-center">
                             <Search className={`w-7 h-7 ${search.pane ? 'text-blue' : 'text-black dark:text-milky-white'}`} />
                         </button>

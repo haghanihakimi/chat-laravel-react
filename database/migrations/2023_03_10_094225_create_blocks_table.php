@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained("users")->onDelete('cascade');
             $table->foreignId('blocked_user_id')->constrained("users")->onDelete('cascade');
+            $table->integer("counter")->default(1);
+            $table->boolean('is_blocked')->default(true);
             $table->timestamps();
             $table->unique(['user_id', 'blocked_user_id']);
         });

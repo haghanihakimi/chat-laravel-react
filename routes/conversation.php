@@ -14,6 +14,6 @@ Route::middleware(['auth'])->group(function() {
      * Message Routes
      */
     Route::controller(MessagesController::class)->group(function() {
-        Route::get('/message/{message_id}', 'index')->where('message_id', '[a-zA-Z0-9_]+')->name('messages.view');
+        Route::get('/message/{username}', 'index')->where('username', '[a-zA-Z0-9_]+')->name('messages.view');
     });
 });

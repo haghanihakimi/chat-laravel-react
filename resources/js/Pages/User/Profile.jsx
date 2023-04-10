@@ -9,58 +9,37 @@ import {
     HiLockClosed as Lock,
     HiChatBubbleLeft as Message,
     HiUserPlus as Follow,
-    HiOutlineUserMinus as OutlineUnfollow,
+    HiUserMinus as OutlineUnfollow,
     HiUser as User,
     HiCheck as Accept,
+    HiXMark as Cancel,
 } from "react-icons/hi2";
 import ProfileMenu from '../../components/ProfileMenu';
 import { useState } from 'react';
+import { useAcceptRequest, useSendRequest, useCancelRequest, useUnfollow } from '../../store/actions/contacts';
+import { setActionOutput } from '../../store/reducers/contacts';
+import { useDispatch, useSelector } from 'react-redux';
 
-export default function({user, image, abilities}) {
-    const [modalData, setModalData] = useState({
-        open: false,
-        header: '',
-        body: '',
-    })
-    const { data: sendRequestData, post: sendRequest, processing: sendingRequest, errors: sendRequestErrors } = useForm({
-        username: user.username
-    })
-    const { data: cancelRequestData, patch: cancelRequest, processing: cancellingRequest, errors: cancelRequestErrors } = useForm({
-        username: user.username
-    })
-
-    const sendFollowRequest = () => {
-        if (!sendingRequest) {
-            sendRequest(route('send.follow.request', {username: user.username}), {
-                onSuccess: (response) => {
-                    setModalData({open: true, header: '', body: response.props.flash.message.followRequest})
-                }
-            })
-        }
-    }
-
-    const cancelFollowRequest = () => {
-        if (!cancellingRequest) {
-            cancelRequest(route('cancel.follow.request', {username: user.username}), {
-                onSuccess: (response) => {
-                    setModalData({open: true, header: '', body: response.props.flash.message.cancelRequest})
-                }
-            })
-        }
-    }
+export default function({user, auth, image, abilities}) {
+    const contacts = useSelector((state) => state.contacts)
+    const dispatch = useDispatch()
+    const { handleAcceptRequest, acceptingRequest } = useAcceptRequest(user.username)
+    const { handleSendRequest, sendingRequest } = useSendRequest(user.username)
+    const { handleCancelRequest, cancellingRequest } = useCancelRequest(user.username)
+    const { handleUnfollow, unFollowing } = useUnfollow(user.username)
 
     return(
         <>
-            <Layout abilities={abilities} user={user} title={user.username} body={
+            <Layout user={user} title={user.username} auth={auth} body={
                 <div className="w-full h-full relative flex flex-col gap-0 z-10 select-none overflow-hidden">
                     <div className='relative'>
                         <Modal
-                        open={modalData.open}
-                        onClose={() => {setModalData({open: false})}}
+                        open={contacts.actionOutputs.open}
+                        onClose={() => {dispatch(setActionOutput({open: false, header: '', body: ''}))}}
                         aria-describedby="modal-modal-description" className='bg-milky-white bg-opacity-30 dark:bg-dark-blue dark:bg-opacity-30 backdrop-blur-md'>
                             <Box className='bg-white border border-black border-opacity-10 p-2 text-black rounded shadow-lg w-full max-w-sm absolute top-1/2 left-1/2 -translate-y-2/4 -translate-x-2/4 dark:text-milky-white dark:border-milky-white dark:border-opacity-10 dark:bg-black'>
                                 <Typography id="modal-modal-description">
-                                    {modalData.body}
+                                    {contacts.actionOutputs.body}
                                 </Typography>
                             </Box>
                         </Modal>
@@ -99,7 +78,7 @@ export default function({user, image, abilities}) {
                             <div className='w-full flex flex-row gap-1 justify-center items-center py-3'>
                                 {
                                     abilities.canFollow
-                                    ? <form method='POST' onSubmit={e => { e.preventDefault();sendFollowRequest(); }} className='w-fit flex flex-row gap-1 justify-center items-center'>
+                                    ? <form method='POST' onSubmit={e => { e.preventDefault();handleSendRequest(); }} className='w-fit flex flex-row gap-1 justify-center items-center'>
                                         <button type='submit' disabled={sendingRequest} className={`w-fit relative rounded bg-blue flex flex-row gap-0 items-center shadow-md text-milky-white tracking-wide text-md px-0 py-0 ${sendingRequest ? 'opacity-80' : 'opacity-100'}`}>
                                             <span className='w-7 h-6 inline-block relative shrink-0 py-1 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
                                                 {
@@ -119,7 +98,7 @@ export default function({user, image, abilities}) {
                                 }
                                 {
                                     abilities.canCancelRequest
-                                    ? <form onSubmit={ e => { e.preventDefault();cancelFollowRequest(); } } method='PATCH' className='w-fit flex flex-row gap-1 justify-center items-center'>
+                                    ? <form onSubmit={ e => { e.preventDefault();handleCancelRequest(); } } method='PATCH' className='w-fit flex flex-row gap-1 justify-center items-center'>
                                         <button type='submit' disabled={cancellingRequest} className={`w-fit relative rounded bg-blue flex flex-row gap-0 items-center shadow-md text-milky-white tracking-wide text-md px-0 py-0 ${cancellingRequest ? 'opacity-80' : 'opacity-100'}`}>
                                             <span className='w-7 h-6 inline-block relative shrink-0 py-1 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
                                                 {
@@ -127,7 +106,7 @@ export default function({user, image, abilities}) {
                                                     ? <Box sx={{ display: 'flex' }}>
                                                         <CircularProgress style={{color: '#ffffff'}} size={15} />
                                                     </Box>
-                                                    : <Follow className='w-4 h-4' />
+                                                    : <Cancel className='w-4 h-4' />
                                                 }
                                             </span>
                                             <span className='w-fit h-auto inline-block text-center relative px-2 py-1 shrink-0 ml-0 rounded'>
@@ -139,10 +118,16 @@ export default function({user, image, abilities}) {
                                 }
                                 {
                                     abilities.canAccept
-                                    ? <form onSubmit={ e => { e.preventDefault();cancelFollowRequest(); } } method='PATCH' className='w-fit flex flex-row gap-1 justify-center items-center'>
-                                        <button type='submit' disabled={cancellingRequest} className={`w-fit relative rounded bg-blue flex flex-row gap-0 items-center shadow-md text-milky-white tracking-wide text-md px-0 py-0 ${cancellingRequest ? 'opacity-50' : 'opacity-100'}`}>
+                                    ? <form onSubmit={ e => { e.preventDefault();handleAcceptRequest(); } } method='PATCH' className='w-fit flex flex-row gap-1 justify-center items-center'>
+                                        <button type='submit' disabled={acceptingRequest} className={`w-fit relative rounded bg-blue flex flex-row gap-0 items-center shadow-md text-milky-white tracking-wide text-md px-0 py-0 ${acceptingRequest ? 'opacity-50' : 'opacity-100'}`}>
                                             <span className='w-7 h-6 inline-block relative shrink-0 py-1 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
-                                                <Accept className='w-4 h-4' />
+                                                {
+                                                    acceptingRequest
+                                                    ? <Box sx={{ display: 'flex' }}>
+                                                        <CircularProgress style={{color: '#ffffff'}} size={15} />
+                                                    </Box>
+                                                    : <Accept className='w-4 h-4' />
+                                                }
                                             </span>
                                             <span className='w-fit h-auto inline-block text-center relative px-2 py-1 shrink-0 ml-0 rounded'>
                                                 Accept
@@ -153,10 +138,16 @@ export default function({user, image, abilities}) {
                                 }
                                 {
                                     abilities.canUnfollow
-                                    ? <form method='PATCH' className='w-fit flex flex-row gap-1 justify-center items-center'>
-                                        <button className='w-fit relative rounded bg-blue flex flex-row gap-0 items-center shadow-md text-milky-white tracking-wide text-md px-0 py-0'>
+                                    ? <form onSubmit={e => { e.preventDefault();handleUnfollow(); }} method='PATCH' className='w-fit flex flex-row gap-1 justify-center items-center'>
+                                        <button type='submit' disabled={unFollowing} className={`w-fit relative rounded bg-blue flex flex-row gap-0 items-center shadow-md text-milky-white tracking-wide text-md px-0 py-0 ${unFollowing ? 'opacity-50' : 'opacity-100'}`}>
                                             <span className='w-7 h-6 inline-block relative shrink-0 py-1 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
-                                                <OutlineUnfollow className='w-4 h-4' />
+                                                {
+                                                    unFollowing
+                                                    ? <Box sx={{ display: 'flex' }}>
+                                                        <CircularProgress style={{color: '#ffffff'}} size={15} />
+                                                    </Box>
+                                                    : <OutlineUnfollow className='w-4 h-4' />
+                                                }
                                             </span>
                                             <span className='w-fit h-auto inline-block text-center relative px-2 py-1 shrink-0 ml-0 rounded'>
                                                 Unfollow
@@ -173,7 +164,7 @@ export default function({user, image, abilities}) {
                                     : ''
                                 }
                                 <div className='w-auto relative rounded bg-blue shadow-md text-milky-white shrink-0'>
-                                    <ProfileMenu abilities={abilities} />
+                                    <ProfileMenu abilities={abilities} user={user} />
                                 </div>
                             </div>
                         </div>

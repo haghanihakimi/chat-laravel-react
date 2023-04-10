@@ -3,7 +3,7 @@ import Layout from '../../Layouts/General'
 import route from 'ziggy-js';
 import { HiCheckCircle as Checkbox } from "react-icons/hi";
 import { useDispatch } from 'react-redux';
-import { setAuth } from '../../store/auth';
+import { setAuth } from '../../store/reducers/auth';
 
 
 export default function({flash}) {

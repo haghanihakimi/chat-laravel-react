@@ -2,7 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import Layout from '../Layouts/General'
 import route from 'ziggy-js';
 import { useSelector, useDispatch } from 'react-redux';
-import { setTheme } from '../store/theme';
+import { setTheme } from '../store/reducers/theme';
 import { HiBars3BottomRight as Menu, HiBars3CenterLeft as OpenMenu, HiMoon as DarkMode, HiSun as LightMode } from "react-icons/hi2";
 import { useState } from 'react';
 

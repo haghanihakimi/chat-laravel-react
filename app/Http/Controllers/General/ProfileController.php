@@ -20,14 +20,14 @@ class ProfileController extends Controller
 {
     public function viewProfile($username) {
         if (Auth::guard('web')->user()->username !== $username) {
-            if(!Abilities::blockedBy($username)) {
+            if(!Abilities::isBlocked($username)) {
                 $user = User::where('username', $username)->select('id', 'first_name', 'surname', 'username', 'privacy')->first();
                 if (!empty($user)) {
                     return Inertia::render('User/Profile', [
                         'user' => $user,
                         'image' => $user->media_forms()->where('media_type', 'profile')->where('is_active', true)->get(),
                         'abilities' => [
-                            'canFollow' => Abilities::canFollow($username), // Abilities::canBlock($username),
+                            'canFollow' => Abilities::canFollow($username) && !Abilities::canUnblock($username),
                             'canUnfollow' => Abilities::canUnfollow($username),
                             'canCancelRequest' => Abilities::canCancelRequest($username),
                             'canMessage' => Abilities::canBlock($username),

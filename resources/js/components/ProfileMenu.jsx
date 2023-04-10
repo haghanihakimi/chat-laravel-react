@@ -8,13 +8,21 @@ import {
     HiOutlineXMark as Reject,
 } from "react-icons/hi2";
 import { GoDiffIgnored as Ignore } from "react-icons/go";
+import { CgUnblock as Unblock } from "react-icons/cg";
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import { useEffect, useRef, useState } from "react";
+import { useRejectRequest, useMarkSpamRequest, useBlockUser, useUnBlockUser } from "../store/actions/contacts";
 
-export default function({abilities}) {
+export default function({abilities, user}) {
     let [data, setData] = useState({
         menu: false,
     })
     const wrapper = useRef(null)
+    const { handleRejectRequest, rejectingRequest } = useRejectRequest(user.username)
+    const { handleMarkSpamRequest, ignoringRequest } = useMarkSpamRequest(user.username)
+    const { handleBlockUser, blockingUser } = useBlockUser(user.username)
+    const { handleUnBlockUser, unBlockingUser } = useUnBlockUser(user.username)
 
     useEffect(() => {
         function hideMenu(event){
@@ -47,13 +55,18 @@ export default function({abilities}) {
                         
                         {
                             abilities.canReject
-                            ? <form>
-                                <button 
-                                type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
-                                    <span className="my-auto relative">
-                                        <Reject className="w-4 h-4 text-orange my-auto" />
+                            ? <form onSubmit={e => { e.preventDefault();handleRejectRequest() } }>
+                                <button type='submit' disabled={blockingUser} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${blockingUser ? 'opacity-50' : 'opacity-100'}`}>
+                                    <span className='w-4 h-4 inline-block relative shrink-0 p-0 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
+                                        {
+                                            blockingUser
+                                            ? <Box sx={{ display: 'flex' }}>
+                                                <CircularProgress style={{color: '#006ce0'}} size={15} />
+                                            </Box>
+                                            : <Reject className="w-4 h-4 text-orange my-auto" />
+                                        }
                                     </span>
-                                    <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
+                                    <span className='text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white'>
                                         Reject
                                     </span>
                                 </button>
@@ -62,13 +75,18 @@ export default function({abilities}) {
                         }
                         {
                             abilities.canMarkSpam
-                            ? <form>
-                                <button 
-                                type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
-                                    <span className="my-auto relative">
-                                        <Ignore className="w-4 h-4 text-red my-auto" />
+                            ? <form onSubmit={e => { e.preventDefault();handleMarkSpamRequest() } }>
+                                <button type='submit' disabled={ignoringRequest} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${ignoringRequest ? 'opacity-50' : 'opacity-100'}`}>
+                                    <span className='w-4 h-4 inline-block relative shrink-0 p-0 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
+                                        {
+                                            ignoringRequest
+                                            ? <Box sx={{ display: 'flex' }}>
+                                                <CircularProgress style={{color: '#006ce0'}} size={15} />
+                                            </Box>
+                                            : <Ignore className="w-4 h-4 text-orange my-auto" />
+                                        }
                                     </span>
-                                    <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
+                                    <span className='text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white'>
                                         Ignore
                                     </span>
                                 </button>
@@ -77,24 +95,34 @@ export default function({abilities}) {
                         }
                         {
                             abilities.canBlock
-                            ? <form>
-                                <button 
-                                type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
-                                    <span className="my-auto relative">
-                                        <Block className="w-4 h-4 text-red my-auto" />
+                            ? <form onSubmit={e => { e.preventDefault();handleBlockUser() } }>
+                                <button type='submit' disabled={blockingUser} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${blockingUser ? 'opacity-50' : 'opacity-100'}`}>
+                                    <span className='w-4 h-4 inline-block relative shrink-0 p-0 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
+                                        {
+                                            blockingUser
+                                            ? <Box sx={{ display: 'flex' }}>
+                                                <CircularProgress style={{color: '#006ce0'}} size={15} />
+                                            </Box>
+                                            : <Block className="w-4 h-4 text-red my-auto" />
+                                        }
                                     </span>
-                                    <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
+                                    <span className='text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white'>
                                         Block
                                     </span>
                                 </button>
                             </form>
-                            : <form>
-                                <button 
-                                type="button" className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
-                                    <span className="my-auto relative">
-                                        <Block className="w-4 h-4 text-blue my-auto" />
+                            : <form onSubmit={e => { e.preventDefault();handleUnBlockUser() } }>
+                                <button type='submit' disabled={unBlockingUser} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${unBlockingUser ? 'opacity-50' : 'opacity-100'}`}>
+                                    <span className='w-4 h-4 inline-block relative shrink-0 p-0 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
+                                        {
+                                            ignoringRequest
+                                            ? <Box sx={{ display: 'flex' }}>
+                                                <CircularProgress style={{color: '#006ce0'}} size={15} />
+                                            </Box>
+                                            : <Unblock className="w-4 h-4 text-green my-auto" />
+                                        }
                                     </span>
-                                    <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
+                                    <span className='text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white'>
                                         Unblock
                                     </span>
                                 </button>

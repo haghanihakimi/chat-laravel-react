@@ -55,12 +55,12 @@ class User extends Authenticatable
 
     public function blocks()
     {
-        return $this->belongsToMany(Block::class, 'blocked_user_id', 'id');
+        return $this->belongsToMany(User::class, Block::class, 'blocked_user_id', 'user_id')->withPivot(['is_blocked', 'created_at', 'updated_at']);
     }
 
     public function blockedBy()
     {
-        return $this->belongsToMany(Block::class, 'block_user', 'user_id', 'block_id',);
+        return $this->belongsToMany(User::class, Block::class, 'user_id', 'blocked_user_id')->withPivot(['is_blocked', 'created_at', 'updated_at']);
     }
 
     public function followers()

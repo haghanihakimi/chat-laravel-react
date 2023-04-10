@@ -1,7 +1,7 @@
 import { Link, useForm,  } from '@inertiajs/react';
 import Layout from '../../Layouts/General'
 import route from 'ziggy-js';
-import { setAuth } from '../../store/auth';
+import { setAuth } from '../../store/reducers/auth';
 import { useDispatch } from 'react-redux';
 
 export default function({auth}) {

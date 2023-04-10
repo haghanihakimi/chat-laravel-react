@@ -17,15 +17,12 @@ class Block extends Model
     protected $fillable = [
         'user_id',
         'blocked_user_id',
+        'counter',
+        'is_blocked',
     ];
 
     public function users()
     {
         return $this->belongsToMany(User::class, 'blocked_user_id');
-    }
-
-    public function blockedUsers()
-    {
-        return $this->belongsToMany(User::class, 'block_user', 'block_id', 'user_id');
     }
 }

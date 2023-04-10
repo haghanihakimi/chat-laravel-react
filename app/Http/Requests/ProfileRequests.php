@@ -15,33 +15,45 @@ use Inertia\Inertia;
 
 class ProfileRequests
 {
-    public static function blockedBy($username) {
-        $host = User::find(Auth::guard()->user()->id); //This is the loaded profile by current user
-        $blockedBy = $host->blockedBy;
-        $blockedBy = $host->blockedBy->map(function($item) {
-            return $item->blocked_user_id;
-        }); //This is situation if profile owner blocked the current user (the user who is viewing the profile)
+    public static function blockedBy() {
+        $user = User::find(Auth::guard('web')->user()->id);
 
-        return in_array(Auth::guard()->user()->id, $blockedBy->toArray()) ? true : false;
+        return $user->blocks;
     }
 
-    public static function blockList($username) {
-        $user_id = Auth::guard('web')->user()->id;
-        $host = User::where('username', $username)->first();
-        $blocks = Block::where('user_id', $user_id)->where('blocked_user_id', $host->id)->first();
-        $blockedUsers = !empty($blocks) ? $blocks->blockedUsers : [];
+    public static function blockList() {
+        $user = User::find(Auth::guard('web')->user()->id);
 
-        return $blockedUsers;
+        return $user->blockedBy;
     }
 
     public static function canBlock($username) {
-        $blocklist = self::blockList($username);
-        return empty($blocklist) ? true : false;
+        $host = User::where('username', $username)->first();
+        if (!$host) {
+            return false;
+        }
+        $canBlock = !empty(static::blockList()) ? static::blockList()->where('pivot.blocked_user_id', $host->id)->pluck('pivot.is_blocked') : [];
+        return count($canBlock) == 0 || $canBlock->contains(false); // empty($canBlock) && $canBlock->contains(false);
     }
 
     public static function canUnblock($username) {
-        $blocklist = self::blockList($username);
-        return empty($blocklist) ? true : false;
+        $host = User::where('username', $username)->first();
+        if (!$host) {
+            return false;
+        }
+        $canUnblock = static::blockList()->where('pivot.blocked_user_id', $host->id)->pluck('pivot.is_blocked');
+        return !empty($canUnblock) && $canUnblock->contains(true);
+    }
+
+    public static function isBlocked($username) {
+        $host = User::where('username', $username)->first();
+        if (!$host) {
+            return false; 
+        }
+        $blocked = static::blockedBy()
+        ->where('pivot.user_id', $host->id)
+        ->where('pivot.blocked_user_id', Auth::guard()->user()->id)->pluck('pivot.is_blocked');
+        return !empty($blocked) && $blocked->contains(true);
     }
 
     public static function followers() {
@@ -64,7 +76,7 @@ class ProfileRequests
         }
         $hostRequest = static::followers()->where('id', $host->id)->pluck('pivot.status');
         $canFollow = static::followings()->where('id', $host->id)->pluck('pivot.status');
-        return !$hostRequest->contains('pending') && ($canFollow->contains('rejected') || $canFollow->contains('cancelled') || empty(static::followings()->toArray())) ? true : false;
+        return (count($hostRequest) <= 0 && count($canFollow) <= 0) || !$hostRequest->contains('pending') && ($canFollow->contains('rejected') || $canFollow->contains('cancelled') || empty(static::followings()->where('username', $username)->first())) && !$canFollow->contains('spam') ? true : false;
     }
 
     public static function canUnfollow($username) {
@@ -73,6 +85,15 @@ class ProfileRequests
             return false;
         }
         $canUnfollow = static::followings()->where('id', $host->id)->pluck('pivot.status');
+        return $canUnfollow->contains('accepted') ? true : false;
+    }
+
+    public static function canRemove($username) {
+        $host = User::where('username', $username)->first();
+        if (!$host) {
+            return false;
+        }
+        $canUnfollow = static::followers()->where('id', $host->id)->pluck('pivot.status');
         return $canUnfollow->contains('accepted') ? true : false;
     }
 

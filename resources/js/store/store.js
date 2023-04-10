@@ -1,20 +1,24 @@
-import { configureStore } from '@reduxjs/toolkit'
-import authSlice from './auth'
-import themeSlice from './theme'
-import messagesSlice from './messages'
-import contactsSlice from './contacts'
-import searchSlice from './search'
-import alertsSlice from './alerts'
-import settingsSlice from './settings'
+import { configureStore, applyMiddleware } from '@reduxjs/toolkit'
+import thunk from 'redux-thunk';
+import authSlice from './reducers/auth'
+import themeSlice from './reducers/theme'
+import messagesSlice from './reducers/messages'
+import notificationsSlice from './reducers/notifications';
+import contactsSlice from './reducers/contacts'
+import searchSlice from './reducers/search'
+import alertsSlice from './reducers/alerts'
+import settingsSlice from './reducers/settings'
 
 export default configureStore({
   reducer: {
     auth: authSlice,
     theme: themeSlice,
     messages: messagesSlice,
+    notifications: notificationsSlice,
     contacts: contactsSlice,
     search: searchSlice,
     alerts: alertsSlice,
     settings: settingsSlice,
   },
+  middleware: [thunk]
 })

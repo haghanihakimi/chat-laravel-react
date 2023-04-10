@@ -8,7 +8,7 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import ChatMenu from '../../components/ChatMenu';
 
-export default function({user}) {
+export default function({user, auth}) {
     const [data, setData] = useState({
         enableSend: false,
         disablePlaceholder: false,
@@ -60,7 +60,7 @@ export default function({user}) {
 
     return(
         <>
-            <Layout title='Messages' user={user} body={
+            <Layout title='Messages' user={user} auth={auth} body={
                 <div className="w-full h-full relative flex flex-col gap-0 z-10 select-none overflow-hidden">
                     {/* Top heading bar */}
                     <div className="w-full h-14 bg-white absolute flex flex-row gap-0 justify-between items-center top-0 left-0 z-50 border-b border-black border-opacity-10 dark:bg-dark-blue dark:border-milky-white dark:border-opacity-5">

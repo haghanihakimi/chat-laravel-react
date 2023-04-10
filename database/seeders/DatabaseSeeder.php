@@ -5,6 +5,8 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use App\Model\User;
+use App\Model\Contact;
 
 class DatabaseSeeder extends Seeder
 {
@@ -24,7 +26,11 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make("password"),
             'gender' => 'male',
         ]);
-
-        \App\Models\User::factory(1000)->create();
+        for ($i = 0;$i < 10;$i++) {
+            \App\Models\User::factory(10)->create();
+        }
+        for ($i = 0;$i < 10;$i++) {
+            \App\Models\Contact::factory(10)->create();
+        }
     }
 }

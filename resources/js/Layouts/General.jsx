@@ -2,7 +2,7 @@ import { Head, router } from '@inertiajs/react';
 import { useEffect } from 'react';
 import route from 'ziggy-js';
 import { useSelector, useDispatch } from 'react-redux';
-import { getTheme, setTheme } from '../store/theme';
+import { getTheme, setTheme } from '../store/reducers/theme';
 import Nav from '../components/GuestNav';
 
 export default function({title, body}) {
