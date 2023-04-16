@@ -82,7 +82,7 @@ module.exports = {
         'xsm-spread': 'rgba(0, 0, 0, 0.1) 0px 1px 2px 0px',
         'sm-spread': 'rgba(0, 0, 0, 0.05) 0px 0px 3px 1px',
         'md-spread': 'rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px',
-        'warm': 'rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;'
+        'gondor': 'rgba(7, 65, 210, 0.1) 0px 9px 30px'
       },
       backgroundImage:{
         dark: 'linear-gradient(to right, #10203c, #0c172c)'

@@ -29,8 +29,11 @@ class DatabaseSeeder extends Seeder
         for ($i = 0;$i < 10;$i++) {
             \App\Models\User::factory(10)->create();
         }
+        // for ($i = 0;$i < 10;$i++) {
+        //     \App\Models\Contact::factory(10)->create();
+        // }
         for ($i = 0;$i < 10;$i++) {
-            \App\Models\Contact::factory(10)->create();
+            \App\Models\MediaForm::factory(10)->create();
         }
     }
 }

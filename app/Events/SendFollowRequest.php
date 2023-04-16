@@ -36,7 +36,7 @@ class SendFollowRequest implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('user.'.$this->requestReceiver->id);
+        return new PrivateChannel('followRequest.'.$this->requestReceiver->id);
     }
 
     public function broadcastWith () {

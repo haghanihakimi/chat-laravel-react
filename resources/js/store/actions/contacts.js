@@ -2,6 +2,7 @@ import { Link, useForm } from '@inertiajs/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setActionOutput, 
     setLoading, 
+    toggleLoadingAbilities,
     fillFollowerRequests, 
     fillSentRequests, 
     fillFollowers, 
@@ -21,12 +22,15 @@ export function useMenuAbilities(username) {
     const dispatch = useDispatch()
 
     async function handleMenuAbilities() {
+        dispatch(toggleLoadingAbilities(true))
         try {
-            if (contacts.abilities && contacts.abilities.length <= 0) {
+            if(contacts.abilities.user !== username) {
                 const response = await axios.get(route('user.abilities', {username: username}))
-                dispatch(setAbilities(response.data.ability))
+                dispatch(setAbilities(response.data))
             }
+            dispatch(toggleLoadingAbilities(false))
         } catch (error) {
+            dispatch(toggleLoadingAbilities(false))
             console.log(error)
         }
     }

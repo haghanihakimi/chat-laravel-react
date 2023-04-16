@@ -1,6 +1,6 @@
 import { Link } from "@inertiajs/react"
 import { useDispatch, useSelector } from "react-redux"
-import IncomingRequests from "./IncomingRequests"
+import IncomingRequests from "../Contacts/IncomingRequests"
 import SentRequests from "./SentRequests"
 import { setPaneList } from "../../store/reducers/contacts"
 

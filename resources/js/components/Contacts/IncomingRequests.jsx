@@ -1,5 +1,5 @@
 import { Link } from "@inertiajs/react"
-import IncomeRequestsMenu from "../IncomeRequestsMenu"
+import IncomeRequestsMenu from "../ContactsMenu"
 import Loading from "../../Partials/Loading"
 import { useDispatch, useSelector } from "react-redux"
 import { useFollowerRequests } from "../../store/actions/contacts"

@@ -163,7 +163,13 @@ class ProfileController extends Controller
             $query->where('media_type', 'profile')->where('is_active', true)
             ->select('user_id', 'media_path');
         }])->limit(15)->get();
+        $search->each(function($user) {
+            $user->is_blocked = Abilities::isBlocked($user->username);
+            $user->blocked = Abilities::canUnblock($user->username);
+        });
         
-        return response()->json($search);
+        return response()->json([
+            "search" => $search,
+        ]);
     }
 }

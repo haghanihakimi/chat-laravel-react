@@ -158,7 +158,7 @@ export default function({user, auth, image, abilities}) {
                                 }
                                 {
                                     abilities.canMessage
-                                    ? <Link href='#' className='w-fit relative rounded bg-blue flex flex-row gap-0 items-center shadow-md text-milky-white p-2'>
+                                    ? <Link href={route('messages.view', {username: user.username})} className='w-fit relative rounded bg-blue flex flex-row gap-0 items-center shadow-md text-milky-white p-2'>
                                         <Message className='w-4 h-4' />
                                     </Link>
                                     : ''

@@ -73,6 +73,10 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, Contact::class, 'user_id', 'contact_id')->withPivot(['status', 'created_at', 'updated_at']);
     }
 
+    public function chats() {
+        return $this->hasMany(Chat::class, 'sender_id')->orWhere('recipient_id', $this->id);
+    }
+
     public function scopeSearch ($query, $input) {
         return $query->where('first_name', 'LIKE', '%' .$input. '%')
         ->orWhere('surname', 'LIKE', '%' .$input. '%')

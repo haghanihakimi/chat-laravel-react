@@ -74,9 +74,32 @@ class ProfileRequests
         if (!$host) {
             return false;
         }
-        $hostRequest = static::followers()->where('id', $host->id)->pluck('pivot.status');
-        $canFollow = static::followings()->where('id', $host->id)->pluck('pivot.status');
-        return (count($hostRequest) <= 0 && count($canFollow) <= 0) || !$hostRequest->contains('pending') && ($canFollow->contains('rejected') || $canFollow->contains('cancelled') || empty(static::followings()->where('username', $username)->first())) && !$canFollow->contains('spam') ? true : false;
+        
+        $hasSentPendingFollowRequest = static::followings()
+        ->where('id', $host->id)
+        ->pluck('pivot.status')
+        ->contains('pending');
+
+        $hasSentAcceptedFollowRequest = static::followings()
+        ->where('id', $host->id)
+        ->pluck('pivot.status')
+        ->contains('accepted');
+
+        $hasSentSpamFollowRequest = static::followings()
+        ->where('id', $host->id)
+        ->pluck('pivot.status')
+        ->contains('spam');
+
+        $isBlocked = self::isBlocked($username);
+        $canBlock = self::canBlock($username);
+
+
+        $canFollow = !$hasSentPendingFollowRequest && 
+        !$hasSentAcceptedFollowRequest && 
+        !$isBlocked && $canBlock && 
+        !$hasSentSpamFollowRequest;
+
+        return $canFollow;
     }
 
     public static function canUnfollow($username) {

@@ -2,7 +2,7 @@ import { Link } from "@inertiajs/react"
 import axios from "axios"
 import { useEffect, useState } from "react"
 import route from "ziggy-js"
-import IncomeRequestsMenu from "../IncomeRequestsMenu"
+import IncomeRequestsMenu from "../ContactsMenu"
 import Loading from "../../Partials/Loading"
 import { useDispatch, useSelector } from "react-redux"
 import { useGetFollowings } from "../../store/actions/contacts"
@@ -34,10 +34,14 @@ export default ({}) => {
                                 <div key={index} className="w-full flex flex-row gap-0 pr-2 bg-milky-white transition duration-150 hover:bg-black hover:bg-opacity-10 dark:bg-dark dark:hover:bg-red">
                                     <Link href={route('profile.view', {username:following.username})} className="w-full px-4 py-2 flex flex-row gap-0">
                                         {/* Image container */}
-                                        <div className="w-12 h-12 shrink-0 rounded-full shadow-md">
-                                            <img src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
-                                            alt="profile picture"
-                                            className="block w-full h-full object-cover rounded-full" />
+                                        <div className="w-12 h-12 shrink-0 rounded-full shadow-md flex justify-center items-center border border-black border-opacity-10">
+                                            {
+                                                following.media_forms && following.media_forms.length > 0
+                                                ? <img src={following.media_forms[0].media_path} 
+                                                alt="profile picture"
+                                                className="block w-full h-full object-cover rounded-full" />
+                                                : <User className='w-8 h-8 m-auto text-blue' />
+                                            }
                                         </div>
                                         {/* Name & username container */}
                                         <div className="w-full h-fit flex flex-col relativ px-3 my-auto">

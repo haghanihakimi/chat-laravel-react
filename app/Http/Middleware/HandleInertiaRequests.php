@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\UserResource;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -38,7 +39,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
-            'auth' => Auth::guard('web')->check() ? Auth::guard('web')->user() : [],
+            'auth' => Auth::guard('web')->check() ? new UserResource(Auth::guard('web')->user()) : [],
             'flash' => [
                 'message' => fn () => $request->session()->get('message')
             ],

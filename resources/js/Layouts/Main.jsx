@@ -10,7 +10,7 @@ import NotificationsPane from '../components/NotificationsPane';
 import ContactsPane from '../components/ContactsPane';
 import SearchPane from '../components/SearchPane';
 
-export default function({title, body, user, auth}) {
+export default function({auth, title, body}) {
   const messages = useSelector((state) => state.messages)
   const notifications = useSelector((state) => state.notifications)
   const contacts = useSelector((state) => state.contacts)
@@ -22,7 +22,7 @@ export default function({title, body, user, auth}) {
 
 
   useEffect(() => {
-    // window.Echo.private(`user.${auth.id}`).listen('SendFollowRequest', (e) => {
+    // window.Echo.private(`user.1`).listen('followRequest', (e) => {
     //   console.log(e);
     // });
     const checkSmallScreen = () => {

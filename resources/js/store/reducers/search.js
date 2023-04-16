@@ -12,24 +12,18 @@ export const searchSlice = createSlice({
   reducers: {
     setPane: (state, action) => {
         state.pane = action.payload
+        state.searchResults = []
     },
-    runSearch: (state, action) => {
-      state.loading = true
-      let results = []
-      axios.get(route('user.search'), {params: {keywords: action.payload}})
-      .then(response => {
-        results = response.data
-      })
-      .finally(() => {
-      })
-      state.searchResults = results
-      state.loading = false
-      console.log(state.searchResults)
+    toggleLoading: (state, action) => {
+      state.loading = action.payload
+    },
+    fillSearchResults: (state, action) => {
+      state.searchResults = action.payload
     }
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { setPane, runSearch } = searchSlice.actions
+export const { setPane, toggleLoading, fillSearchResults } = searchSlice.actions
 
 export default searchSlice.reducer

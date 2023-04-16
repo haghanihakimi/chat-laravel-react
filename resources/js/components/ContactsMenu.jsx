@@ -7,6 +7,7 @@ import {
     HiXMark as Cancel,
     HiOutlineChatBubbleLeft as Message,
     HiOutlineUserMinus as OutlineUnfollow,
+    HiOutlineUserPlus as Follow,
 } from "react-icons/hi2";
 import { CgUnblock as Unblock } from "react-icons/cg";
 import { TfiHandStop as Reject } from "react-icons/tfi";
@@ -22,6 +23,7 @@ import { useMenuAbilities,
     useBlockUser, 
     useUnBlockUser, 
     useCancelRequest,
+    useSendRequest,
     useUnfollow, 
     useRemoveFollower
 } from "../store/actions/contacts";
@@ -37,6 +39,7 @@ export default function({request}) {
     const { handleAcceptRequest, acceptingRequest } = useAcceptRequest(request.username)
     const { handleRejectRequest, rejectingRequest } = useRejectRequest(request.username)
     const { handleCancelRequest, cancellingRequest } = useCancelRequest(request.username)
+    const { handleSendRequest, sendingRequest } = useSendRequest(request.username)
     const { handleUnfollow, unFollowing } = useUnfollow(request.username)
     const { handleRemoveFollower, removingFollower } = useRemoveFollower(request.username)
     const { handleMarkSpamRequest, ignoringRequest } = useMarkSpamRequest(request.username)
@@ -44,7 +47,6 @@ export default function({request}) {
     const { handleUnBlockUser, unBlockingUser } = useUnBlockUser(request.username)
 
     useEffect(() => {
-        handleMenuAbilities()
         function hideMenu(event){
             if (wrapper.current && !wrapper.current.contains(event.target)) {
                 setData({menu: false})
@@ -64,7 +66,7 @@ export default function({request}) {
             <div className="w-8 h-8 rounded-full relative shrink-0 select-none">
                 <button 
                 ref={wrapper}
-                onClick={() => setData({menu: true})}
+                onClick={() => { setData({ menu: !data.menu });handleMenuAbilities() } }
                 type="button" 
                 className="w-full h-full rounded-full flex justify-center items-center">
                     <Menu className="w-6 h-6 text-black dark:text-milky-white" />
@@ -73,16 +75,16 @@ export default function({request}) {
                     data.menu ? 
                     <div ref={wrapper} className="min-w-[140px] z-10 h-auto bg-white border border-black border-opacity-10 absolute rounded shadow-lg top-7 right-0 flex flex-col gap-0 dark:border-milky-white dark:border-opacity-10 dark:bg-dark-blue">
                         {
-                            !contacts.loading
+                            !contacts.loadingAbilities
                             ?
                             <div className="relative flex flex-col gap-0">
                                 {/* accept request button */}
                                 {
-                                    contacts.abilities.canAccept
+                                    contacts.abilities.ability.canAccept
                                     ?
                                     <form action="/" method="POST" onSubmit={e => { e.preventDefault();handleAcceptRequest() }}>
                                         <button type='submit' disabled={acceptingRequest} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${acceptingRequest ? 'opacity-50' : 'opacity-100'}`}>
-                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
+                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 flex justify-center items-center'>
                                                 {
                                                     acceptingRequest
                                                     ? <Box sx={{ display: 'flex' }}>
@@ -100,11 +102,11 @@ export default function({request}) {
                                 }
                                 {/* Reject request button */}
                                 {
-                                    contacts.abilities.canReject
+                                    contacts.abilities.ability.canReject
                                     ?
                                     <form method="POST" onSubmit={e => { e.preventDefault();handleRejectRequest() }}>
                                         <button type='submit' disabled={rejectingRequest} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${rejectingRequest ? 'opacity-50' : 'opacity-100'}`}>
-                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
+                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 flex justify-center items-center'>
                                                 {
                                                     rejectingRequest
                                                     ? <Box sx={{ display: 'flex' }}>
@@ -122,11 +124,11 @@ export default function({request}) {
                                 }
                                 {/* Remove follower button */}
                                 {
-                                    contacts.abilities.canRemove
+                                    contacts.abilities.ability.canRemove
                                     ?
                                     <form method="POST" onSubmit={e => { e.preventDefault();handleRemoveFollower() }}>
                                         <button type='submit' disabled={removingFollower} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${removingFollower ? 'opacity-50' : 'opacity-100'}`}>
-                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
+                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 flex justify-center items-center'>
                                                 {
                                                     removingFollower
                                                     ? <Box sx={{ display: 'flex' }}>
@@ -142,13 +144,35 @@ export default function({request}) {
                                     </form>
                                     : ''
                                 }
+                                {/* Follow the user button */}
+                                {
+                                    contacts.abilities.ability.canFollow
+                                    ?
+                                    <form method="POST" onSubmit={e => { e.preventDefault();handleSendRequest() }}>
+                                        <button type='submit' disabled={sendingRequest} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${sendingRequest ? 'opacity-50' : 'opacity-100'}`}>
+                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 flex justify-center items-center'>
+                                                {
+                                                    sendingRequest
+                                                    ? <Box sx={{ display: 'flex' }}>
+                                                        <CircularProgress style={{color: '#006ce0'}} size={15} />
+                                                    </Box>
+                                                    : <Follow className="w-4 h-4 text-green my-auto" />
+                                                }
+                                            </span>
+                                            <span className='txext-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white'>
+                                                Follow
+                                            </span>
+                                        </button>
+                                    </form>
+                                    : ''
+                                }
                                 {/* Unfollow the user button */}
                                 {
-                                    contacts.abilities.canUnfollow
+                                    contacts.abilities.ability.canUnfollow
                                     ?
                                     <form method="POST" onSubmit={e => { e.preventDefault();handleUnfollow() }}>
                                         <button type='submit' disabled={unFollowing} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${unFollowing ? 'opacity-50' : 'opacity-100'}`}>
-                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
+                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 flex justify-center items-center'>
                                                 {
                                                     unFollowing
                                                     ? <Box sx={{ display: 'flex' }}>
@@ -157,56 +181,20 @@ export default function({request}) {
                                                     : <OutlineUnfollow className="w-4 h-4 text-orange my-auto" />
                                                 }
                                             </span>
-                                            <span className='text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white'>
+                                            <span className='txext-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white'>
                                                 Unfollow
                                             </span>
                                         </button>
                                     </form>
                                     : ''
                                 }
-                                {/* Message link */}
+                                {/* cancel the sent request user button */}
                                 {
-                                    !contacts.abilities.isBlocked && contacts.abilities.canBlock
-                                    ?
-                                    <Link href={route('messages.view', {username: request.username})} className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
-                                        <span className="my-auto relative">
-                                            <Message className="w-4 h-4 text-blue my-auto" />
-                                        </span>
-                                        <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
-                                            Message
-                                        </span>
-                                    </Link>
-                                    : ''
-                                }
-                                {/* mark as spam button */}
-                                {
-                                    contacts.abilities.canIgnore
-                                    ?
-                                    <form method="POST" onSubmit={e => { e.preventDefault();handleMarkSpamRequest() }}>
-                                        <button type='submit' disabled={ignoringRequest} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${ignoringRequest ? 'opacity-50' : 'opacity-100'}`}>
-                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
-                                                {
-                                                    ignoringRequest
-                                                    ? <Box sx={{ display: 'flex' }}>
-                                                        <CircularProgress style={{color: '#006ce0'}} size={15} />
-                                                    </Box>
-                                                    : <Ignore className="w-4 h-4 text-red my-auto" />
-                                                }
-                                            </span>
-                                            <span className='text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white'>
-                                                Ignore
-                                            </span>
-                                        </button>
-                                    </form>
-                                    : ''
-                                }
-                                {/* reject request user button */}
-                                {
-                                    contacts.abilities.canCancelRequest
+                                    contacts.abilities.ability.canCancelRequest
                                     ?
                                     <form method="POST" onSubmit={e => { e.preventDefault();handleCancelRequest() }}>
                                         <button type='submit' disabled={cancellingRequest} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${cancellingRequest ? 'opacity-50' : 'opacity-100'}`}>
-                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
+                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 flex justify-center items-center'>
                                                 {
                                                     cancellingRequest
                                                     ? <Box sx={{ display: 'flex' }}>
@@ -222,13 +210,49 @@ export default function({request}) {
                                     </form>
                                     : ''
                                 }
+                                {/* Message link */}
+                                {
+                                    !contacts.abilities.ability.isBlocked && contacts.abilities.ability.canBlock
+                                    ?
+                                    <Link href={route('messages.view', {username: request.username})} className="w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center">
+                                        <span className="my-auto relative">
+                                            <Message className="w-4 h-4 text-blue my-auto" />
+                                        </span>
+                                        <span className="text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white">
+                                            Message
+                                        </span>
+                                    </Link>
+                                    : ''
+                                }
+                                {/* mark as spam button */}
+                                {
+                                    contacts.abilities.ability.canIgnore
+                                    ?
+                                    <form method="POST" onSubmit={e => { e.preventDefault();handleMarkSpamRequest() }}>
+                                        <button type='submit' disabled={ignoringRequest} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${ignoringRequest ? 'opacity-50' : 'opacity-100'}`}>
+                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 flex justify-center items-center'>
+                                                {
+                                                    ignoringRequest
+                                                    ? <Box sx={{ display: 'flex' }}>
+                                                        <CircularProgress style={{color: '#006ce0'}} size={15} />
+                                                    </Box>
+                                                    : <Ignore className="w-4 h-4 text-red my-auto" />
+                                                }
+                                            </span>
+                                            <span className='text-left text-sm font-semibold my-auto text-black tracking-wide dark:font-medium dark:text-milky-white'>
+                                                Ignore
+                                            </span>
+                                        </button>
+                                    </form>
+                                    : ''
+                                }
                                 {/* block user button */}
                                 {
-                                    contacts.abilities.canBlock
+                                    contacts.abilities.ability.canBlock
                                     ?
                                     <form method="POST" onSubmit={e => { e.preventDefault();handleBlockUser() }}>
                                         <button type='submit' disabled={blockingUser} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${blockingUser ? 'opacity-50' : 'opacity-100'}`}>
-                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
+                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 flex justify-center items-center'>
                                                 {
                                                     blockingUser
                                                     ? <Box sx={{ display: 'flex' }}>
@@ -246,11 +270,11 @@ export default function({request}) {
                                 }
                                 {/* unblock user button */}
                                 {
-                                    contacts.abilities.canUnblock
+                                    contacts.abilities.ability.canUnblock
                                     ?
                                     <form method="POST" onSubmit={e => { e.preventDefault();handleUnBlockUser() }}>
                                         <button type='submit' disabled={unBlockingUser} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${unBlockingUser ? 'opacity-50' : 'opacity-100'}`}>
-                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
+                                            <span className='w-4 h-4 inline-block relative shrink-0 p-0 flex justify-center items-center'>
                                                 {
                                                     unBlockingUser
                                                     ? <Box sx={{ display: 'flex' }}>

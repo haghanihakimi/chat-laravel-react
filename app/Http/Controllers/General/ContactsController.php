@@ -18,12 +18,13 @@ class ContactsController extends Controller
     public function sendFollowRequest($username) {
         if(!Abilities::isBlocked($username) && Abilities::canFollow($username)) {
             $host = User::where('username', $username)->first();
+            $user = User::find(Auth::guard('web')->user()->id);
             if ($host) {
                 $contact = Contact::updateOrCreate(
-                ['user_id' => Auth::guard('web')->user()->id, 'contact_id' => $host->id],
-                ['status' => 'pending']);
+                ['user_id' => $user->id, 'contact_id' => $host->id],
+                ['status' => $host->privacy ? 'pending' : 'accepted']);
                 if($contact) {
-                    event(new FollowRequestEvent(Auth::guard()->user(), $host));
+                    // event(new FollowRequestEvent($user, $host));
                     return back()->with('message', ['followRequest' => "Follow request has been sent."]);
                 }
                 return back()->with('message', ['followRequest' => "Sending follow request to this user is temporarily unavailable. Please try again later."]);
@@ -174,7 +175,10 @@ class ContactsController extends Controller
     }
 
     public function getFollowers(Request $request) {
-        $followers = Abilities::followers()->where('pivot.status', 'accepted');
+        $followers = Abilities::followers()
+        ->where('pivot.status', 'accepted')->each(function($user) {
+            $user->media_forms = $user->media_forms;
+        });
         $paginator = new Paginator(
             array_slice($followers->toArray(), ($request->input('page') - 1) * 50, 50),
             $followers->count(),
@@ -185,13 +189,16 @@ class ContactsController extends Controller
                 'query' => $request->query(),
             ]
         );
+
         return response()->json([
             "followers" => $paginator,
         ]);
     }
 
     public function getFollowings(Request $request) {
-        $followings = Abilities::followings()->where('pivot.status', 'accepted');
+        $followings = Abilities::followings()->where('pivot.status', 'accepted')->each(function($user) {
+            $user->media_forms = $user->media_forms;
+        });
         $paginator = new Paginator(
             array_slice($followings->toArray(), ($request->input('page') - 1) * 50, 50),
             $followings->count(),
@@ -208,7 +215,9 @@ class ContactsController extends Controller
     }
 
     public function getFollowerRequests(Request $request) {
-        $followerRequests = Abilities::followers()->where('pivot.status', 'pending');
+        $followerRequests = Abilities::followers()->where('pivot.status', 'pending')->each(function($user) {
+            $user->media_forms = $user->media_forms;
+        });
         $paginator = new Paginator(
             array_slice($followerRequests->toArray(), ($request->input('page') - 1) * 50, 50),
             $followerRequests->count(),
@@ -225,7 +234,9 @@ class ContactsController extends Controller
     }
 
     public function getFollowingRequests(Request $request) {
-        $followingRequests = Abilities::followings()->where('pivot.status', 'pending');
+        $followingRequests = Abilities::followings()->where('pivot.status', 'pending')->each(function($user) {
+            $user->media_forms = $user->media_forms;
+        });
         $paginator = new Paginator(
             array_slice($followingRequests->toArray(), ($request->input('page') - 1) * 50, 50),
             $followingRequests->count(),
@@ -243,6 +254,7 @@ class ContactsController extends Controller
 
     public function getAbilities($username) {
         return response()->json([
+            "user" => $username,
             "ability" => [
                 "isBlocked" => Abilities::isBlocked($username),
                 "canFollow" => Abilities::canFollow($username),

@@ -1,13 +1,10 @@
 import { Link } from "@inertiajs/react"
 import { useDispatch, useSelector } from "react-redux"
 import route from "ziggy-js"
-import ContactsListMenu from "./ContactsListMenu"
-import IncomeRequestsMenu from "./IncomeRequestsMenu"
 import { setPaneList } from "../store/reducers/contacts"
 import FollowersList from "./Contacts/FollowersList"
 import FollowingsList from "./Contacts/FollowingsList"
 import Requests from "./Contacts/Requests"
-import { useRef } from "react"
 
 export default function({}) {
     const contacts = useSelector((state) => state.contacts)
