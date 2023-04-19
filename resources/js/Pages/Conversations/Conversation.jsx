@@ -4,6 +4,7 @@ import Layout from '../../Layouts/Main'
 import { 
     HiOutlinePaperAirplane as Send,
     HiUser as User,
+    HiOutlineCheck as Tick,
 } from "react-icons/hi2";
 import { useEffect, useRef, useState } from 'react';
 import Loading from "../../Partials/Loading"
@@ -143,43 +144,64 @@ export default function({auth, host, media_forms}) {
                                                         ? 
                                                         <div key={index} className="select-text flex items-end justify-start flex-row-reverse gap-2">
                                                             <div className="max-w-[55%] flex flex-col items-end bg-blue bg-opacity-90 p-2 shadow-lg rounded-tr-lg rounded-tl-lg rounded-bl-lg">
-                                                                <div className='w-full select-none h-auto flex flex-row gap-1 flex-wrap'>
-                                                                    {
-                                                                        messages.media_forms.map((media, imgInex) => {
-                                                                            return <img 
-                                                                            key={imgInex}
-                                                                            src={media.media_path}
-                                                                            className='w-full max-w-xs min-w-[60px] flex-1 h-auto object-covert rounded shrink-0'
-                                                                            />
-                                                                        })
-                                                                    }
-                                                                </div>
-                                                                <p className="text-sm text-white mt-2">
+                                                                {
+                                                                    messages.media_forms && messages.media_forms.length > 0
+                                                                    ?
+                                                                    <div className='w-full h-auto select-none mb-2 flex flex-row gap-1 flex-wrap'>
+                                                                        {
+                                                                            messages.media_forms.map((media, imgInex) => {
+                                                                                return <img 
+                                                                                key={imgInex}
+                                                                                src={media.media_path}
+                                                                                className='w-full max-w-[200px] min-w-[60px] flex-1 h-auto object-covert rounded shrink-0'
+                                                                                />
+                                                                            })
+                                                                        }
+                                                                    </div>
+                                                                    : ''
+                                                                }
+                                                                <p className="text-sm text-white">
                                                                     {message.messages}
                                                                 </p>
-                                                                <span className="text-xs text-white font-semibold tracking-wide text-opacity-90">
-                                                                    {convertTime(message.created_at)}
-                                                                </span>
+                                                                <div className='w-full flex flex-row gap-[2px] items-center justify-start'>
+                                                                    <span className='rotate-[5deg] mb-[2px] flex flex-row gap-0 items-center' title={`${message.seen_at ? 'seet at ' + convertTime(message.seen_at) : 'delivered at ' + convertTime(message.created_at)}`}>
+                                                                        {
+                                                                            message.seen_at
+                                                                            ? <Tick className='w-4 h-4 text-white' />
+                                                                            : <Tick className='w-4 h-4 text-milky-white text-opacity-50' />
+                                                                        }
+                                                                    </span>
+                                                                    <span className="text-xs text-black font-semibold tracking-wide text-opacity-80 dark:text-milky-white dark:text-opacity-80">
+                                                                        {convertTime(message.created_at)}
+                                                                    </span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         : 
                                                         <div key={index} className="select-text flex items-end justify-end flex-row-reverse gap-2">
                                                             <div className="max-w-[50%] flex flex-col items-start bg-white p-2 shadow-lg border border-black border-opacity-5 rounded-tr-lg rounded-tl-lg rounded-br-lg dark:border-milky-white dark:border-opacity-10 dark:bg-black dark:text-milky-white">
-                                                                <div className='w-full h-auto select-none flex flex-row gap-1 flex-wrap'>
-                                                                    {
-                                                                        messages.media_forms.map((media, imgInex) => {
-                                                                            return <img 
-                                                                            key={imgInex}
-                                                                            src={media.media_path}
-                                                                            className='w-full max-w-xs min-w-[60px] flex-1 h-auto object-covert rounded shrink-0'
-                                                                            />
-                                                                        })
-                                                                    }
-                                                                </div>
+                                                                {
+                                                                    messages.media_forms && messages.media_forms.length > 0
+                                                                    ?
+                                                                    <div className='w-full h-auto select-none mb-2 flex flex-row gap-1 flex-wrap'>
+                                                                        {
+                                                                            messages.media_forms.map((media, imgInex) => {
+                                                                                return <img 
+                                                                                key={imgInex}
+                                                                                src={media.media_path}
+                                                                                className='w-full max-w-[200px] min-w-[60px] flex-1 h-auto object-covert rounded shrink-0'
+                                                                                />
+                                                                            })
+                                                                        }
+                                                                    </div>
+                                                                    : ''
+                                                                }
                                                                 <p className="text-sm">{message.messages}</p>
-                                                                <span className="text-xs text-black font-semibold tracking-wide text-opacity-80 dark:text-milky-white dark:text-opacity-80">
-                                                                    {convertTime(message.created_at)}
-                                                                </span>
+                                                                <div className='w-full flex flex-row gap-[2px] items-center justify-start'>
+                                                                    <span className="text-xs text-black font-semibold tracking-wide text-opacity-80 dark:text-milky-white dark:text-opacity-80">
+                                                                        {convertTime(message.created_at)}
+                                                                    </span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     })

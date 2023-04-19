@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignId('chat_id')->constrained("chats")->onDelete('cascade');
             $table->longText('messages');
             $table->timestamp('seen_at')->nullable();
-            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }
