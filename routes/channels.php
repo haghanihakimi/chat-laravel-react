@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Broadcast;
 
-Broadcast::channel('followRequest.{userId}', function ($user, $userId) {
-    return $user->id === (int)$userId;
+Broadcast::channel('home', function ($id) {
+    // return $user->id === (int)$userId;
+    return true;
 });

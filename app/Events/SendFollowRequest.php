@@ -15,18 +15,16 @@ class SendFollowRequest implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    protected $requestSender;
-    protected $requestReceiver;
+    public $message;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($requestSender, $requestReceiver)
+    public function __construct($message)
     {
-        $this->requestSender = $requestSender;
-        $this->requestReceiver = $requestReceiver;
+        $this->message = $message;
     }
 
     /**
@@ -36,12 +34,12 @@ class SendFollowRequest implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('followRequest.'.$this->requestReceiver->id);
+        return new Channel('home');
     }
 
     public function broadcastWith () {
         return [
-            'followRequests' => $this->requestSender->username.' has sent you a follow request.',
+            'message' => $this->message,
         ];
     }
 }
