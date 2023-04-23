@@ -9,3 +9,7 @@ Broadcast::channel('followerRequest.{id}', function ($user, $id) {
 Broadcast::channel('cancelFollowRequest.{id}', function ($user, $id) {
     return (int)$user->id === (int)$id ? true : false;
 });
+
+Broadcast::channel('DeleteTwoWayMessage.{id}', function ($user, $id) {
+    return (int)$user->id === (int)$id ? true : false;
+});

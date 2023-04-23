@@ -1,3 +1,7 @@
+import { 
+    setPendingContacts, 
+} from "../reducers/contacts";
+import { reduceMessages } from "../reducers/messages";
 import { useDispatch } from "react-redux";
 
 
@@ -17,9 +21,17 @@ export function useListeners() {
         });
     }
 
+    function deleteTwoWayMessage(chat, user) {
+        window.Echo.private(`DeleteTwoWayMessage.${user}`).listen('DeleteMessageTwoWay', (e) => {
+            dispatch(reduceMessages(chat))
+            console.log(chat)
+        });
+    }
+
     return {
         incomingFollowRequest,
         cancelFollowRequest,
+        deleteTwoWayMessage,
     }
 }
 
@@ -32,6 +44,14 @@ export function useListenersLeave() {
     function cancelFollowRequestListener(user) {
         window.Echo.leave(`cancelFollowRequest.${user.id}`);
     }
+    
+    function deleteTwoWayMessageLeave(user) {
+        window.Echo.leave(`DeleteTwoWayMessage.${user}`);
+    }
 
-    return { incomingFollowListener, cancelFollowRequestListener }
+    return { 
+        incomingFollowListener, 
+        cancelFollowRequestListener, 
+        deleteTwoWayMessageLeave 
+    }
 }

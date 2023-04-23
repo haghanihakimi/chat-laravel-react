@@ -21,5 +21,10 @@ Route::middleware(['auth'])->group(function() {
         ->where('user', '[0-9]+')
         ->where('host', '[0-9]+')
         ->name('delete.single.message.oneway');
+        Route::delete("/twoway/delete/single/message/{chat}/{user}/{host}", "removeSingleMessageTwoWay")
+        ->where('chat', '[0-9]+')
+        ->where('user', '[0-9]+')
+        ->where('host', '[0-9]+')
+        ->name('delete.single.message.twoway');
     });
 });

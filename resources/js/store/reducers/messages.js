@@ -25,6 +25,10 @@ export const messagesSlice = createSlice({
     toggleDeletePopup: (state, action) => {
       state.deletePopup = action.payload
     },
+    reduceMessages: (state, action) => {
+      let i = state.messages.map(data => data.id).indexOf(action.payload)
+      state.messages.splice(i, 1)
+    },
   },
 })
 
@@ -35,6 +39,7 @@ export const {
   toggleLoadingMessages, 
   toggleDoingAction, 
   toggleDeletePopup,
+  reduceMessages,
 } = messagesSlice.actions
 
 export default messagesSlice.reducer

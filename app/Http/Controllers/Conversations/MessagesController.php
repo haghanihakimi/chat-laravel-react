@@ -10,6 +10,7 @@ use App\Http\Requests\ProfileRequests as Abilities;
 use App\Http\Resources\HostResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\MediaFormsResource;
+use App\Events\DeleteMessageTwoWay;
 use App\Models\User;
 use App\Models\Chat;
 use Inertia\Inertia;
@@ -62,6 +63,17 @@ class MessagesController extends Controller
         ->where('sender_id', Auth::user()->id)
         ->where('recipient_id', $host)
         ->update(['deleter_id' => Auth::user()->id]);
+
+        return response()->json($chat);
+    }
+
+    public function removeSingleMessageTwoWay($chat,$user,$host) {
+        $delete = Chat::where('id', $chat)
+        ->where('sender_id', Auth::user()->id)
+        ->where('recipient_id', $host)
+        ->update(['deleter_id' => Auth::user()->id, "deleted_at" => now()]);
+
+        event(new DeleteMessageTwoWay(User::find($host)));
 
         return response()->json($chat);
     }

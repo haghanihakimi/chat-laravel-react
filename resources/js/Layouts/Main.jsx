@@ -21,7 +21,10 @@ export default function({auth, title, body}) {
     smallScreen: false,
   })
   const {handlePendingRequestsCounter} = usePendingRequestsCounter(auth ? auth.data : [])
-  const {incomingFollowListener, cancelFollowRequestListener} = useListenersLeave()
+  const {
+    incomingFollowListener, 
+    cancelFollowRequestListener,
+  } = useListenersLeave()
 
 
   useEffect(() => {

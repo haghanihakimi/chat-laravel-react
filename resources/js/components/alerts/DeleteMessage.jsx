@@ -7,19 +7,38 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { toggleDeletePopup } from '../../store/reducers/messages';
+import { useDeleteMessages } from '../../store/actions/messages';
 import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
 
 
 const label = { inputProps: { 'aria-label': 'Unsend for everyone' } };
 
 
-export default function({isOpen}) {
+export default function({chat, user, host}) {
     const messages = useSelector(state => state.messages)
     const dispatch = useDispatch()
+    const [data, setData] = useState({
+        isTwoway: true,
+    })
+    const {deleteSingleMessageOneWay, deleteSingleMessageTwoWay} = useDeleteMessages(chat, user, host)
 
     const handleClose = () => {
         dispatch(toggleDeletePopup(false))
-    };
+    }
+
+    const deleteMessage = () => {
+        if (!messages.doingAction) {
+            if (!data.isTwoway) {
+                deleteSingleMessageOneWay()
+            } else {
+                deleteSingleMessageTwoWay()
+            }
+            if(!messages.doingAction) {
+                handleClose()
+            }
+        }
+    }
 
 
     return(
@@ -40,13 +59,17 @@ export default function({isOpen}) {
 
                 <DialogContent className='bg-white select-none dark:bg-black'>
                     <DialogContentText id="alert-dialog-slide-description" className='flex flex-row gap-0 items-center justify-start'>
-                        <FormControlLabel control={<Checkbox defaultChecked />} label="Unsend for everyone" className='text-black dark:text-milky-white' />
+                        <FormControlLabel control={<Checkbox disabled={messages.doingAction} checked={data.isTwoway} onChange={ event => { setData({isTwoway: event.target.checked}) } } />} label="Unsend for everyone" className='text-black dark:text-milky-white disabled:opacity-50' />
                     </DialogContentText>
                 </DialogContent>
 
                 <DialogActions className='bg-white select-none px-8 dark:bg-black'>
-                    <button className='px-2 py-2 rounded m-0 text-black dark:text-milky-white' onClick={handleClose}>Cancel</button>
-                    <button className='px-2 py-2 rounded m-0 text-black mr-4 dark:text-milky-white' onClick={handleClose}>Delete</button>
+                    <button disabled={messages.doingAction} className='px-2 py-2 rounded m-0 text-black text-opacity-75 dark:text-milky-white disabled:opacity-50' 
+                    onClick={handleClose}>Cancel</button>
+                    <button disabled={messages.doingAction} className='px-2 py-2 rounded m-0 text-red mr-4 disabled:opacity-50' 
+                    onClick={deleteMessage}>{
+                        messages.doingAction ? 'Deleting...' : 'Delete'
+                    }</button>
                 </DialogActions>
             </Dialog>
         </div>

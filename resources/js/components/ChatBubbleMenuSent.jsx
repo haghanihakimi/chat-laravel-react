@@ -8,10 +8,12 @@ import {
  } from "react-icons/ai";
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DeleteMessage from "./alerts/DeleteMessage";
 import { toggleDeletePopup } from "../store/reducers/messages";
 import { useDispatch } from "react-redux";
+import { useListeners } from "../store/actions/listeners";
+import { useListenersLeave } from "../store/actions/listeners";
 
 
 export default function({chat, user, host}) {
@@ -21,15 +23,26 @@ export default function({chat, user, host}) {
     })
     const open = Boolean(anchorEl)
     const dispatch = useDispatch()
+    const {deleteTwoWayMessage} = useListeners()
+    const {deleteTwoWayMessageLeave} = useListenersLeave()
 
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget)
     };
     const handleClose = () => {
-        dispatch(toggleDeletePopup(true))
         setAnchorEl(null)
     }
+
+    useEffect(() => {
+        
+        deleteTwoWayMessage(chat, user)
+        console.log(chat)
+
+        return() => {
+            deleteTwoWayMessageLeave(user)
+        }
+    }, [user])
 
 
     return(
@@ -53,7 +66,7 @@ export default function({chat, user, host}) {
                 'aria-labelledby': 'basic-button',
                 }}
                 sx={{"& .MuiMenu-paper": {minWidth: '100px', padding: '0', color: "#f3f3f3",backgroundColor: "rgba(97, 97, 97, 1.0   )",boxShadow:"rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px"}}}>
-                    <MenuItem onClick={() => { handleClose() } } className="flex flex-row gap-2 items-center justify-start">
+                    <MenuItem onClick={() => { dispatch(toggleDeletePopup(true));handleClose() } } className="flex flex-row gap-2 items-center justify-start">
                         <Delete className="w-5 h-5 text-milky-white" />
                         <span className="text-md">
                             Remove
@@ -72,7 +85,7 @@ export default function({chat, user, host}) {
                         </span>
                     </MenuItem>
                 </Menu>
-                <DeleteMessage />
+                <DeleteMessage chat={chat} user={user} host={host} />
             </div>
         </>
     )
