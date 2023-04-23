@@ -11,8 +11,12 @@ import Loading from "../../Partials/Loading"
 import ChatMenu from '../../components/ChatMenu';
 import { useGetMessages } from '../../store/actions/messages';
 import { useSelector } from 'react-redux';
+import Tooltip from '@mui/material/Tooltip';
+import moment from 'moment';
+import ChatBubbleMenuSent from '../../components/ChatBubbleMenuSent';
+import ChatBubbleMenuReceived from '../../components/ChatBubbleMenuReceived';
 
-export default function({auth, host, media_forms}) {
+export default function({auth, host, media_forms, abilities}) {
     const [data, setData] = useState({
         enableSend: false,
         disablePlaceholder: false,
@@ -52,14 +56,6 @@ export default function({auth, host, media_forms}) {
         if (!event.shiftKey && event.keyCode === 13) {
             event.preventDefault()
         }
-    }
-
-    const convertTime = (time) => {
-        return new Date(time).toLocaleString('en-AU', {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-        })
     }
 
     useEffect(() => {
@@ -124,102 +120,118 @@ export default function({auth, host, media_forms}) {
                                         </strong>
                                     </div>
                                     {/* alert body text */}
-                                    <p className='max-w-[260px] select-text p-2 text-center text-sm text-black text-opacity-75 font-medium dark:text-milky-white dark:text-opacity-75'>
-                                        You and {host.data.first_name} are not following each other. Add {host.data.gender === 'female' ? 'her' : 'him'} to see more info on {host.data.gender === 'female' ? 'her' : 'his'} profile.
-                                    </p>
+                                    {
+                                        !abilities.canFollow && abilities.canRemove
+                                        ? ''
+                                        :
+                                        <p className='max-w-[260px] select-text p-2 text-center text-sm text-black text-opacity-75 font-medium dark:text-milky-white dark:text-opacity-75'>
+                                            You and {host.data.first_name} are not following each other. Add {host.data.gender === 'female' ? 'her' : 'him'} to see more info on {host.data.gender === 'female' ? 'her' : 'his'} profile.
+                                        </p>
+                                    }
                                 </div>
                                 
+                                {/* Chat bubbles */}
                                 {
                                     !conversations.loadingMessages
                                     ?
                                     <div className='w-full h-full px-2 py-4 flex flex-col gap-6'>
-                                        {/* Receiver Chat bubble */}
                                         {
                                             conversations.messages && conversations.messages.length > 0
                                             ? 
                                             conversations.messages.map(data => {
-                                                return data.map(messages => {
-                                                    return messages.messages.map((message, index) => {
-                                                        return messages.status == "sent"
-                                                        ? 
-                                                        <div key={index} className="select-text flex items-end justify-start flex-row-reverse gap-2">
-                                                            <div className="max-w-[55%] flex flex-col items-end bg-blue bg-opacity-90 p-2 shadow-lg rounded-tr-lg rounded-tl-lg rounded-bl-lg">
-                                                                {
-                                                                    messages.media_forms && messages.media_forms.length > 0
-                                                                    ?
-                                                                    <div className='w-full h-auto select-none mb-2 flex flex-row gap-1 flex-wrap'>
+                                                return data.messages.map((message, index) => {
+                                                    return data.status == "sent"
+                                                    ? 
+                                                    <div key={index} className="select-text flex items-end justify-start flex-row-reverse gap-2 group">
+                                                        <div className="max-w-[55%] flex flex-col items-end bg-blue bg-opacity-90 p-2 shadow-lg rounded-tr-lg rounded-tl-lg rounded-bl-lg">
+                                                            {
+                                                                data.media_forms && data.media_forms.length > 0
+                                                                ?
+                                                                <div className='w-full h-auto select-none mb-2 flex flex-row gap-1 flex-wrap'>
+                                                                    {
+                                                                        data.media_forms.map((media, imgInex) => {
+                                                                            return <img 
+                                                                            key={imgInex}
+                                                                            src={media.media_path}
+                                                                            className='w-full max-w-[200px] min-w-[60px] flex-1 h-auto object-covert rounded shrink-0'
+                                                                            />
+                                                                        })
+                                                                    }
+                                                                </div>
+                                                                : ''
+                                                            }
+                                                            <p className="text-sm text-white">
+                                                                {message.messages}
+                                                            </p>
+                                                            <div className='w-full flex flex-row gap-[2px] items-center justify-end'>
+                                                                <Tooltip
+                                                                sx={{"& .MuiTooltip-tooltip": {color: "#f3f3f3",backgroundColor: "#ff003b"}}}
+                                                                title={`sent ${moment(message.created_at).format("MMM D, YYYY - h:mm A")}`}>
+                                                                    <span className="text-xs text-milky-white text-opacity-80 tracking-wide">
                                                                         {
-                                                                            messages.media_forms.map((media, imgInex) => {
-                                                                                return <img 
-                                                                                key={imgInex}
-                                                                                src={media.media_path}
-                                                                                className='w-full max-w-[200px] min-w-[60px] flex-1 h-auto object-covert rounded shrink-0'
-                                                                                />
-                                                                            })
+                                                                            moment().diff(message.created_at, 'hours') < 24
+                                                                            ?
+                                                                            moment(message.created_at).format('h:mm A')
+                                                                            : moment(message.created_at).fromNow()
                                                                         }
-                                                                    </div>
-                                                                    : ''
-                                                                }
-                                                                <p className="text-sm text-white">
-                                                                    {message.messages}
-                                                                </p>
-                                                                <div className='w-full flex flex-row gap-[2px] items-center justify-start'>
-                                                                    <span className='rotate-[5deg] mb-[2px] flex flex-row gap-0 items-center' title={`${message.seen_at ? 'seet at ' + convertTime(message.seen_at) : 'delivered at ' + convertTime(message.created_at)}`}>
+                                                                    </span>
+                                                                </Tooltip>
+                                                                <Tooltip
+                                                                sx={{"& .MuiTooltip-tooltip": {marginRight: "24px"}}} 
+                                                                title={`${message.seen_at ? 'seen at ' + moment(message.seen_at).format("MMM D, YYYY - h:mm A") : 'delivered at ' + moment(message.created_at).format("MMM D, YYYY - h:mm A")}`}>
+                                                                    <span className='rotate-[5deg] mb-[2px] flex flex-row gap-0 items-center'>
                                                                         {
                                                                             message.seen_at
                                                                             ? <Tick className='w-4 h-4 text-white' />
-                                                                            : <Tick className='w-4 h-4 text-milky-white text-opacity-50' />
+                                                                            : <Tick className='w-4 h-4 text-milky-white text-opacity-60' />
                                                                         }
                                                                     </span>
-                                                                    <span className="text-xs text-black font-semibold tracking-wide text-opacity-80 dark:text-milky-white dark:text-opacity-80">
-                                                                        {convertTime(message.created_at)}
-                                                                    </span>
-                                                                </div>
+                                                                </Tooltip>
                                                             </div>
                                                         </div>
-                                                        : 
-                                                        <div key={index} className="select-text flex items-end justify-end flex-row-reverse gap-2">
-                                                            <div className="max-w-[50%] flex flex-col items-start bg-white p-2 shadow-lg border border-black border-opacity-5 rounded-tr-lg rounded-tl-lg rounded-br-lg dark:border-milky-white dark:border-opacity-10 dark:bg-black dark:text-milky-white">
-                                                                {
-                                                                    messages.media_forms && messages.media_forms.length > 0
-                                                                    ?
-                                                                    <div className='w-full h-auto select-none mb-2 flex flex-row gap-1 flex-wrap'>
+                                                        <ChatBubbleMenuSent chat={data.id} user={data.sender_id} host={data.recipient_id} />
+                                                    </div>
+                                                    : 
+                                                    <div key={index} className="select-text flex items-end justify-end flex-row-reverse gap-2 group">
+                                                        <ChatBubbleMenuReceived />
+                                                        <div className="max-w-[50%] flex flex-col items-start bg-white p-2 shadow-lg border border-black border-opacity-5 rounded-tr-lg rounded-tl-lg rounded-br-lg dark:border-milky-white dark:border-opacity-10 dark:bg-black dark:text-milky-white">
+                                                            {
+                                                                data.media_forms && data.media_forms.length > 0
+                                                                ?
+                                                                <div className='w-full h-auto select-none mb-2 flex flex-row gap-1 flex-wrap'>
+                                                                    {
+                                                                        data.media_forms.map((media, imgInex) => {
+                                                                            return <img 
+                                                                            key={imgInex}
+                                                                            src={media.media_path}
+                                                                            className='w-full max-w-[200px] min-w-[60px] flex-1 h-auto object-covert rounded shrink-0'
+                                                                            />
+                                                                        })
+                                                                    }
+                                                                </div>
+                                                                : ''
+                                                            }
+                                                            <p className="text-sm">{message.messages}</p>
+                                                            <div className='w-full flex flex-row gap-[2px] items-center justify-start'>
+                                                                <Tooltip
+                                                                sx={{"& .MuiTooltip-tooltip": {color: "#f3f3f3",backgroundColor: "#ff003b"}}}
+                                                                title={`sent ${moment(message.created_at).format("MMM D, YYYY - h:mm A")}`}>
+                                                                    <span className="text-xs text-black text-opacity-70 tracking-wide dark:text-milky-white dark:text-opacity-70">
                                                                         {
-                                                                            messages.media_forms.map((media, imgInex) => {
-                                                                                return <img 
-                                                                                key={imgInex}
-                                                                                src={media.media_path}
-                                                                                className='w-full max-w-[200px] min-w-[60px] flex-1 h-auto object-covert rounded shrink-0'
-                                                                                />
-                                                                            })
+                                                                            moment().diff(message.created_at, 'hours') < 24
+                                                                            ?
+                                                                            moment(message.created_at).format('h:mm A')
+                                                                            : moment(message.created_at).fromNow()
                                                                         }
-                                                                    </div>
-                                                                    : ''
-                                                                }
-                                                                <p className="text-sm">{message.messages}</p>
-                                                                <div className='w-full flex flex-row gap-[2px] items-center justify-start'>
-                                                                    <span className="text-xs text-black font-semibold tracking-wide text-opacity-80 dark:text-milky-white dark:text-opacity-80">
-                                                                        {convertTime(message.created_at)}
                                                                     </span>
-                                                                </div>
+                                                                </Tooltip>
                                                             </div>
                                                         </div>
-                                                    })
+                                                    </div>
                                                 })
                                             })
                                             : 
-                                            <div className="select-text flex items-end justify-end flex-row-reverse gap-2">
-                                                <div className="max-w-[50%] flex flex-col items-center justify-center bg-black bg-opacity-10 p-2 shadow-lg border border-black border-opacity-5 rounded-tr-lg rounded-tl-lg rounded-br-lg dark:border-milky-white dark:border-opacity-10 dark:bg-black dark:text-milky-white">
-                                                    <Loading color={'text-black text-opacity-5 fill-blue'} height={4} width={4} />
-                                                </div>
-                                                {
-                                                    media_forms.host.data
-                                                    ? <img src={media_forms.host.data.url} 
-                                                    alt="profile picture"
-                                                    className="w-4 h-4 ml-1 select-none rounded-full shadow-lg" />
-                                                    : <User className='w-4 h-4 select-none m-auto text-blue rounded-full shrink-0 my-auto bg-red' />
-                                                }
-                                            </div>
+                                            ''
                                         }
                                     </div>
                                     :

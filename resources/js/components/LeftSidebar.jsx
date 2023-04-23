@@ -24,6 +24,8 @@ import {
     HiArrowRightOnRectangle as SignOut,
 } from "react-icons/hi2";
 import { SiTheconversation } from "react-icons/si";
+import { usePendingRequestsCounter } from "../store/actions/contacts";
+import { useEffect } from "react";
 
 
 export default function({}) {
@@ -44,6 +46,9 @@ export default function({}) {
             })
         }
     }
+
+    useEffect(() => {
+    }, [])
 
     return(
         <>
@@ -80,7 +85,8 @@ export default function({}) {
                         <button onClick={() => { dispatch(NotificationsPane(notifications.pane ? false : true)); dispatch(ContactsPane(false)); dispatch(MessagesPane(false)); dispatch(SearchPane(false)); } } 
                         type="button" 
                         className="w-12 h-12 flex justify-center items-center">
-                            <Badge badgeContent={0} color="primary">
+                            <Badge badgeContent={0} 
+                            sx={{"& .MuiBadge-badge": {color: "#f3f3f3",backgroundColor: "#ff003b"}}}>
                                 {
                                     notifications.pane ?
                                     <Bell className={`w-7 h-7 ${notifications.pane ? 'text-blue' : 'text-black dark:text-milky-white'}`} />
@@ -99,11 +105,14 @@ export default function({}) {
                         onClick={() => { dispatch(ContactsPane(contacts.pane ? false : true)); dispatch(MessagesPane(false)); dispatch(NotificationsPane(false)); dispatch(SearchPane(false)) } } 
                         type="button" 
                         className="w-12 h-12 flex justify-center items-center">
-                            {
-                                contacts.pane ?
-                                <ContactsFill className={`w-7 h-7 ${contacts.pane ? 'text-blue' : 'text-black dark:text-milky-white'}`} /> :
-                                <ContactsOutline className="w-7 h-7 text-black dark:text-milky-white" />
-                            }
+                            <Badge badgeContent={contacts.pendingContacts} 
+                            sx={{"& .MuiBadge-badge": {color: "#f3f3f3",backgroundColor: "#ff003b"}}}>
+                                {
+                                    contacts.pane ?
+                                    <ContactsFill className={`w-7 h-7 ${contacts.pane ? 'text-blue' : 'text-black dark:text-milky-white'}`} /> :
+                                    <ContactsOutline className="w-7 h-7 text-black dark:text-milky-white" />
+                                }
+                            </Badge>
                         </button>
                         <span className="inline-block invisible opacity-0 transition duration-150 pointer-events-none w-fit h-fit px-2 py-1 translate-x-[50px] top-0 bottom-0 my-auto absolute rounded bg-white text-black text-sm font-medium shadow-lg border border-black border-opacity-10 dark:text-milky-white dark:bg-black dark:border-milky-white dark:border-opacity-10 group-hover:visible group-hover:opacity-100">
                             Contacts

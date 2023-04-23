@@ -1,8 +1,9 @@
-import { Head, router } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
-import route from 'ziggy-js';
 import { useSelector, useDispatch } from 'react-redux';
-import { getTheme, setTheme } from '../store/reducers/theme';
+import { getTheme } from '../store/reducers/theme';
+import { usePendingRequestsCounter } from '../store/actions/contacts';
+import { useListenersLeave } from '../store/actions/listeners';
 import Nav from '../components/MainNav';
 import LeftSidebar from '../components/LeftSidebar';
 import MessagesPane from '../components/MessagesPane'
@@ -19,12 +20,11 @@ export default function({auth, title, body}) {
   const [data, setData] = useState({
     smallScreen: false,
   })
+  const {handlePendingRequestsCounter} = usePendingRequestsCounter(auth ? auth.data : [])
+  const {incomingFollowListener, cancelFollowRequestListener} = useListenersLeave()
 
 
   useEffect(() => {
-    // window.Echo.private(`user.1`).listen('followRequest', (e) => {
-    //   console.log(e);
-    // });
     const checkSmallScreen = () => {
         if (window.innerWidth <= 720) {
             setData({
@@ -36,15 +36,22 @@ export default function({auth, title, body}) {
             }) 
         }
     }
+
     window.addEventListener('resize', checkSmallScreen)
     window.addEventListener('load', checkSmallScreen)
+    
+    dispatch(getTheme())
+
+    handlePendingRequestsCounter()
 
     return() =>{
       dispatch(getTheme())
+      incomingFollowListener(auth ? auth.data : [])
+      cancelFollowRequestListener(auth ? auth.data : [])
       window.removeEventListener('resize', checkSmallScreen)
       window.removeEventListener('load', checkSmallScreen)
     }
-  })
+  }, [auth, getTheme])
   return (
     <>
       <Head title={title} />

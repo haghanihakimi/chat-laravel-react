@@ -11,10 +11,12 @@ import { setActionOutput,
     removeFollowerFromList,
     removeFollowingUserFromList,
     removeFollowerRequest, 
-    removeFollowingRequest
+    removeFollowingRequest,
+    setPendingContacts,
 } from '../reducers/contacts'
 import route from 'ziggy-js'
 import axios from 'axios'
+import { useListeners } from './listeners'
 
 //Get Menu abilities
 export function useMenuAbilities(username) {
@@ -130,6 +132,7 @@ export function useSendRequest(username) {
 
 // Cancel incoming follow request
 export function useCancelRequest(username) {
+    const contacts = useSelector(state => state.contacts)
     const dispatch = useDispatch()
     const { data: cancelRequestData, patch: cancelRequest, processing: cancellingRequest, errors: cancelRequestErrors } = useForm({})
 
@@ -330,4 +333,27 @@ export function useSentRequests(page = 1) {
     }
 
     return { handleSentRequests }
+}
+
+// Get number of pending incoming requests
+export function usePendingRequestsCounter(user) {
+    const contacts = useSelector((state) => state.contacts)
+    const dispatch = useDispatch()
+    const {incomingFollowRequest, cancelFollowRequest} = useListeners()
+
+    async function handlePendingRequestsCounter() {
+        dispatch(setLoading(true))
+        try {
+            const response = await axios.get(route('count.incoming.follower.requests'));
+            dispatch(setPendingContacts(response.data.counter))
+            dispatch(setLoading(false))
+        } catch (error) {
+            dispatch(setLoading(false))
+            console.log(error)
+        }
+    }
+    incomingFollowRequest(contacts.pendingContacts + 1, user)
+    cancelFollowRequest(contacts.pendingContacts - 1, user)
+
+    return { handlePendingRequestsCounter }
 }

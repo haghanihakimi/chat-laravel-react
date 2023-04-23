@@ -2,7 +2,10 @@
 
 use Illuminate\Support\Facades\Broadcast;
 
-Broadcast::channel('home', function ($id) {
-    // return $user->id === (int)$userId;
-    return true;
+Broadcast::channel('followerRequest.{id}', function ($user, $id) {
+    return (int)$user->id === (int)$id ? true : false;
+});
+
+Broadcast::channel('cancelFollowRequest.{id}', function ($user, $id) {
+    return (int)$user->id === (int)$id ? true : false;
 });

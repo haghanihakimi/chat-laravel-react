@@ -18,9 +18,8 @@ class Message extends Model
         'chat_id',
         'messages',
         'seen_at',
-        'read_at',
     ];
-
+    
     public function chat()
     {
         return $this->belongsTo(Chat::class, 'chat_id');

@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Contact;
 use App\Models\Block;
 use App\Events\SendFollowRequest as FollowRequestEvent;
+use App\Events\CancelFollowRequest as CancelFollowRequestEvent;
 
 class ContactsController extends Controller
 {
@@ -24,7 +25,7 @@ class ContactsController extends Controller
                 ['user_id' => $user->id, 'contact_id' => $host->id],
                 ['status' => $host->privacy ? 'pending' : 'accepted']);
                 if($contact) {
-                    // event(new FollowRequestEvent($user, $host));
+                    if($contact->status === "pending"): event(new FollowRequestEvent($host, $user)); endif;
                     return back()->with('message', ['followRequest' => "Follow request has been sent."]);
                 }
                 return back()->with('message', ['followRequest' => "Sending follow request to this user is temporarily unavailable. Please try again later."]);
@@ -91,6 +92,7 @@ class ContactsController extends Controller
             if ($host && $request) {
                 $request->status = 'cancelled';
                 $request->save();
+                event(new CancelFollowRequestEvent( $host ));
                 return back()->with('message', ['cancelRequest' => "Follow request has been cancelled."]);
             }
             return back()->with('message', ['cancelRequest' => "OOPS! Sorry, something went wrong with cancelling the request. Please try again later."]);
@@ -249,6 +251,17 @@ class ContactsController extends Controller
         );
         return response()->json([
             "sentRequests" => $paginator,
+        ]);
+    }
+
+    public function countPendingRequests() {
+        $pendings = Abilities::followers()
+        ->where('pivot.status', 'pending')
+        ->take(100)
+        ->count();
+
+        return response()->json([
+            "counter" => $pendings,
         ]);
     }
 

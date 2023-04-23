@@ -16,6 +16,7 @@ export const contactsSlice = createSlice({
     incomingRequests: [],
     sentRequests: [],
     abilities: [],
+    pendingContacts: 0,
     loading: false,
     loadingAbilities: false,
   },
@@ -78,6 +79,9 @@ export const contactsSlice = createSlice({
     toggleLoadingAbilities: (state, action) => {
       state.loadingAbilities = action.payload
     },
+    setPendingContacts: (state, action) => {
+      state.pendingContacts = action.payload
+    },
     fillFollowers: (state, action) => {
       state.followers = action.payload
     },
@@ -117,6 +121,7 @@ export const {
   setPane, 
   setPaneList, 
   setActionOutput,
+  setPendingContacts,
   fillFollowers, 
   fillFollowings, 
   fillFollowerRequests,

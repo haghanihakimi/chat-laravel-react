@@ -11,22 +11,20 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SendFollowRequest implements ShouldBroadcastNow
+class CancelFollowRequest implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $receiver;
-    public $sender;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($receiver, $sender)
+    public function __construct($receiver)
     {
         $this->receiver = $receiver;
-        $this->sender = $sender;
     }
 
     /**
@@ -36,12 +34,6 @@ class SendFollowRequest implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('followerRequest.'.$this->receiver->id);
+        return new PrivateChannel('cancelFollowRequest.'.$this->receiver->id);
     }
-
-    // public function broadcastWith () {
-    //     return [
-    //         'message' => $this->sender->first_name.' '.$this->sender->surname.' sent you a follow request.',
-    //     ];
-    // }
 }

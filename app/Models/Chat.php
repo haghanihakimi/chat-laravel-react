@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Chat extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -17,7 +19,10 @@ class Chat extends Model
     protected $fillable = [
         'sender_id',
         'recipient_id',
+        'deleter_id',
     ];
+
+    protected $dates = ['deleted_at'];
 
     public function sender()
     {

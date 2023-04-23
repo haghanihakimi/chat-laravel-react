@@ -48,6 +48,7 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/list/followings', 'getFollowings')->name('user.followings');
         Route::get('/list/requests/follower', 'getFollowerRequests')->name('user.follower.requests');
         Route::get('/list/requests/following', 'getFollowingRequests')->name('user.following.requests');
+        Route::get('/count/incoming/following/requests', 'countPendingRequests')->name('count.incoming.follower.requests');
     });
 });
 

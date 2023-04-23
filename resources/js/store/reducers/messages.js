@@ -6,17 +6,25 @@ export const messagesSlice = createSlice({
     pane: false,
     messages: [],
     loadingMessages: false,
+    doingAction: false,
+    deletePopup: false,
   },
   reducers: {
     setPane: (state, action) => {
         state.pane = action.payload
     },
     setMessages: (state, action) => {
-      state.messages.unshift(action.payload)
+      state.messages = action.payload
     },
     toggleLoadingMessages: (state, action) => {
       state.loadingMessages = action.payload
-    }
+    },
+    toggleDoingAction: (state, action) => {
+      state.doingAction = action.payload
+    },
+    toggleDeletePopup: (state, action) => {
+      state.deletePopup = action.payload
+    },
   },
 })
 
@@ -24,7 +32,9 @@ export const messagesSlice = createSlice({
 export const { 
   setPane, 
   setMessages,
-  toggleLoadingMessages 
+  toggleLoadingMessages, 
+  toggleDoingAction, 
+  toggleDeletePopup,
 } = messagesSlice.actions
 
 export default messagesSlice.reducer
