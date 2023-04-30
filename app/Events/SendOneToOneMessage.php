@@ -11,7 +11,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class DeleteMessageTwoWay implements ShouldBroadcastNow
+class SendOneToOneMessage implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -36,7 +36,7 @@ class DeleteMessageTwoWay implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('deleteTwoWayMessage.'.$this->receiver->id);
+        return new PrivateChannel('sendOneToOneMessage.'.$this->receiver->id);
     }
 
     public function broadcastWith () {

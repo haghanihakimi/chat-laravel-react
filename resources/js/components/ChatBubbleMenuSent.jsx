@@ -10,13 +10,14 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useEffect, useState } from 'react';
 import DeleteMessage from "./alerts/DeleteMessage";
-import { toggleDeletePopup } from "../store/reducers/messages";
+import { toggleDeletePopup, setCurrentchat } from "../store/reducers/messages";
 import { useDispatch } from "react-redux";
 import { useListeners } from "../store/actions/listeners";
 import { useListenersLeave } from "../store/actions/listeners";
+import { usePinOneToOneMessages } from "../store/actions/messages";
 
 
-export default function({chat, user, host}) {
+export default function({chat, user, host, message}) {
     const [anchorEl, setAnchorEl] = useState(null)
     const [data, setData] = useState({
         popup: false,
@@ -25,6 +26,7 @@ export default function({chat, user, host}) {
     const dispatch = useDispatch()
     const {deleteTwoWayMessage} = useListeners()
     const {deleteTwoWayMessageLeave} = useListenersLeave()
+    const {pinOneToOneMessages} = usePinOneToOneMessages()
 
 
     const handleClick = (event) => {
@@ -35,9 +37,7 @@ export default function({chat, user, host}) {
     }
 
     useEffect(() => {
-        
-        deleteTwoWayMessage(chat, user)
-        console.log(chat)
+        deleteTwoWayMessage(user)
 
         return() => {
             deleteTwoWayMessageLeave(user)
@@ -66,26 +66,26 @@ export default function({chat, user, host}) {
                 'aria-labelledby': 'basic-button',
                 }}
                 sx={{"& .MuiMenu-paper": {minWidth: '100px', padding: '0', color: "#f3f3f3",backgroundColor: "rgba(97, 97, 97, 1.0   )",boxShadow:"rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px"}}}>
-                    <MenuItem onClick={() => { dispatch(toggleDeletePopup(true));handleClose() } } className="flex flex-row gap-2 items-center justify-start">
+                    <MenuItem onClick={() => { dispatch(setCurrentchat(chat));dispatch(toggleDeletePopup(true));handleClose() } } className="flex flex-row gap-2 items-center justify-start">
                         <Delete className="w-5 h-5 text-milky-white" />
                         <span className="text-md">
                             Remove
                         </span>
                     </MenuItem>
-                    <MenuItem onClick={handleClose} className="flex flex-row gap-2 items-center justify-start">
+                    {/* <MenuItem onClick={handleClose} className="flex flex-row gap-2 items-center justify-start">
                         <Forward className="w-5 h-5 text-milky-white" />
                         <span className="text-md">
                             Forward
                         </span>
-                    </MenuItem>
-                    <MenuItem onClick={handleClose} className="flex flex-row gap-2 items-center justify-start">
+                    </MenuItem> */}
+                    <MenuItem onClick={() => { pinOneToOneMessages(chat, message, host);handleClose() }} className="flex flex-row gap-2 items-center justify-start">
                         <Pin className="w-5 h-5 text-milky-white" />
                         <span className="text-md">
                             Pin
                         </span>
                     </MenuItem>
                 </Menu>
-                <DeleteMessage chat={chat} user={user} host={host} />
+                <DeleteMessage user={user} host={host} />
             </div>
         </>
     )

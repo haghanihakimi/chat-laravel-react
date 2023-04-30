@@ -1,4 +1,3 @@
-
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -15,13 +14,13 @@ import { useState } from 'react';
 const label = { inputProps: { 'aria-label': 'Unsend for everyone' } };
 
 
-export default function({chat, user, host}) {
+export default function({user, host}) {
     const messages = useSelector(state => state.messages)
     const dispatch = useDispatch()
     const [data, setData] = useState({
         isTwoway: true,
     })
-    const {deleteSingleMessageOneWay, deleteSingleMessageTwoWay} = useDeleteMessages(chat, user, host)
+    const {deleteSingleMessageOneWay, deleteSingleMessageTwoWay} = useDeleteMessages(host)
 
     const handleClose = () => {
         dispatch(toggleDeletePopup(false))

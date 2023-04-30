@@ -11,22 +11,22 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class DeleteMessageTwoWay implements ShouldBroadcastNow
+class SeenOneToOneMessage implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $receiver;
-    public $chat;
+    public $seen;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($receiver, $chat)
+    public function __construct($receiver, $seen)
     {
         $this->receiver = $receiver;
-        $this->chat = $chat;
+        $this->seen = $seen;
     }
 
     /**
@@ -36,12 +36,12 @@ class DeleteMessageTwoWay implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('deleteTwoWayMessage.'.$this->receiver->id);
+        return new PrivateChannel('seenOneToOneMessage.'.$this->receiver->id);
     }
 
     public function broadcastWith () {
         return [
-            'chat' => $this->chat,
+            'seen' => $this->seen,
         ];
     }
 }

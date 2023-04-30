@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('sender_id');
             $table->unsignedBigInteger('recipient_id');
             $table->softDeletes();
-            $table->unsignedBigInteger('deleter_id')->nullable();
+            $table->unsignedBigInteger('deleter_id')->nullable()->default(null);
             $table->timestamps();
 
             $table->foreign('sender_id')->references('id')->on('users')->onDelete('cascade');

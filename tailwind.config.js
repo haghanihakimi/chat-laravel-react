@@ -65,6 +65,13 @@ module.exports = {
           '75%': { opacity: '1.0', transform: 'scale(1.05, 1.05)' },
           '100%': { opacity: '1.0', transform: 'scale(1.00, 1.00)' },
         },
+        bounceBubbles: {
+          '0%': { opacity: '0', transform: 'scale(0.5, 0.5)' },
+          '25%': { opacity: '0.5', transform: 'scale(1.00, 1.00)' },
+          '50%': { opacity: '0.5', transform: 'scale(1.075, 1.075)' },
+          '75%': { opacity: '1.0', transform: 'scale(0.9, 0.9)' },
+          '100%': { opacity: '1.0', transform: 'scale(1.00, 1.00)' },
+        },
         alertFadeIn: {
           '0%': { opacity: '0', transform: 'scale(0.95, 0.95)', transform: 'translateX(0)' },
           '25%': { opacity: '0.25', transform: 'scale(1.075, 1.075)', transform: 'translateX(-1%)' },
@@ -77,6 +84,7 @@ module.exports = {
         'fadeIn': 'fadeIn 120ms ease-in 0ms 1 alternate',
         'fadeInBounce': 'fadeInBounce 200ms ease-in 0ms 1 alternate',
         'alertFadeIn': 'alertFadeIn 200ms ease-in 0ms 1 alternate',
+        'bounceBubbles': 'bounceBubbles 350ms linear 0ms 1 alternate'
       },
       boxShadow: {
         'xsm-spread': 'rgba(0, 0, 0, 0.1) 0px 1px 2px 0px',

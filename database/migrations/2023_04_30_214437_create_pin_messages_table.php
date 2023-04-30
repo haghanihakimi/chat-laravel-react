@@ -13,12 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('messages', function (Blueprint $table) {
+        Schema::create('pin_messages', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('chat_id')->constrained("chats")->onDelete('cascade');
-            $table->longText('messages');
-            $table->timestamp('seen_at')->nullable()->default(null);
-            $table->boolean('pinned')->nullable()->default(false);
             $table->timestamps();
         });
     }
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('messages');
+        Schema::dropIfExists('pin_messages');
     }
 };

@@ -74,7 +74,17 @@ class User extends Authenticatable
     }
 
     public function chats() {
-        return $this->hasMany(Chat::class, 'sender_id')->orWhere('recipient_id', $this->id);
+        return $this->hasMany(Chat::class, 'recipient_id')
+        ->orWhere(function($query) {
+            $query->where('sender_id', '<>', $this->id)
+            ->where('recipient_id', $this->id)
+            ->whereNull('deleter_id');
+        })
+        ->orWhere(function($query) {
+            $query->where('sender_id', $this->id)
+            ->where('recipient_id', '<>', $this->id)
+            ->whereNull('deleter_id');
+        });
     }
 
     public function scopeSearch ($query, $input) {

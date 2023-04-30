@@ -1,13 +1,16 @@
 import { 
     setPendingContacts, 
 } from "../reducers/contacts";
-import { reduceMessages } from "../reducers/messages";
-import { useDispatch } from "react-redux";
+import { reduceMessages, fetchNewMessage, seenMessages } from "../reducers/messages";
+import { useDispatch, useSelector } from "react-redux";
+import { useMarkAsSeen } from "./messages";
 
 
 //Listen to incoming following request - Enter
 export function useListeners() {
+    const messages = useSelector(state => state.messages)
     const dispatch = useDispatch()
+    const {markOneToOneMessageAsSeen} = useMarkAsSeen()
 
     function incomingFollowRequest(data, user){
         window.Echo.private(`followerRequest.${user.id}`).listen('SendFollowRequest', (e) => {
@@ -21,10 +24,22 @@ export function useListeners() {
         });
     }
 
-    function deleteTwoWayMessage(chat, user) {
-        window.Echo.private(`DeleteTwoWayMessage.${user}`).listen('DeleteMessageTwoWay', (e) => {
-            dispatch(reduceMessages(chat))
-            console.log(chat)
+    function deleteTwoWayMessage(user) {
+        window.Echo.private(`deleteTwoWayMessage.${user}`).listen('DeleteMessageTwoWay', (e) => {
+            dispatch(reduceMessages(e.chat))
+        });
+    }
+
+    function sendOneToOneMessageListen(user, username) {
+        window.Echo.private(`sendOneToOneMessage.${user.id}`).listen('SendOneToOneMessage', (e) => {
+            dispatch(fetchNewMessage(e.chat))
+            markOneToOneMessageAsSeen(username)
+        });
+    }
+
+    function seenOneToOneMessageListen(user, username) {
+        window.Echo.private(`seenOneToOneMessage.${user.id}`).listen('SeenOneToOneMessage', (e) => {
+            // dispatch(seenMessages())
         });
     }
 
@@ -32,6 +47,8 @@ export function useListeners() {
         incomingFollowRequest,
         cancelFollowRequest,
         deleteTwoWayMessage,
+        sendOneToOneMessageListen,
+        seenOneToOneMessageListen,
     }
 }
 
@@ -46,12 +63,22 @@ export function useListenersLeave() {
     }
     
     function deleteTwoWayMessageLeave(user) {
-        window.Echo.leave(`DeleteTwoWayMessage.${user}`);
+        window.Echo.leave(`deleteTwoWayMessage.${user}`);
+    }
+    
+    function sendOneToOneMessageLeave(user) {
+        window.Echo.leave(`sendOneToOneMessage.${user}`);
+    }
+    
+    function seenOneToOneMessageLeave(user) {
+        window.Echo.leave(`seenOneToOneMessage.${user}`);
     }
 
     return { 
         incomingFollowListener, 
         cancelFollowRequestListener, 
-        deleteTwoWayMessageLeave 
+        deleteTwoWayMessageLeave,
+        sendOneToOneMessageLeave, 
+        seenOneToOneMessageLeave,
     }
 }

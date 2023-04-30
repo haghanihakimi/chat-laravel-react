@@ -7,19 +7,25 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ProfileRequests as Abilities;
+use Illuminate\Contracts\Auth\Authenticatable;
 use App\Http\Resources\HostResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\MediaFormsResource;
 use App\Events\DeleteMessageTwoWay;
+use App\Events\SendOneToOneMessage;
+use App\Events\SeenOneToOneMessage;
 use App\Models\User;
 use App\Models\Chat;
+use App\Models\Message;
 use Inertia\Inertia;
 
 class MessagesController extends Controller
 {
+
     public function index($username) {
         if($username !== Auth::guard('web')->user()->username && !Abilities::isBlocked($username) && Abilities::canBlock($username)) {
             $host = new HostResource(User::where('username', $username)->first());
+            $this->seenOneToOneMessage($username);
 
             return Inertia::render('Conversations/Conversation', [
                 'host' => $host,
@@ -36,70 +42,180 @@ class MessagesController extends Controller
         return Inertia::render('Unavailable');
     }
 
+    /**
+     * Gets list of chats between users - One to One
+     * @return JsonResponse
+     */
     public function getConversations($username) {
         // 
     }
 
-    public function getMessages(Request $request, $username) {
-        if($username !== Auth::guard('web')->user()->username && !Abilities::isBlocked($username) && Abilities::canBlock($username)) {
-            $messages = $this->getSentMessages($username)->each(function($chat) {
-                $chat->status = $chat->sender_id === Auth::guard('web')->user()->id ? "sent" : 'received';
-            })
-            ->merge($this->getReceivedMessages($username))
+    /**
+     * Gets every single messages between two users - One to One messaging
+     * "username" is required - it is the username of the user who the current user is viewing them on the messages page.
+     * @return JsonResponse
+     */
+    public function getMessages($username) {
+        $host = User::where('username', $username)->first();
+        $user = Auth::user();
+
+        if($username !== $user->username && !Abilities::isBlocked($username) && Abilities::canBlock($username)) {
+            $messages = $host->chats()
+            ->with('messages')
+            ->with('media_forms')
+            ->where('recipient_id', $user->id)
+            ->get()
             ->each(function($chat) {
-                $chat->status = $chat->sender_id === Auth::guard('web')->user()->id ? "sent" : 'received';
-            })
-            ->sortBy(function ($chat) {
-                return count($chat->messages) > 0 ? $chat->messages->first()->created_at : [];
+                $chat->status = $chat->sender_id === Auth::user()->id ? "sent" : "received";
             });
             
-            return response()->json($messages);
+            return response()->json([
+                "messages" => $messages,
+            ]);
         }
+        
         return response()->json(["messages" => "Unauthorized access."]);
     }
 
-    public function removeSingleMessageOneWay($chat,$user,$host) {
-        $delete = Chat::where('id', $chat)
-        ->where('sender_id', Auth::user()->id)
-        ->where('recipient_id', $host)
-        ->update(['deleter_id' => Auth::user()->id]);
+    /**
+     * Send message to receiver.
+     * "username" required - "username" of receiver's account.
+     * @return Void|JsonResponse
+     */
+    public function sendMessageOneToOne($username, Request $request) {
+        $user = Auth::user();
+        $host = User::where('username', $username)->first();
 
-        return response()->json($chat);
+        if($username !== $user->username && !Abilities::isBlocked($username) && Abilities::canBlock($username)) {
+            $chat = Chat::create([
+                'sender_id' => $user->id,
+                'recipient_id' => $host->id,
+            ]);
+
+            if ($chat) {
+                $message = Message::create([
+                    'chat_id' => $chat->id,
+                    'messages' => $request->message,
+                ]);
+                if($message) {
+                    $message = $chat->with('messages')
+                    ->with('media_forms')
+                    ->latest()
+                    ->first();
+
+                    event(new SendOneToOneMessage($host, $message->setAttribute('status', "received")));
+
+                    return response()->json([
+                        "messages" => $message->setAttribute('status', "sent"),
+                    ]);
+                }
+            }
+
+            return response()->json([
+                "messages" => "Failed to send message. Please try again later."
+            ]);
+        }
+        
+        return response()->json(["messages" => "Unauthorized access."]);
     }
 
-    public function removeSingleMessageTwoWay($chat,$user,$host) {
-        $delete = Chat::where('id', $chat)
-        ->where('sender_id', Auth::user()->id)
-        ->where('recipient_id', $host)
-        ->update(['deleter_id' => Auth::user()->id, "deleted_at" => now()]);
+    /**
+     * Seen all received/unseen messages
+     * "username" required - "username" of receiver's account.
+     * @return Void|JsonResponse
+     */
+    public function seenOneToOneMessage($username) {
+        $user = Auth::user();
+        $host = User::where('username', $username)->first();
 
-        event(new DeleteMessageTwoWay(User::find($host)));
+        $seenMessages = Chat::where('recipient_id', $user->id)
+        ->where('sender_id', $host->id)
+        ->has('messages')
+        ->with(['messages' => function($query) {
+            $query->whereNull('seen_at');
+        }])
+        ->each(function($chat) {
+            $chat->messages->each(function($message) {
+                $message->seen_at = now();
+                $message->save();
+            });
+        });
+        
 
-        return response()->json($chat);
+        if ($seenMessages) {
+            event(new SeenOneToOneMessage($host, $seenMessages));
+            return response()->json([
+                "messages" => $seenMessages
+            ]);
+        }
     }
 
-    private function getSentMessages($username) {
-        $user = Auth::guard('web')->user();
-        if($host = User::where('username', $username)->first()){
-            return $host->chats()->with('messages')->with('media_forms')
-            ->whereNull('deleter_id')
+    /**
+     * Removes the single message which is chosen by the current user only for the user who's removing it.
+     * "chat" required - it is ID of the selected message/chat
+     * "host" required - It is ID of the user who is receives messages from user who is deleting the message.
+     * @return Void|JsonResponse
+     */
+    public function removeSingleMessageOneWay($chat,$host) {
+        $user = Auth::user();
+
+        if($username !== $user->username && !Abilities::isBlocked($username) && Abilities::canBlock($username)) {
+            $delete = Chat::where('id', $chat)
             ->where('sender_id', $user->id)
+            ->where('recipient_id', $host)
+            ->update(['deleter_id' => $user->id]);
+
+            return response()->json([
+                "messages" => "Selected message removed."
+            ]);
+        }
+        
+        return response()->json(["messages" => "Unauthorized access."]);
+    }
+
+    /**
+     * Removes the single message which is chosen by the current user for both sender and receiver users.
+     * "chat" required - it is ID of the selected message/chat
+     * "host" required - It is ID of the user who is receives messages from user who is deleting the message.
+     * @return Void|JsonResponse
+     */
+    public function removeSingleMessageTwoWay($chat,$host) {
+        $user = Auth::user();
+        $host = User::find($host);
+
+        if(!Abilities::isBlocked($host->username) && Abilities::canBlock($host->username)) {
+            $delete = Chat::where('id', $chat)
             ->where('sender_id', $user->id)
             ->where('recipient_id', $host->id)
-            ->get(); 
+            ->update(['deleter_id' => $user->id, "deleted_at" => now()]);
+    
+            event(new DeleteMessageTwoWay($host, $chat));
+
+            return response()->json([
+                "messages" => "Selected message permanently deleted from two sides."
+            ]);
         }
-        return [];
+        
+        return response()->json(["messages" => "Unauthorized access."]);
     }
 
-    private function getReceivedMessages($username) {
-        $user = Auth::guard()->user();
-        if($host = User::where('username', $username)->first()){
-            return $host->chats()->with('messages')->with('media_forms')
-            ->whereNull('deleter_id')
-            ->where('sender_id', $host->id)
-            ->where('recipient_id', $user->id)
-            ->get(); 
+    /**
+     * pin selected message
+     * "chat" required - it is ID of the selected message/chat
+     * "host" required - It is ID of the user who is receives messages from user who is deleting the message.
+     * @return Void|JsonResponse
+     */
+    public function pinOneToOneMessage($chat, $message, $host) {
+        $host = User::find($host);
+        $user = Auth::user();
+
+        $chats = Chat::message($chat, $message, $host, $user)->first();
+
+        if(!is_null($chats)) {
+            if($chats->pin()) {
+                return response()->json(["messages" => "Message pinned"]);
+            }
+            return response()->json(["messages" => "Unable to pin this message. Please try again later."]);
         }
-        return [];
     }
 }

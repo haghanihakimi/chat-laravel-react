@@ -1,6 +1,14 @@
 import { Link, useForm } from '@inertiajs/react'
 import { useDispatch, useSelector } from 'react-redux'
-import { setMessages, toggleLoadingMessages, toggleDoingAction, reduceMessages } from '../reducers/messages'
+import { 
+    setMessages, 
+    toggleLoadingMessages, 
+    toggleSendingMessage, 
+    reduceMessages, 
+    fetchNewMessage,
+    setPinnedCounter,
+    togglePinning, 
+} from '../reducers/messages'
 import route from 'ziggy-js'
 import axios from 'axios'
 
@@ -13,7 +21,7 @@ export function useGetMessages(username) {
         dispatch(toggleLoadingMessages(true))
         try {
             const response = await axios.get(route('get.messages', {username: username}), {params: {keywords: input}})
-            dispatch(setMessages(response.data))
+            dispatch(setMessages(response.data.messages))
             dispatch(toggleLoadingMessages(false))
         } catch(error) {
             dispatch(toggleLoadingMessages(false))
@@ -25,44 +33,39 @@ export function useGetMessages(username) {
 }
 
 //Delete message function
-export function useDeleteMessages(chat, user, host) {
+export function useDeleteMessages(host) {
     const messages = useSelector(state => state.messages)
     const dispatch = useDispatch()
 
     // Delete single message - one way
     async function deleteSingleMessageOneWay() {
-        dispatch(toggleDoingAction(true))
+        dispatch(toggleSendingMessage(true))
         try {
             const response = await axios.delete(route('delete.single.message.oneway', {
-                chat: chat,
-                user: user,
+                chat: messages.currentChat,
                 host: host,
             }))
-            // dispatch(fillSearchResults(response.data.search))
-            // dispatch(toggleDoingAction(false))
-            dispatch(reduceMessages(chat))
-            console.log(response)
+            dispatch(reduceMessages(messages.currentChat))
+            dispatch(toggleSendingMessage(false))
         } catch(error) {
-            dispatch(toggleDoingAction(false))
+            dispatch(toggleSendingMessage(false))
             console.log(error)
         } 
     }
 
     // Delete single message - two way
     async function deleteSingleMessageTwoWay() {
-        dispatch(toggleDoingAction(true))
+        dispatch(toggleSendingMessage(true))
+        
         try {
             const response = await axios.delete(route('delete.single.message.twoway', {
-                chat: chat,
-                user: user,
+                chat: messages.currentChat,
                 host: host,
             }))
-            // dispatch(fillSearchResults(response.data.search))
-            // dispatch(toggleDoingAction(false))
-            dispatch(reduceMessages(chat))
-            console.log(response)
+            dispatch(reduceMessages(messages.currentChat))
+            dispatch(toggleSendingMessage(false))
         } catch(error) {
-            dispatch(toggleDoingAction(false))
+            dispatch(toggleSendingMessage(false))
             console.log(error)
         } 
     }
@@ -70,5 +73,104 @@ export function useDeleteMessages(chat, user, host) {
     return {
         deleteSingleMessageOneWay,
         deleteSingleMessageTwoWay,
+    }
+}
+
+
+/**
+ * handle all send message events including one to one, one to many or vice versa
+ * @param {*} host 
+ * @returns
+ */
+export function useSendMessages(host) {
+    
+    const messages = useSelector(state => state.messages)
+    const dispatch = useDispatch()
+
+    /**
+     * Send one to one messages
+     * "message" is required. It is typed messages which should be send.
+     */
+    async function sendOneToOneMessage(message) {
+        if (!messages.sendingMessage){
+            dispatch(toggleSendingMessage(true))
+            try {
+                const response = await axios.post(route('send.new.one.to.one.message', {username: host}), {
+                    message: message
+                })
+                dispatch(fetchNewMessage(response.data.messages))
+                dispatch(toggleSendingMessage(false))
+            } catch(error) {
+                dispatch(toggleSendingMessage(false))
+                console.log(error)
+            } 
+        }
+    }
+
+    return {
+        sendOneToOneMessage,
+    }
+}
+
+/**
+ * Mark one to one messages as "seen"
+ * @param {*} host 
+ * @returns
+ */
+export function useMarkAsSeen() {
+    
+    const messages = useSelector(state => state.messages)
+    const dispatch = useDispatch()
+
+    /**
+     * Send one to one messages
+     * "message" is required. It is typed messages which should be send.
+     */
+    async function markOneToOneMessageAsSeen(host) {
+        dispatch(toggleLoadingMessages(true))
+        try {
+            const response = await axios.post(route('seen.one.to.one.message', {username: host}))
+            // console.log(response.data)
+            dispatch(toggleLoadingMessages(false))
+        } catch(error) {
+            dispatch(toggleLoadingMessages(false))
+            console.log(error)
+        } 
+    }
+
+    return {
+        markOneToOneMessageAsSeen,
+    }
+}
+
+/**
+ * Pin one to one messages
+ * @param {*} host 
+ * @returns
+ */
+export function usePinOneToOneMessages() {
+    
+    const messages = useSelector(state => state.messages)
+    const dispatch = useDispatch()
+
+    async function pinOneToOneMessages(chat, message, host) {
+        dispatch(togglePinning(true))
+        try {
+            const response = await axios.patch(route('pin.message', {
+                chat: chat,
+                message: message,
+                host: host,
+            }))
+            // console.log(response.data)
+            dispatch(setPinnedCounter(messages.pinnedCounter + 1))
+            dispatch(togglePinning(false))
+        } catch(error) {
+            dispatch(togglePinning(false))
+            console.log(error)
+        } 
+    }
+
+    return {
+        pinOneToOneMessages,
     }
 }

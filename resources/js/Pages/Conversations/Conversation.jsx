@@ -6,15 +6,20 @@ import {
     HiUser as User,
     HiOutlineCheck as Tick,
 } from "react-icons/hi2";
+import { 
+    AiFillPushpin as Pin
+ } from "react-icons/ai";
 import { useEffect, useRef, useState } from 'react';
 import Loading from "../../Partials/Loading"
 import ChatMenu from '../../components/ChatMenu';
 import { useGetMessages } from '../../store/actions/messages';
 import { useSelector } from 'react-redux';
 import Tooltip from '@mui/material/Tooltip';
+import Badge from '@mui/material/Badge';    
 import moment from 'moment';
 import ChatBubbleMenuSent from '../../components/ChatBubbleMenuSent';
 import ChatBubbleMenuReceived from '../../components/ChatBubbleMenuReceived';
+import { useSendMessages } from '../../store/actions/messages';
 import { useListeners } from '../../store/actions/listeners';
 import { useListenersLeave } from '../../store/actions/listeners';
 
@@ -24,8 +29,12 @@ export default function({auth, host, media_forms, abilities}) {
         disablePlaceholder: false,
     })
     const chatRef = useRef(null)
+    const chatView = useRef(null)
     const conversations = useSelector(state => state.messages)
     const {handleGetMessages} = useGetMessages(host.data.username)
+    const {sendOneToOneMessage} = useSendMessages(host.data.username)
+    const {sendOneToOneMessageListen, seenOneToOneMessageListen} = useListeners()
+    const {sendOneToOneMessageLeave, seenOneToOneMessageLeave} = useListenersLeave()
 
     const adjust = () => {
         const message = document.getElementById('message')
@@ -45,7 +54,7 @@ export default function({auth, host, media_forms, abilities}) {
             })
             message.innerHTML = "<p class='cursor-text text-black before:text-black before:text-opacity-50 dark:text-milky-white dark:before:text-milky-white dark:before:text-opacity-50' placeholder='Type Message...'></p>"
         }
-        if (message.innerHTML === '<p class="cursor-text text-black before:text-black before:text-opacity-50 dark:text-milky-white dark:before:text-milky-white dark:before:text-opacity-50" placeholder="Type Message..."><br></p>') {
+        if (message.innerHTML === '<p class="cursor-text text-black before:text-black before:text-opacity-50 dark:text-milky-white dark:before:text-milky-white dark:before:text-opacity-50" placeholder="Type Message..."><br></p>' && chatRef.current.textContent.length <= 0) {
             message.innerHTML = "<p class='cursor-text text-black before:text-black before:text-opacity-50 dark:text-milky-white dark:before:text-milky-white dark:before:text-opacity-50' placeholder='Type Message...'></p>"
             setData({
                 enableSend: false
@@ -57,19 +66,78 @@ export default function({auth, host, media_forms, abilities}) {
     const lockEnter = event => {
         if (!event.shiftKey && event.keyCode === 13) {
             event.preventDefault()
+            sendMessage()
         }
     }
 
+    const sendMessage = () => {
+        if (!conversations.sendingMessage) {
+            const messageElement = chatRef.current.querySelector('p');
+            const message = messageElement.textContent;
+            sendOneToOneMessage(message)
+            chatRef.current.innerHTML = `
+            <p class='cursor-text text-black before:text-black before:text-opacity-50 dark:text-milky-white dark:before:text-milky-white dark:before:text-opacity-50' placeholder='Type Message...'></p>
+            `;
+            if (chatRef.current) {
+                const range = document.createRange();
+                range.selectNodeContents(chatRef.current);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        }
+    }
+
+    moment.relativeTimeThreshold('d', 31);
+    moment.updateLocale('en', {
+        relativeTime: {
+            future: 'in %s',
+            past: '%s',
+            s: 'seconds ago',
+            ss: '%d sec',
+            m: '1 min',
+            mm: '%d mins',
+            h: '1hr',
+            hh: '%dhrs',
+            d:function (number, withoutSuffix, key, isFuture) {
+                // Customize the output for days
+                var suffix = withoutSuffix ? '' : ' ';
+                var unit = number === 1 ? 'day' : 'days';
+                return number + suffix + unit;
+            },
+            M: '1mo',
+            MM: '%dmos',
+            y: '1yr',
+            yy: '%dyrs'
+        }
+    });
+
+
+
     useEffect(() => {
         if (chatRef.current) {
-          const range = document.createRange();
-          range.selectNodeContents(chatRef.current);
-          const selection = window.getSelection();
-          selection.removeAllRanges();
-          selection.addRange(range);
+            const range = document.createRange();
+            range.selectNodeContents(chatRef.current);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
         }
 
-        handleGetMessages(1)
+        handleGetMessages(1).then(() => {
+            chatView.current.scrollTop = chatView.current.scrollHeight
+        })
+
+        chatView.current.addEventListener('DOMNodeInserted', event => {
+            const { currentTarget: target } = event;
+            target.scroll({ top: target.scrollHeight, behavior: 'smooth' });
+        });
+        sendOneToOneMessageListen(auth.data, host.data.username)
+        // seenOneToOneMessageListen(auth.data, host.data.username)
+
+        return() => {
+            sendOneToOneMessageLeave(auth.data.id)
+            // seenOneToOneMessageLeave(auth.data.id)
+        }
     }, []);
 
     return(
@@ -96,6 +164,14 @@ export default function({auth, host, media_forms, abilities}) {
                                     <div className='w-fit h-auto select-none relative flex justify-center items-center'>
                                         <ChatMenu request={host.data} />
                                     </div>
+                                    <div className='w-7 h-7 rounded-full my-auto ml-2'>
+                                        <button className='w-full h-full rounded-full flex justify-center items-center'>
+                                            <Badge badgeContent={0} 
+                                            sx={{"& .MuiBadge-badge": {color: "#f3f3f3",backgroundColor: "#ff003b",width: '20px', height: '20px'}}}>
+                                                <Pin className='w-6 h-6 text-black dark:text-milky-white' />
+                                            </Badge>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -104,7 +180,7 @@ export default function({auth, host, media_forms, abilities}) {
                     <div className='w-full h-full pt-14 relative z-20'>
                         <div className='w-full h-full relative flex flex-col justify-between items-center'>
                             {/* message texts view */}
-                            <div className='w-full h-full px-2 py-4 overflow-auto flex flex-col gap-6'>
+                            <div ref={chatView} style={{overflowAnchor: 'none'}} className='w-full h-screen px-2 py-4 overflow-auto overflow-x-hidden flex flex-col gap-6'>
                                 
                                 {/* Event alert container */}
                                 <div className='w-full flex flex-col gap-0 justify-center items-center'>
@@ -136,7 +212,7 @@ export default function({auth, host, media_forms, abilities}) {
                                 {
                                     !conversations.loadingMessages
                                     ?
-                                    <div className='w-full h-full px-2 py-4 flex flex-col gap-6'>
+                                    <div className='w-full h-full px-2 py-4 flex flex-col gap-3'>
                                         {
                                             conversations.messages && conversations.messages.length > 0
                                             ? 
@@ -144,8 +220,9 @@ export default function({auth, host, media_forms, abilities}) {
                                                 return data.messages.map((message, index) => {
                                                     return data.status == "sent"
                                                     ? 
-                                                    <div key={index} className="select-text flex items-end justify-start flex-row-reverse gap-2 group">
-                                                        <div className="max-w-[55%] flex flex-col items-end bg-blue bg-opacity-90 p-2 shadow-lg rounded-tr-lg rounded-tl-lg rounded-bl-lg">
+                                                    // Sent message bubbles
+                                                    <div key={index} id={`message-se-${message.id}`} className="select-text flex items-end justify-start flex-row-reverse gap-2 group">
+                                                        <div className="max-w-[55%] animate-bounceBubbles flex flex-col items-end bg-blue bg-opacity-90 p-2 shadow-lg rounded-tr-lg rounded-tl-lg rounded-bl-lg">
                                                             {
                                                                 data.media_forms && data.media_forms.length > 0
                                                                 ?
@@ -191,12 +268,13 @@ export default function({auth, host, media_forms, abilities}) {
                                                                 </Tooltip>
                                                             </div>
                                                         </div>
-                                                        <ChatBubbleMenuSent chat={data.id} user={data.sender_id} host={data.recipient_id} />
+                                                        <ChatBubbleMenuSent chat={data.id} user={data.sender_id} host={data.recipient_id} message={message.id}/>
                                                     </div>
                                                     : 
-                                                    <div key={index} className="select-text flex items-end justify-end flex-row-reverse gap-2 group">
+                                                    // received message bubbles
+                                                    <div key={index} id={`message-re-${message.id}`} className="select-text flex items-end justify-end flex-row-reverse gap-2 group">
                                                         <ChatBubbleMenuReceived />
-                                                        <div className="max-w-[50%] flex flex-col items-start bg-white p-2 shadow-lg border border-black border-opacity-5 rounded-tr-lg rounded-tl-lg rounded-br-lg dark:border-milky-white dark:border-opacity-10 dark:bg-black dark:text-milky-white">
+                                                        <div className="max-w-[50%] animate-bounceBubbles flex flex-col items-start bg-white p-2 shadow-lg border border-black border-opacity-5 rounded-tr-lg rounded-tl-lg rounded-br-lg dark:border-milky-white dark:border-opacity-10 dark:bg-black dark:text-milky-white">
                                                             {
                                                                 data.media_forms && data.media_forms.length > 0
                                                                 ?
@@ -217,7 +295,7 @@ export default function({auth, host, media_forms, abilities}) {
                                                             <div className='w-full flex flex-row gap-[2px] items-center justify-start'>
                                                                 <Tooltip
                                                                 sx={{"& .MuiTooltip-tooltip": {color: "#f3f3f3",backgroundColor: "#ff003b"}}}
-                                                                title={`sent ${moment(message.created_at).format("MMM D, YYYY - h:mm A")}`}>
+                                                                title={`received ${moment(message.created_at).format("MMM D, YYYY - h:mm A")}`}>
                                                                     <span className="text-xs text-black text-opacity-70 tracking-wide dark:text-milky-white dark:text-opacity-70">
                                                                         {
                                                                             moment().diff(message.created_at, 'hours') < 24
@@ -247,7 +325,7 @@ export default function({auth, host, media_forms, abilities}) {
                             {/* Chat Input container */}
                             <div className='chatInputContainer w-full h-fit p-2 relative p-0 m-0 flex flex-row gap-2 justify-between items-end'>
                                 <div 
-                                contentEditable="true" 
+                                contentEditable={!conversations.sendingMessage} 
                                 suppressContentEditableWarning={true}
                                 role="textbox" 
                                 spellCheck="true" 
@@ -264,8 +342,18 @@ export default function({auth, host, media_forms, abilities}) {
                                 {
                                     data.enableSend ? 
                                     <div className='w-12 h-12 rounded-full bg-white animate-fadeInBounce dark:bg-dark-blue'>
-                                        <button type='button' className='w-full h-full rounded-full flex justify-center items-center'>
-                                            <Send className='w-6 h-6 text-blue' />
+                                        <button 
+                                        onClick={sendMessage}
+                                        type='button' 
+                                        disabled={conversations.sendingMessage}
+                                        className='w-full h-full rounded-full flex justify-center items-center'>
+                                            {
+                                                conversations.sendingMessage
+                                                ? 
+                                                <Loading color={'text-black text-opacity-5 fill-blue'} height={6} width={6} />
+                                                : 
+                                                <Send className='w-6 h-6 text-blue' />
+                                            }
                                         </button>
                                     </div>
                                     : ''

@@ -18,10 +18,29 @@ class Message extends Model
         'chat_id',
         'messages',
         'seen_at',
+        'pinned',
     ];
     
     public function chat()
     {
         return $this->belongsTo(Chat::class, 'chat_id');
+    }
+
+    public function pin()
+    {
+        $this->pinned = true;
+        if($this->save()) {
+            return true;
+        }
+        return false;
+    }
+
+    public function unpin()
+    {
+        $this->pinned = false;
+        if($this->save()) {
+            return true;
+        }
+        return false;
     }
 }
