@@ -161,7 +161,7 @@ export function usePinOneToOneMessages() {
                 message: message,
                 host: host,
             }))
-            // console.log(response.data)
+            console.log(response.data)
             dispatch(setPinnedCounter(messages.pinnedCounter + 1))
             dispatch(togglePinning(false))
         } catch(error) {

@@ -8,12 +8,15 @@ import {
  } from "react-icons/ai";
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { usePinOneToOneMessages } from "../store/actions/messages";
 import { useState } from 'react';
 
 
-export default function({message = null}) {
+export default function({ chat, user, host, message}) {
     const [anchorEl, setAnchorEl] = useState(null)
     const open = Boolean(anchorEl)
+    const {pinOneToOneMessages} = usePinOneToOneMessages()
+
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget)
     };
@@ -43,7 +46,7 @@ export default function({message = null}) {
                 'aria-labelledby': 'basic-button',
                 }}
                 sx={{"& .MuiMenu-paper": {minWidth: '100px', padding: '0', color: "#f3f3f3",backgroundColor: "rgba(97, 97, 97, 1.0   )",boxShadow:"rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px"}}}>
-                    <MenuItem onClick={handleClose} className="flex flex-row gap-2 items-center justify-start">
+                    <MenuItem onClick={() => { pinOneToOneMessages(chat, message, host);handleClose() }} className="flex flex-row gap-2 items-center justify-start">
                         <Pin className="w-5 h-5 text-milky-white" />
                         <span className="text-md">
                             Pin

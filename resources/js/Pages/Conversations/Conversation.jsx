@@ -166,7 +166,7 @@ export default function({auth, host, media_forms, abilities}) {
                                     </div>
                                     <div className='w-7 h-7 rounded-full my-auto ml-2'>
                                         <button className='w-full h-full rounded-full flex justify-center items-center'>
-                                            <Badge badgeContent={0} 
+                                            <Badge badgeContent={conversations.pinnedCounter} 
                                             sx={{"& .MuiBadge-badge": {color: "#f3f3f3",backgroundColor: "#ff003b",width: '20px', height: '20px'}}}>
                                                 <Pin className='w-6 h-6 text-black dark:text-milky-white' />
                                             </Badge>
@@ -273,7 +273,7 @@ export default function({auth, host, media_forms, abilities}) {
                                                     : 
                                                     // received message bubbles
                                                     <div key={index} id={`message-re-${message.id}`} className="select-text flex items-end justify-end flex-row-reverse gap-2 group">
-                                                        <ChatBubbleMenuReceived />
+                                                        <ChatBubbleMenuReceived chat={data.id} user={data.sender_id} host={data.recipient_id} message={message.id} />
                                                         <div className="max-w-[50%] animate-bounceBubbles flex flex-col items-start bg-white p-2 shadow-lg border border-black border-opacity-5 rounded-tr-lg rounded-tl-lg rounded-br-lg dark:border-milky-white dark:border-opacity-10 dark:bg-black dark:text-milky-white">
                                                             {
                                                                 data.media_forms && data.media_forms.length > 0

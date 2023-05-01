@@ -45,10 +45,10 @@ class Chat extends Model
 
     public function scopeMessage($query, $chat, $message, $host, $user) {
         return $query->where('sender_id', $user->id)
-        ->where('recipient_id', $host->id)
+        ->orWhere('recipient_id', $host->id)
         ->where('id', $chat)
         ->orWhere('sender_id', $host->id)
-        ->orWhere('recipient_id', $user->id)
+        ->where('recipient_id', $user->id)
         ->where('id', $chat)->first()
         ->messages
         ->where('id', $message)

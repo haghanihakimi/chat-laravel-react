@@ -61,7 +61,9 @@ class MessagesController extends Controller
 
         if($username !== $user->username && !Abilities::isBlocked($username) && Abilities::canBlock($username)) {
             $messages = $host->chats()
-            ->with('messages')
+            ->with(['messages' => function ($query) {
+                $query->orderBy('created_at', 'desc');
+            }])
             ->with('media_forms')
             ->where('recipient_id', $user->id)
             ->get()
@@ -206,6 +208,7 @@ class MessagesController extends Controller
      * @return Void|JsonResponse
      */
     public function pinOneToOneMessage($chat, $message, $host) {
+        // return response()->json(["Chat" => $chat, "message" => $message, "host" => $host]);
         $host = User::find($host);
         $user = Auth::user();
 

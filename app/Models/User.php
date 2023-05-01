@@ -84,7 +84,7 @@ class User extends Authenticatable
             $query->where('sender_id', $this->id)
             ->where('recipient_id', '<>', $this->id)
             ->whereNull('deleter_id');
-        });
+        })->orderBy('created_at', 'asc');
     }
 
     public function scopeSearch ($query, $input) {
