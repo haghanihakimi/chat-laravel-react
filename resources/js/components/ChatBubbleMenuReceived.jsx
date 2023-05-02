@@ -52,12 +52,12 @@ export default function({ chat, user, host, message}) {
                             Pin
                         </span>
                     </MenuItem>
-                    <MenuItem onClick={handleClose} className="flex flex-row gap-2 items-center justify-start">
+                    {/* <MenuItem onClick={handleClose} className="flex flex-row gap-2 items-center justify-start">
                         <Forward className="w-5 h-5 text-milky-white" />
                         <span className="text-md">
                             Forward
                         </span>
-                    </MenuItem>
+                    </MenuItem> */}
                 </Menu>
             </div>
         </>

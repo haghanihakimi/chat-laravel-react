@@ -211,14 +211,31 @@ class MessagesController extends Controller
         // return response()->json(["Chat" => $chat, "message" => $message, "host" => $host]);
         $host = User::find($host);
         $user = Auth::user();
+        
 
         $chats = Chat::message($chat, $message, $host, $user)->first();
 
-        if(!is_null($chats)) {
+        if(!is_null($chats) && Chat::pinnedMessages($host, $user)->count() < 10) {
             if($chats->pin()) {
                 return response()->json(["messages" => "Message pinned"]);
             }
             return response()->json(["messages" => "Unable to pin this message. Please try again later."]);
         }
+    }
+
+    /**
+     * pin selected message
+     * "chat" required - it is ID of the selected message/chat
+     * "host" required - It is ID of the user who is receives messages from user who is deleting the message.
+     * @return Void|JsonResponse
+     */
+    public function countPinnedOneToOneMessages($username) {
+        // return response()->json(["pins" => 5]);
+        $host = User::where('username', $username)->first();
+        $user = Auth::user();
+
+        $chats = Chat::pinnedMessages($host, $user)->count();
+
+        return response()->json(["pins" => $chats]);
     }
 }

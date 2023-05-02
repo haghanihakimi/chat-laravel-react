@@ -39,6 +39,14 @@ Route::middleware(['auth'])->group(function() {
         ->where('chat', '[0-9]+')
         ->where('message', '[0-9]+')
         ->where('host', '[0-9]+')
-        ->name('pin.message');
+        ->name('pin.message');        
+
+        Route::get("/conversation/pinned/messages/{username}", "getOneToOneMessages")
+        ->where('username', '[a-zA-Z0-9_]+')
+        ->name('get.pinned.messages');
+
+        Route::get("/conversation/count/messages/{username}", "countPinnedOneToOneMessages")
+        ->where('username', '[a-zA-Z0-9_]+')
+        ->name('count.pinned.messages');
     });
 });

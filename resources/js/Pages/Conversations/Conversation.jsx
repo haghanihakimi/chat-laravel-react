@@ -7,32 +7,40 @@ import {
     HiOutlineCheck as Tick,
 } from "react-icons/hi2";
 import { 
-    AiFillPushpin as Pin
+    AiFillPushpin as PinFill,
+    AiOutlinePushpin as PinOutline
  } from "react-icons/ai";
 import { useEffect, useRef, useState } from 'react';
 import Loading from "../../Partials/Loading"
 import ChatMenu from '../../components/ChatMenu';
 import { useGetMessages } from '../../store/actions/messages';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Tooltip from '@mui/material/Tooltip';
 import Badge from '@mui/material/Badge';    
 import moment from 'moment';
 import ChatBubbleMenuSent from '../../components/ChatBubbleMenuSent';
 import ChatBubbleMenuReceived from '../../components/ChatBubbleMenuReceived';
+import { togglePinMessagesPopup } from '../../store/reducers/messages';
 import { useSendMessages } from '../../store/actions/messages';
+import { usePinOneToOneMessages } from '../../store/actions/messages';
 import { useListeners } from '../../store/actions/listeners';
 import { useListenersLeave } from '../../store/actions/listeners';
+import PinMessagesPopup from '../../components/PinMessagesPopup';
 
 export default function({auth, host, media_forms, abilities}) {
     const [data, setData] = useState({
         enableSend: false,
         disablePlaceholder: false,
     })
+    const [PinMessagesPopupComp, setPinMessagesPopupComp] = useState(null)
     const chatRef = useRef(null)
     const chatView = useRef(null)
     const conversations = useSelector(state => state.messages)
+    const theme = useSelector(state => state.theme)
+    const dispatch = useDispatch()
     const {handleGetMessages} = useGetMessages(host.data.username)
     const {sendOneToOneMessage} = useSendMessages(host.data.username)
+    const {countPinnedOneToOneMessages} = usePinOneToOneMessages()
     const {sendOneToOneMessageListen, seenOneToOneMessageListen} = useListeners()
     const {sendOneToOneMessageLeave, seenOneToOneMessageLeave} = useListenersLeave()
 
@@ -125,6 +133,8 @@ export default function({auth, host, media_forms, abilities}) {
 
         handleGetMessages(1).then(() => {
             chatView.current.scrollTop = chatView.current.scrollHeight
+            countPinnedOneToOneMessages(host.data.username)
+            setPinMessagesPopupComp(<PinMessagesPopup user={auth} host={host} />)
         })
 
         chatView.current.addEventListener('DOMNodeInserted', event => {
@@ -165,10 +175,14 @@ export default function({auth, host, media_forms, abilities}) {
                                         <ChatMenu request={host.data} />
                                     </div>
                                     <div className='w-7 h-7 rounded-full my-auto ml-2'>
-                                        <button className='w-full h-full rounded-full flex justify-center items-center'>
+                                        <button onClick={() => {dispatch(togglePinMessagesPopup(true));}} className='w-full h-full rounded-full flex justify-center items-center'>
                                             <Badge badgeContent={conversations.pinnedCounter} 
-                                            sx={{"& .MuiBadge-badge": {color: "#f3f3f3",backgroundColor: "#ff003b",width: '20px', height: '20px'}}}>
-                                                <Pin className='w-6 h-6 text-black dark:text-milky-white' />
+                                            sx={{"& .MuiBadge-badge": {color: "#f3f3f3",backgroundColor: "#006ce0",width: '20px', height: '20px', 'border': theme.value === 'white' ? '2px solid white' : '2px solid #011f44'}}}>
+                                                {
+                                                    conversations.pinnedCounter && conversations.pinnedCounter > 0
+                                                    ? <PinFill className='w-6 h-6 text-blue' />
+                                                    : <PinOutline className='w-6 h-6 text-blue' />
+                                                }
                                             </Badge>
                                         </button>
                                     </div>
@@ -361,6 +375,7 @@ export default function({auth, host, media_forms, abilities}) {
                             </div>
                         </div>
                     </div>
+                    {PinMessagesPopupComp}
                 </div>
             } />
         </>

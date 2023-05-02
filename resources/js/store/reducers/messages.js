@@ -9,9 +9,10 @@ export const messagesSlice = createSlice({
     sendingMessage: false,
     deletePopup: false,
     currentChat: '',
-    pinneds: [],
+    pinnedMessages: [],
     pinnedCounter: 0,
     pinning: false,
+    pinMessagesPopup: false,
   },
   reducers: {
     setPane: (state, action) => {
@@ -47,7 +48,7 @@ export const messagesSlice = createSlice({
       }
     },
     setPinneds: (state, action) => {
-      state.pinneds = action.payload
+      state.pinnedMessages = action.payload
     },
     setPinnedCounter: (state, action) => {
       state.pinnedCounter = action.payload
@@ -55,6 +56,9 @@ export const messagesSlice = createSlice({
     togglePinning: (state, action) => {
       state.pinning = action.payload
     },
+    togglePinMessagesPopup: (state, action) => {
+      state.pinMessagesPopup = action.payload
+    }
   },
 })
 
@@ -72,6 +76,7 @@ export const {
   setPinneds,
   setPinnedCounter,
   togglePinning,
+  togglePinMessagesPopup,
 } = messagesSlice.actions
 
 export default messagesSlice.reducer

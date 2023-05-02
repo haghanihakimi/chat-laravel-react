@@ -11,9 +11,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 
 
-const label = { inputProps: { 'aria-label': 'Unsend for everyone' } };
-
-
 export default function({user, host}) {
     const messages = useSelector(state => state.messages)
     const dispatch = useDispatch()

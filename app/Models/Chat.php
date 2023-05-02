@@ -44,14 +44,30 @@ class Chat extends Model
     }
 
     public function scopeMessage($query, $chat, $message, $host, $user) {
-        return $query->where('sender_id', $user->id)
-        ->orWhere('recipient_id', $host->id)
-        ->where('id', $chat)
-        ->orWhere('sender_id', $host->id)
-        ->where('recipient_id', $user->id)
-        ->where('id', $chat)->first()
+        return $query->where('id', $chat)
+        ->where('sender_id', $user->id)
+        ->where('recipient_id', $host->id)
+        ->orWhere('id', $chat)
+        ->where('sender_id', $host->id)
+        ->where('recipient_id', $user->id)->first()
         ->messages
         ->where('id', $message)
         ->where('pinned', false);
+    }
+
+    public function scopePinnedMessages($query, $host, $user) {
+        return $query->where(function($query) use ($host, $user) {
+            $query->where('sender_id', $user->id)
+            ->where('recipient_id', $host->id);
+        })->orWhere(function($query) use ($host, $user) {
+            $query->where('sender_id', $host->id)
+            ->where('recipient_id', $user->id);
+        })
+        ->with(['messages' => function($query) {
+            $query->where('pinned', true);
+        }])
+        ->get()
+        ->pluck('messages')
+        ->flatten();
     }
 }
