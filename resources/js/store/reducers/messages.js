@@ -8,6 +8,7 @@ export const messagesSlice = createSlice({
     loadingMessages: false,
     sendingMessage: false,
     deletePopup: false,
+    pinPopup: false,
     currentChat: '',
     pinnedMessages: [],
     pinnedCounter: 0,
@@ -33,6 +34,9 @@ export const messagesSlice = createSlice({
     toggleDeletePopup: (state, action) => {
       state.deletePopup = action.payload
     },
+    togglePinPopup: (state, action) => {
+      state.pinPopup = action.payload
+    },
     reduceMessages: (state, action) => {
       const index = state.messages.findIndex((message) => message.id == action.payload);
       if (index !== -1) {
@@ -51,7 +55,16 @@ export const messagesSlice = createSlice({
       state.pinnedMessages = action.payload
     },
     setPinnedCounter: (state, action) => {
-      state.pinnedCounter = action.payload
+      state.pinnedCounter = action.payload.counter
+      if(action.payload.messageId){
+        state.messages.map(data => {
+          data.messages.map(message => {
+            if (message.id == action.payload.messageId) {
+              message.pinned = message.pinned ? false : true
+            }
+          })
+        })
+      }
     },
     togglePinning: (state, action) => {
       state.pinning = action.payload
@@ -70,6 +83,7 @@ export const {
   toggleLoadingMessages, 
   toggleSendingMessage, 
   toggleDeletePopup,
+  togglePinPopup,
   reduceMessages,
   fetchNewMessage,
   seenMessages,

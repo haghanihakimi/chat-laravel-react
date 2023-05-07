@@ -177,7 +177,7 @@ export default function({auth, host, media_forms, abilities}) {
                                     <div className='w-7 h-7 rounded-full my-auto ml-2'>
                                         <button onClick={() => {dispatch(togglePinMessagesPopup(true));}} className='w-full h-full rounded-full flex justify-center items-center'>
                                             <Badge badgeContent={conversations.pinnedCounter} 
-                                            sx={{"& .MuiBadge-badge": {color: "#f3f3f3",backgroundColor: "#006ce0",width: '20px', height: '20px', 'border': theme.value === 'white' ? '2px solid white' : '2px solid #011f44'}}}>
+                                            sx={{"& .MuiBadge-badge": {color: "#f3f3f3",backgroundColor: "#006ce0",width: '24px', height: '24px', borderRadius: '99999px', 'border': theme.value === 'white' ? '2px solid white' : '2px solid #011f44'}}}>
                                                 {
                                                     conversations.pinnedCounter && conversations.pinnedCounter > 0
                                                     ? <PinFill className='w-6 h-6 text-blue' />
@@ -194,7 +194,7 @@ export default function({auth, host, media_forms, abilities}) {
                     <div className='w-full h-full pt-14 relative z-20'>
                         <div className='w-full h-full relative flex flex-col justify-between items-center'>
                             {/* message texts view */}
-                            <div ref={chatView} style={{overflowAnchor: 'none'}} className='w-full h-screen px-2 py-4 overflow-auto overflow-x-hidden flex flex-col gap-6'>
+                            <div ref={chatView} style={{overflowAnchor: 'none'}} className='w-full h-screen px-2 py-4 overflow-auto overflow-x-hidden flex flex-col gap-6 scrollbar-thumb-blue scrollbar-track-blue'>
                                 
                                 {/* Event alert container */}
                                 <div className='w-full flex flex-col gap-0 justify-center items-center'>
@@ -236,7 +236,7 @@ export default function({auth, host, media_forms, abilities}) {
                                                     ? 
                                                     // Sent message bubbles
                                                     <div key={index} id={`message-se-${message.id}`} className="select-text flex items-end justify-start flex-row-reverse gap-2 group">
-                                                        <div className="max-w-[55%] animate-bounceBubbles flex flex-col items-end bg-blue bg-opacity-90 p-2 shadow-lg rounded-tr-lg rounded-tl-lg rounded-bl-lg">
+                                                        <div className="max-w-[55%] relative animate-bounceBubbles flex flex-col items-end bg-blue bg-opacity-90 p-2 shadow-lg rounded-tr-lg rounded-tl-lg rounded-bl-lg">
                                                             {
                                                                 data.media_forms && data.media_forms.length > 0
                                                                 ?
@@ -257,6 +257,11 @@ export default function({auth, host, media_forms, abilities}) {
                                                                 {message.messages}
                                                             </p>
                                                             <div className='w-full flex flex-row gap-[2px] items-center justify-end'>
+                                                                {
+                                                                    message.pinned || message.pinned_by == data.sender_id
+                                                                    ? <PinFill className='text-white w-3 h-3 text-opacity-80 animate-bounceBubbles' />
+                                                                    : ''
+                                                                }
                                                                 <Tooltip
                                                                 sx={{"& .MuiTooltip-tooltip": {color: "#f3f3f3",backgroundColor: "#ff003b"}}}
                                                                 title={`sent ${moment(message.created_at).format("MMM D, YYYY - h:mm A")}`}>
@@ -282,12 +287,12 @@ export default function({auth, host, media_forms, abilities}) {
                                                                 </Tooltip>
                                                             </div>
                                                         </div>
-                                                        <ChatBubbleMenuSent chat={data.id} user={data.sender_id} host={data.recipient_id} message={message.id}/>
+                                                        <ChatBubbleMenuSent chat={data.id} user={data.sender_id} host={data.recipient_id} message={message.id} pinned={(message.pinned || message.pinned_by) ? true : false}/>
                                                     </div>
                                                     : 
                                                     // received message bubbles
                                                     <div key={index} id={`message-re-${message.id}`} className="select-text flex items-end justify-end flex-row-reverse gap-2 group">
-                                                        <ChatBubbleMenuReceived chat={data.id} user={data.sender_id} host={data.recipient_id} message={message.id} />
+                                                        <ChatBubbleMenuReceived chat={data.id} user={data.recipient_id} host={data.sender_id} message={message.id} pinned={(message.pinned || message.pinned_by) ? true : false} />
                                                         <div className="max-w-[50%] animate-bounceBubbles flex flex-col items-start bg-white p-2 shadow-lg border border-black border-opacity-5 rounded-tr-lg rounded-tl-lg rounded-br-lg dark:border-milky-white dark:border-opacity-10 dark:bg-black dark:text-milky-white">
                                                             {
                                                                 data.media_forms && data.media_forms.length > 0
@@ -307,6 +312,11 @@ export default function({auth, host, media_forms, abilities}) {
                                                             }
                                                             <p className="text-sm">{message.messages}</p>
                                                             <div className='w-full flex flex-row gap-[2px] items-center justify-start'>
+                                                                {
+                                                                    message.pinned || message.pinned_by == data.recipient_id
+                                                                    ? <PinFill className='text-white w-3 h-3 text-opacity-80 animate-bounceBubbles' />
+                                                                    : ''
+                                                                }
                                                                 <Tooltip
                                                                 sx={{"& .MuiTooltip-tooltip": {color: "#f3f3f3",backgroundColor: "#ff003b"}}}
                                                                 title={`received ${moment(message.created_at).format("MMM D, YYYY - h:mm A")}`}>

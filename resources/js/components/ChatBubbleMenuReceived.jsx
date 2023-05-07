@@ -8,14 +8,15 @@ import {
  } from "react-icons/ai";
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { usePinOneToOneMessages } from "../store/actions/messages";
+import { togglePinPopup } from "../store/reducers/messages";
 import { useState } from 'react';
+import { useDispatch } from "react-redux";
 
 
-export default function({ chat, user, host, message}) {
+export default function({ chat, user, host, message, pinned}) {
     const [anchorEl, setAnchorEl] = useState(null)
     const open = Boolean(anchorEl)
-    const {pinOneToOneMessages} = usePinOneToOneMessages()
+    const dispatch = useDispatch()
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget)
@@ -46,12 +47,22 @@ export default function({ chat, user, host, message}) {
                 'aria-labelledby': 'basic-button',
                 }}
                 sx={{"& .MuiMenu-paper": {minWidth: '100px', padding: '0', color: "#f3f3f3",backgroundColor: "rgba(97, 97, 97, 1.0   )",boxShadow:"rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px"}}}>
-                    <MenuItem onClick={() => { pinOneToOneMessages(chat, message, host);handleClose() }} className="flex flex-row gap-2 items-center justify-start">
-                        <Pin className="w-5 h-5 text-milky-white" />
-                        <span className="text-md">
-                            Pin
-                        </span>
-                    </MenuItem>
+                    
+                    {
+                        pinned
+                        ? <MenuItem onClick={() => { handleClose() }} className="flex flex-row gap-2 items-center justify-start">
+                            <Pin className="w-5 h-5 text-milky-white" />
+                            <span className="text-md">
+                                Unpin
+                            </span>
+                        </MenuItem>
+                        : <MenuItem onClick={() => { dispatch(togglePinPopup(true));handleClose() }} className="flex flex-row gap-2 items-center justify-start">
+                        <Pin className="w-5 h-5 text-milky-white animate-bounceBubbles" />
+                            <span className="text-md">
+                                Pin
+                            </span>
+                        </MenuItem>
+                    }
                     {/* <MenuItem onClick={handleClose} className="flex flex-row gap-2 items-center justify-start">
                         <Forward className="w-5 h-5 text-milky-white" />
                         <span className="text-md">

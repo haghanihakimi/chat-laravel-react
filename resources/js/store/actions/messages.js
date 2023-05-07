@@ -154,17 +154,38 @@ export function usePinOneToOneMessages() {
     const messages = useSelector(state => state.messages)
     const dispatch = useDispatch()
 
-    async function pinOneToOneMessages(chat, message, host) {
-        dispatch(togglePinning(true))
-        if (messages.pinnedCounter < 10) {
+    async function pinOneToOneMessages(chat, message, host, isTwoway) {
+        if (messages.pinnedCounter < 100) {
             try {
                 const response = await axios.patch(route('pin.message', {
                     chat: chat,
                     message: message,
                     host: host,
+                }), {istwoway: isTwoway})
+                console.log(response.data)
+                dispatch(setPinnedCounter({counter: messages.pinnedCounter + 1, messageId: message}))
+                dispatch(togglePinning(false))
+                
+            } catch(error) {
+                dispatch(togglePinning(false))
+                console.log(error)
+            }
+        } else {
+            alert("maximum pins exceeded.")
+            dispatch(togglePinning(false))
+        }
+    }
+
+    async function unPinOneToOneMessages(chat, message, host) {
+        if (messages.pinnedCounter < 100) {
+            try {
+                const response = await axios.patch(route('unpin.message', {
+                    chat: chat,
+                    message: message,
+                    host: host,
                 }))
                 console.log(response.data)
-                dispatch(setPinnedCounter(messages.pinnedCounter + 1))
+                dispatch(setPinnedCounter({counter: messages.pinnedCounter + 1, messageId: message}))
                 dispatch(togglePinning(false))
                 
             } catch(error) {
@@ -195,7 +216,7 @@ export function usePinOneToOneMessages() {
         try {
             const response = await axios.get(route('count.pinned.messages', {username: username}))
 
-            dispatch(setPinnedCounter(response.data.pins))
+            dispatch(setPinnedCounter({counter: response.data.pins}))
             dispatch(togglePinning(false))
         } catch(error) {
             dispatch(togglePinning(false))
@@ -205,6 +226,7 @@ export function usePinOneToOneMessages() {
 
     return {
         pinOneToOneMessages,
+        unPinOneToOneMessages,
         getPinnedOneToOneMessages,
         countPinnedOneToOneMessages,
     }

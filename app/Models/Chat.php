@@ -48,7 +48,7 @@ class Chat extends Model
         ->where('sender_id', $user->id)
         ->where('recipient_id', $host->id)
         ->orWhere('id', $chat)
-        ->where('sender_id', $host->id)
+        ->Where('sender_id', $host->id)
         ->where('recipient_id', $user->id)->first()
         ->messages
         ->where('id', $message)
@@ -63,8 +63,9 @@ class Chat extends Model
             $query->where('sender_id', $host->id)
             ->where('recipient_id', $user->id);
         })
-        ->with(['messages' => function($query) {
-            $query->where('pinned', true);
+        ->with(['messages' => function($query) use($user) {
+            $query->where('pinned_by', $user->id)
+            ->orWhere('pinned', true);
         }])
         ->get()
         ->pluck('messages')

@@ -10,23 +10,23 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useEffect, useState } from 'react';
 import DeleteMessage from "./alerts/DeleteMessage";
-import { toggleDeletePopup, setCurrentchat } from "../store/reducers/messages";
-import { useDispatch } from "react-redux";
+import { toggleDeletePopup, setCurrentchat, togglePinPopup } from "../store/reducers/messages";
+import { useDispatch, useSelector } from "react-redux";
 import { useListeners } from "../store/actions/listeners";
 import { useListenersLeave } from "../store/actions/listeners";
-import { usePinOneToOneMessages } from "../store/actions/messages";
+import PinMessage from "./alerts/pinMessage";
 
 
-export default function({chat, user, host, message}) {
+export default function({chat, user, host, message, pinned}) {
     const [anchorEl, setAnchorEl] = useState(null)
     const [data, setData] = useState({
         popup: false,
     })
     const open = Boolean(anchorEl)
+    const messages = useSelector((state) => state.messages)
     const dispatch = useDispatch()
     const {deleteTwoWayMessage} = useListeners()
     const {deleteTwoWayMessageLeave} = useListenersLeave()
-    const {pinOneToOneMessages} = usePinOneToOneMessages()
 
 
     const handleClick = (event) => {
@@ -78,14 +78,32 @@ export default function({chat, user, host, message}) {
                             Forward
                         </span>
                     </MenuItem> */}
-                    <MenuItem onClick={() => { pinOneToOneMessages(chat, message, host);handleClose() }} className="flex flex-row gap-2 items-center justify-start">
-                        <Pin className="w-5 h-5 text-milky-white" />
-                        <span className="text-md">
-                            Pin
-                        </span>
-                    </MenuItem>
+                    {
+                        pinned
+                        ? <MenuItem onClick={() => { dispatch(setCurrentchat(chat));handleClose() }} className="flex flex-row gap-2 items-center justify-start">
+                            <Pin className="w-5 h-5 text-milky-white" />
+                            <span className="text-md">
+                                Unpin
+                            </span>
+                        </MenuItem>
+                        : <MenuItem onClick={() => { dispatch(setCurrentchat(chat));dispatch(togglePinPopup(true));handleClose() }} className="flex flex-row gap-2 items-center justify-start">
+                            <Pin className="w-5 h-5 text-milky-white animate-bounceBubbles" />
+                            <span className="text-md">
+                                Pin
+                            </span>
+                        </MenuItem>
+                    }
                 </Menu>
-                <DeleteMessage user={user} host={host} />
+                {
+                    messages.deletePopup
+                    ? <DeleteMessage user={user} host={host} />
+                    : ''
+                }
+                {
+                    messages.pinPopup
+                    ? <PinMessage chat={chat} message={message} host={host} />
+                    : ''
+                }
             </div>
         </>
     )

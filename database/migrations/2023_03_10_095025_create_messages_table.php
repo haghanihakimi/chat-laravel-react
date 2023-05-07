@@ -19,6 +19,11 @@ return new class extends Migration
             $table->longText('messages');
             $table->timestamp('seen_at')->nullable()->default(null);
             $table->boolean('pinned')->nullable()->default(false);
+            $table->foreignId('pinned_by')
+            ->nullable()
+            ->default(null)
+            ->constrained('users')
+            ->onDelete('cascade');
             $table->timestamps();
         });
     }

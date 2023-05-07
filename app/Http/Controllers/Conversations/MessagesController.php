@@ -207,16 +207,21 @@ class MessagesController extends Controller
      * "host" required - It is ID of the user who is receives messages from user who is deleting the message.
      * @return Void|JsonResponse
      */
-    public function pinOneToOneMessage($chat, $message, $host) {
+    public function pinOneToOneMessage(Request $request, $chat, $message, $host) {
+        $request->validate([
+            'istwoway' => ['required', 'boolean']
+        ]);
         // return response()->json(["Chat" => $chat, "message" => $message, "host" => $host]);
         $host = User::find($host);
         $user = Auth::user();
+
+        // return response()->json(["Chat" => $chat, "message" => $message, "host" => $host->id, "user" => $user->id]);
         
 
         $chats = Chat::message($chat, $message, $host, $user)->first();
 
-        if(!is_null($chats) && Chat::pinnedMessages($host, $user)->count() < 10) {
-            if($chats->pin()) {
+        if(!is_null($chats) && Chat::pinnedMessages($host, $user)->count() < 100) {
+            if($chats->pin($user->id, $request->istwoway)) {
                 return response()->json(["messages" => "Message pinned"]);
             }
             return response()->json(["messages" => "Unable to pin this message. Please try again later."]);
@@ -230,7 +235,6 @@ class MessagesController extends Controller
      * @return Void|JsonResponse
      */
     public function countPinnedOneToOneMessages($username) {
-        // return response()->json(["pins" => 5]);
         $host = User::where('username', $username)->first();
         $user = Auth::user();
 

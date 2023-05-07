@@ -35,7 +35,7 @@ Route::middleware(['auth'])->group(function() {
         ->where('username', '[a-zA-Z0-9_]+')
         ->name('seen.one.to.one.message');
 
-        Route::patch("/conversation/pin/message/{chat}/{message}/{host}", "pinOneToOneMessage")
+        Route::patch("/conversation/pin/message/{chat}/{message}/{host}/", "pinOneToOneMessage")
         ->where('chat', '[0-9]+')
         ->where('message', '[0-9]+')
         ->where('host', '[0-9]+')

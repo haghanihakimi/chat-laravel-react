@@ -19,6 +19,7 @@ class Message extends Model
         'messages',
         'seen_at',
         'pinned',
+        'pinned_by',
     ];
     
     public function chat()
@@ -26,20 +27,25 @@ class Message extends Model
         return $this->belongsTo(Chat::class, 'chat_id');
     }
 
-    public function pin()
+    public function pin($user, $istwoway)
     {
-        $this->pinned = true;
+        $this->pinned = $istwoway ? true : false;
+        $this->pinned_by = $user;
         if($this->save()) {
             return true;
         }
         return false;
     }
 
-    public function unpin()
+    public function unpin($user)
     {
-        $this->pinned = false;
-        if($this->save()) {
-            return true;
+        if($this->pinned_by === $user){ 
+            $this->pinned = false;
+            $this->pinned_by = null;
+            if($this->save()) {
+                return true;
+            }
+            return false;
         }
         return false;
     }
