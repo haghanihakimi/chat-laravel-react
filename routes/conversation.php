@@ -22,6 +22,11 @@ Route::middleware(['auth'])->group(function() {
         ->where('host', '[0-9]+')
         ->name('delete.single.message.oneway');
 
+        Route::delete("/remove/received/message/{chat}/{host}", "removeReceivedMessage")
+        ->where('chat', '[0-9]+')
+        ->where('host', '[0-9]+')
+        ->name('remove.received.message');
+
         Route::delete("/twoway/delete/single/message/{chat}/{host}", "removeSingleMessageTwoWay")
         ->where('chat', '[0-9]+')
         ->where('host', '[0-9]+')
@@ -39,7 +44,13 @@ Route::middleware(['auth'])->group(function() {
         ->where('chat', '[0-9]+')
         ->where('message', '[0-9]+')
         ->where('host', '[0-9]+')
-        ->name('pin.message');        
+        ->name('pin.message');
+
+        Route::patch("/conversation/unpin/message/{chat}/{message}/{host}/", "unPinOneToOneMessage")
+        ->where('chat', '[0-9]+')
+        ->where('message', '[0-9]+')
+        ->where('host', '[0-9]+')
+        ->name('unpin.message');
 
         Route::get("/conversation/pinned/messages/{username}", "getOneToOneMessages")
         ->where('username', '[a-zA-Z0-9_]+')

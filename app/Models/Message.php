@@ -9,6 +9,8 @@ class Message extends Model
 {
     use HasFactory;
 
+    protected $table = "Messages";
+
     /**
      * The attributes that are mass assignable.
      *
@@ -39,9 +41,15 @@ class Message extends Model
 
     public function unpin($user)
     {
-        if($this->pinned_by === $user){ 
+        if($this->pinned_by == $user){ 
             $this->pinned = false;
             $this->pinned_by = null;
+            if($this->save()) {
+                return true;
+            }
+            return false;
+        } else {
+            $this->pinned = false;
             if($this->save()) {
                 return true;
             }

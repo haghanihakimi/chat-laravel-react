@@ -9,31 +9,45 @@ import {
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useEffect, useState } from 'react';
-import DeleteMessage from "./alerts/DeleteMessage";
-import { toggleDeletePopup, setCurrentchat, togglePinPopup } from "../store/reducers/messages";
+import { toggleDeletePopup, setData, togglePinPopup } from "../store/reducers/messages";
+import { usePinOneToOneMessages } from "../store/actions/messages";
 import { useDispatch, useSelector } from "react-redux";
 import { useListeners } from "../store/actions/listeners";
 import { useListenersLeave } from "../store/actions/listeners";
-import PinMessage from "./alerts/pinMessage";
 
 
 export default function({chat, user, host, message, pinned}) {
     const [anchorEl, setAnchorEl] = useState(null)
-    const [data, setData] = useState({
-        popup: false,
-    })
     const open = Boolean(anchorEl)
     const messages = useSelector((state) => state.messages)
     const dispatch = useDispatch()
     const {deleteTwoWayMessage} = useListeners()
     const {deleteTwoWayMessageLeave} = useListenersLeave()
+    const {unPinOneToOneMessages} = usePinOneToOneMessages()
 
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget)
+        dispatch(setData({
+            'chat': chat, 
+            'message': message, 
+            'sender': user, 
+            'receiver': host, 
+        }))
     };
     const handleClose = () => {
         setAnchorEl(null)
+        dispatch(setData({
+            chat: chat, 
+            message: message, 
+            sender: user, 
+            receiver: host, 
+        }))
+    }
+
+    const unPinMessage = () => {
+        unPinOneToOneMessages(chat, message, host)
+        handleClose()
     }
 
     useEffect(() => {
@@ -53,7 +67,7 @@ export default function({chat, user, host, message, pinned}) {
                 aria-controls={open ? 'basic-menu' : undefined}
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
+                onClick={(e) => {handleClick(e);}}
                 className='w-full h-full rounded-full flex justify-center items-center'>
                     <Options className='w-6 h-6 text-black dark:text-milky-white' />
                 </button>
@@ -66,7 +80,7 @@ export default function({chat, user, host, message, pinned}) {
                 'aria-labelledby': 'basic-button',
                 }}
                 sx={{"& .MuiMenu-paper": {minWidth: '100px', padding: '0', color: "#f3f3f3",backgroundColor: "rgba(97, 97, 97, 1.0   )",boxShadow:"rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px"}}}>
-                    <MenuItem onClick={() => { dispatch(setCurrentchat(chat));dispatch(toggleDeletePopup(true));handleClose() } } className="flex flex-row gap-2 items-center justify-start">
+                    <MenuItem onClick={(e) => { dispatch(toggleDeletePopup({popup: true, option: true}));handleClose(e) } } className="flex flex-row gap-2 items-center justify-start">
                         <Delete className="w-5 h-5 text-milky-white" />
                         <span className="text-md">
                             Remove
@@ -80,13 +94,13 @@ export default function({chat, user, host, message, pinned}) {
                     </MenuItem> */}
                     {
                         pinned
-                        ? <MenuItem onClick={() => { dispatch(setCurrentchat(chat));handleClose() }} className="flex flex-row gap-2 items-center justify-start">
+                        ? <MenuItem onClick={() => { unPinMessage() }} className="flex flex-row gap-2 items-center justify-start">
                             <Pin className="w-5 h-5 text-milky-white" />
                             <span className="text-md">
                                 Unpin
                             </span>
                         </MenuItem>
-                        : <MenuItem onClick={() => { dispatch(setCurrentchat(chat));dispatch(togglePinPopup(true));handleClose() }} className="flex flex-row gap-2 items-center justify-start">
+                        : <MenuItem onClick={() => { dispatch(togglePinPopup(true));handleClose() }} className="flex flex-row gap-2 items-center justify-start">
                             <Pin className="w-5 h-5 text-milky-white animate-bounceBubbles" />
                             <span className="text-md">
                                 Pin
@@ -94,16 +108,7 @@ export default function({chat, user, host, message, pinned}) {
                         </MenuItem>
                     }
                 </Menu>
-                {
-                    messages.deletePopup
-                    ? <DeleteMessage user={user} host={host} />
-                    : ''
-                }
-                {
-                    messages.pinPopup
-                    ? <PinMessage chat={chat} message={message} host={host} />
-                    : ''
-                }
+                
             </div>
         </>
     )

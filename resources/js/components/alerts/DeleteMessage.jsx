@@ -15,20 +15,24 @@ export default function({user, host}) {
     const messages = useSelector(state => state.messages)
     const dispatch = useDispatch()
     const [data, setData] = useState({
-        isTwoway: true,
+        isTwoway: false,
     })
-    const {deleteSingleMessageOneWay, deleteSingleMessageTwoWay} = useDeleteMessages(host)
+    const {deleteSingleMessageOneWay, removeReceivedMessage, deleteSingleMessageTwoWay} = useDeleteMessages(host)
 
     const handleClose = () => {
-        dispatch(toggleDeletePopup(false))
+        dispatch(toggleDeletePopup({popup: false, option: false}))
     }
 
     const deleteMessage = () => {
         if (!messages.doingAction) {
-            if (!data.isTwoway) {
-                deleteSingleMessageOneWay()
+            if(messages.deletePopup.option) {
+                if (!data.isTwoway) {
+                    deleteSingleMessageOneWay()
+                } else {
+                    deleteSingleMessageTwoWay()
+                }
             } else {
-                deleteSingleMessageTwoWay()
+                removeReceivedMessage()
             }
             if(!messages.doingAction) {
                 handleClose()
@@ -41,7 +45,7 @@ export default function({user, host}) {
         <>
         <div className='relative'>
             <Dialog
-            open={messages.deletePopup}
+            open={messages.deletePopup.popup}
             keepMounted
             onClose={handleClose}
             aria-describedby="alert-dialog-slide-description"
@@ -53,11 +57,17 @@ export default function({user, host}) {
                     </span>
                 </DialogTitle>
 
-                <DialogContent className='bg-white select-none dark:bg-black'>
-                    <DialogContentText id="alert-dialog-slide-description" className='flex flex-row gap-0 items-center justify-start'>
-                        <FormControlLabel control={<Checkbox disabled={messages.doingAction} checked={data.isTwoway} onChange={ event => { setData({isTwoway: event.target.checked}) } } />} label="Unsend for everyone" className='text-black dark:text-milky-white disabled:opacity-50' />
-                    </DialogContentText>
-                </DialogContent>
+                {
+                    messages.deletePopup.option
+                    ?
+                    <DialogContent className='bg-white select-none dark:bg-black'>
+                        <DialogContentText id="alert-dialog-slide-description" className='flex flex-row gap-0 items-center justify-start'>
+                            <FormControlLabel control={<Checkbox disabled={messages.doingAction} checked={data.isTwoway} onChange={ event => { setData({isTwoway: event.target.checked}) } } />} label="Unsend for everyone" className='text-black dark:text-milky-white disabled:opacity-50' />
+                        </DialogContentText>
+                    </DialogContent>
+                    :
+                    ''
+                }
 
                 <DialogActions className='bg-white select-none px-8 dark:bg-black'>
                     <button disabled={messages.doingAction} className='px-2 py-2 rounded m-0 text-black text-opacity-75 dark:text-milky-white disabled:opacity-50' 

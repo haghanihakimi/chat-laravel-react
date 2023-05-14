@@ -11,6 +11,8 @@ class Chat extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $table = "Chats";
+
     /**
      * The attributes that are mass assignable.
      *
@@ -24,14 +26,16 @@ class Chat extends Model
 
     protected $dates = ['deleted_at'];
 
-    public function sender()
-    {
-        return $this->belongsTo(User::class, 'sender_id');
+    public function users() {
+        return $this->belongsTo(User::class);
     }
 
-    public function receiver()
-    {
-        return $this->belongsTo(User::class, 'recipient_id');
+    public function scopeChats($query, $user, $host) {
+        return $query->where('sender_id', $user)
+        ->where('recipient_id', $host)
+        ->orWhere('sender_id', $host)
+        ->where('recipient_id', $user)
+        ->orderBy('created_at', 'asc');
     }
 
     public function messages()
@@ -48,7 +52,7 @@ class Chat extends Model
         ->where('sender_id', $user->id)
         ->where('recipient_id', $host->id)
         ->orWhere('id', $chat)
-        ->Where('sender_id', $host->id)
+        ->where('sender_id', $host->id)
         ->where('recipient_id', $user->id)->first()
         ->messages
         ->where('id', $message)

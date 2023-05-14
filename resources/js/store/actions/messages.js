@@ -43,10 +43,27 @@ export function useDeleteMessages(host) {
         dispatch(toggleSendingMessage(true))
         try {
             const response = await axios.delete(route('delete.single.message.oneway', {
-                chat: messages.currentChat,
+                chat: messages.data.chat,
                 host: host,
             }))
-            dispatch(reduceMessages(messages.currentChat))
+            dispatch(reduceMessages(messages.data.chat))
+            dispatch(toggleSendingMessage(false))
+        } catch(error) {
+            dispatch(toggleSendingMessage(false))
+            console.log(error)
+        } 
+    }
+
+    // Delete received message
+    async function removeReceivedMessage() {
+        dispatch(toggleSendingMessage(true))
+        try {
+            const response = await axios.delete(route('remove.received.message', {
+                chat: messages.data.chat,
+                host: host,
+            }))
+            console.log(response.data)
+            dispatch(reduceMessages(messages.data.chat))
             dispatch(toggleSendingMessage(false))
         } catch(error) {
             dispatch(toggleSendingMessage(false))
@@ -60,10 +77,10 @@ export function useDeleteMessages(host) {
         
         try {
             const response = await axios.delete(route('delete.single.message.twoway', {
-                chat: messages.currentChat,
+                chat: messages.data.chat,
                 host: host,
             }))
-            dispatch(reduceMessages(messages.currentChat))
+            dispatch(reduceMessages(messages.data.chat))
             dispatch(toggleSendingMessage(false))
         } catch(error) {
             dispatch(toggleSendingMessage(false))
@@ -73,6 +90,7 @@ export function useDeleteMessages(host) {
 
     return {
         deleteSingleMessageOneWay,
+        removeReceivedMessage,
         deleteSingleMessageTwoWay,
     }
 }
@@ -155,6 +173,7 @@ export function usePinOneToOneMessages() {
     const dispatch = useDispatch()
 
     async function pinOneToOneMessages(chat, message, host, isTwoway) {
+        console.log(chat, message, host, isTwoway)
         if (messages.pinnedCounter < 100) {
             try {
                 const response = await axios.patch(route('pin.message', {
@@ -162,7 +181,6 @@ export function usePinOneToOneMessages() {
                     message: message,
                     host: host,
                 }), {istwoway: isTwoway})
-                console.log(response.data)
                 dispatch(setPinnedCounter({counter: messages.pinnedCounter + 1, messageId: message}))
                 dispatch(togglePinning(false))
                 
@@ -177,15 +195,14 @@ export function usePinOneToOneMessages() {
     }
 
     async function unPinOneToOneMessages(chat, message, host) {
-        if (messages.pinnedCounter < 100) {
+        if (messages.pinnedCounter > 0) {
             try {
                 const response = await axios.patch(route('unpin.message', {
                     chat: chat,
                     message: message,
                     host: host,
                 }))
-                console.log(response.data)
-                dispatch(setPinnedCounter({counter: messages.pinnedCounter + 1, messageId: message}))
+                dispatch(setPinnedCounter({counter: messages.pinnedCounter - 1, messageId: message}))
                 dispatch(togglePinning(false))
                 
             } catch(error) {

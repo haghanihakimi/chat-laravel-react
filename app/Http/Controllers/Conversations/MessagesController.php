@@ -60,12 +60,7 @@ class MessagesController extends Controller
         $user = Auth::user();
 
         if($username !== $user->username && !Abilities::isBlocked($username) && Abilities::canBlock($username)) {
-            $messages = $host->chats()
-            ->with(['messages' => function ($query) {
-                $query->orderBy('created_at', 'desc');
-            }])
-            ->with('media_forms')
-            ->where('recipient_id', $user->id)
+            $messages = $user->chats($host->id)
             ->get()
             ->each(function($chat) {
                 $chat->status = $chat->sender_id === Auth::user()->id ? "sent" : "received";
@@ -159,16 +154,41 @@ class MessagesController extends Controller
      * @return Void|JsonResponse
      */
     public function removeSingleMessageOneWay($chat,$host) {
+        $host = User::find($host);
         $user = Auth::user();
 
-        if($username !== $user->username && !Abilities::isBlocked($username) && Abilities::canBlock($username)) {
+        if($host->username !== $user->username && !Abilities::isBlocked($host->username) && Abilities::canBlock($host->username)) {
             $delete = Chat::where('id', $chat)
             ->where('sender_id', $user->id)
-            ->where('recipient_id', $host)
+            ->where('recipient_id', $host->id)
             ->update(['deleter_id' => $user->id]);
 
             return response()->json([
                 "messages" => "Selected message removed."
+            ]);
+        }
+        
+        return response()->json(["messages" => "Unauthorized access."]);
+    }
+
+    /**
+     * Removes received message.
+     * "chat" required - it is ID of the selected message/chat
+     * "host" required - It is ID of the user who is receives messages from user who is deleting the message.
+     * @return Void|JsonResponse
+     */
+    public function removeReceivedMessage($chat,$host) {
+        $host = User::find($host);
+        $user = Auth::user();
+
+        if($host->username !== $user->username && !Abilities::isBlocked($host->username) && Abilities::canBlock($host->username)) {
+            $delete = Chat::where('id', $chat)
+            ->where('recipient_id', $user->id)
+            ->where('sender_id', $host->id)
+            ->update(['deleter_id' => $user->id]);
+
+            return response()->json([
+                "messages" => "Message removed."
             ]);
         }
         
@@ -203,7 +223,9 @@ class MessagesController extends Controller
 
     /**
      * pin selected message
+     * "Request" required - Specifies if selected message shold be pinned only for the current user or for both users.
      * "chat" required - it is ID of the selected message/chat
+     * "message" required - It is ID of the message that should be pinned.
      * "host" required - It is ID of the user who is receives messages from user who is deleting the message.
      * @return Void|JsonResponse
      */
@@ -219,6 +241,8 @@ class MessagesController extends Controller
         
 
         $chats = Chat::message($chat, $message, $host, $user)->first();
+        
+        // return response()->json($chats);
 
         if(!is_null($chats) && Chat::pinnedMessages($host, $user)->count() < 100) {
             if($chats->pin($user->id, $request->istwoway)) {
@@ -229,9 +253,33 @@ class MessagesController extends Controller
     }
 
     /**
-     * pin selected message
-     * "chat" required - it is ID of the selected message/chat
+     * Unpin selected message
+     * "chat" required - it is ID of the selected chat
+     * "message" required - It is ID of the message should be unpinned.
      * "host" required - It is ID of the user who is receives messages from user who is deleting the message.
+     * @return Void|JsonResponse
+     */
+    public function unPinOneToOneMessage($chat, $message, $host) {
+        // return response()->json(["Chat" => $chat, "message" => $message, "host" => $host]);
+        $host = User::find($host);
+        $user = Auth::user();
+
+        // return response()->json(["Chat" => $chat, "message" => $message, "host" => $host->id, "user" => $user->id]);
+        
+
+        $chats = Chat::pinnedMessages($host, $user)->where('id', $message)->first();
+
+        if(!is_null($chats)) {
+            if($chats->unpin($user->id)) {
+                return response()->json(["messages" => "Message unpinned"]);
+            }
+            return response()->json(["messages" => "Unable to unpin this message. Please try again later."]);
+        }
+    }
+
+    /**
+     * Get and count number of pinned messages
+     * "username" required - It is username of the user who is chatting with other user.
      * @return Void|JsonResponse
      */
     public function countPinnedOneToOneMessages($username) {

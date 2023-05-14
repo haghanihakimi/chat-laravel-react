@@ -26,6 +26,9 @@ import { usePinOneToOneMessages } from '../../store/actions/messages';
 import { useListeners } from '../../store/actions/listeners';
 import { useListenersLeave } from '../../store/actions/listeners';
 import PinMessagesPopup from '../../components/PinMessagesPopup';
+// import PinMessage from "./alerts/pinMessage";
+import PinMessage from '../../components/alerts/PinMessage'
+import DeleteMessage from '../../components/alerts/DeleteMessage'
 
 export default function({auth, host, media_forms, abilities}) {
     const [data, setData] = useState({
@@ -176,7 +179,7 @@ export default function({auth, host, media_forms, abilities}) {
                                     </div>
                                     <div className='w-7 h-7 rounded-full my-auto ml-2'>
                                         <button onClick={() => {dispatch(togglePinMessagesPopup(true));}} className='w-full h-full rounded-full flex justify-center items-center'>
-                                            <Badge badgeContent={conversations.pinnedCounter} 
+                                            <Badge badgeContent={(conversations.pinnedCounter >= 0) ? conversations.pinnedCounter : 0} 
                                             sx={{"& .MuiBadge-badge": {color: "#f3f3f3",backgroundColor: "#006ce0",width: '24px', height: '24px', borderRadius: '99999px', 'border': theme.value === 'white' ? '2px solid white' : '2px solid #011f44'}}}>
                                                 {
                                                     conversations.pinnedCounter && conversations.pinnedCounter > 0
@@ -287,7 +290,7 @@ export default function({auth, host, media_forms, abilities}) {
                                                                 </Tooltip>
                                                             </div>
                                                         </div>
-                                                        <ChatBubbleMenuSent chat={data.id} user={data.sender_id} host={data.recipient_id} message={message.id} pinned={(message.pinned || message.pinned_by) ? true : false}/>
+                                                        <ChatBubbleMenuSent chat={data.id} user={data.sender_id} host={data.recipient_id} message={message.id} pinned={(message.pinned || message.pinned_by == data.sender_id) ? true : false}/>
                                                     </div>
                                                     : 
                                                     // received message bubbles
@@ -386,6 +389,16 @@ export default function({auth, host, media_forms, abilities}) {
                         </div>
                     </div>
                     {PinMessagesPopupComp}
+                    {
+                        conversations.deletePopup
+                        ? <DeleteMessage user={conversations.data.user} host={conversations.data.receiver} />
+                        : ''
+                    }
+                    {
+                        conversations.pinPopup
+                        ? <PinMessage chat={conversations.data.chat} message={conversations.data.message} host={conversations.data.receiver} />
+                        : ''
+                    }
                 </div>
             } />
         </>

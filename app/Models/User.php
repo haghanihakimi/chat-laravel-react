@@ -73,18 +73,24 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, Contact::class, 'user_id', 'contact_id')->withPivot(['status', 'created_at', 'updated_at']);
     }
 
-    public function chats() {
-        return $this->hasMany(Chat::class, 'recipient_id')
-        ->orWhere(function($query) {
-            $query->where('sender_id', '<>', $this->id)
-            ->where('recipient_id', $this->id)
+    public function chats($userId) {
+        return $this->hasMany(Chat::class, 'sender_id')
+        ->where(function($query) use ($userId) {
+            $query->where('sender_id', $this->id)
+            ->where('recipient_id', $userId)
             ->whereNull('deleter_id');
         })
-        ->orWhere(function($query) {
-            $query->where('sender_id', $this->id)
-            ->where('recipient_id', '<>', $this->id)
-            ->whereNull('deleter_id');
-        })->orderBy('created_at', 'asc');
+        ->orWhere(function($query) use ($userId) {
+            $query->where('sender_id', $userId)
+            ->where('recipient_id', $this->id)
+            ->whereNull('deleter_id')
+            ->orWhere('deleter_id', '!=', $this->id);
+        })
+        ->with(['messages' => function ($query) {
+            $query->orderBy('created_at', 'desc');
+        }])
+        ->with('media_forms')
+        ->orderBy('created_at', 'asc');
     }
 
     public function scopeSearch ($query, $input) {

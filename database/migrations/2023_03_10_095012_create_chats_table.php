@@ -15,15 +15,11 @@ return new class extends Migration
     {
         Schema::create('chats', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('sender_id');
-            $table->unsignedBigInteger('recipient_id');
+            $table->foreignId('sender_id')->nullable()->default(null)->constrained('users')->onDelete('cascade');
+            $table->foreignId('recipient_id')->nullable()->default(null)->constrained('users')->onDelete('cascade');
+            $table->foreignId('deleter_id')->nullable()->default(null)->constrained('users')->onDelete('cascade');
             $table->softDeletes();
-            $table->unsignedBigInteger('deleter_id')->nullable()->default(null);
             $table->timestamps();
-
-            $table->foreign('sender_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('recipient_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('deleter_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
