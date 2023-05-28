@@ -14,6 +14,7 @@ import {
     HiCheck as Accept,
     HiXMark as Cancel,
 } from "react-icons/hi2";
+import moment from 'moment';
 import ProfileMenu from '../../components/ProfileMenu';
 import { useState } from 'react';
 import { useAcceptRequest, useSendRequest, useCancelRequest, useUnfollow } from '../../store/actions/contacts';
@@ -30,7 +31,7 @@ export default function({user, auth, image, abilities}) {
 
     return(
         <>
-            <Layout user={user} title={user.username} auth={auth} body={
+            <Layout moment={moment} title={user.username} auth={auth} body={
                 <div className="w-full h-full relative flex flex-col gap-0 z-10 select-none overflow-hidden">
                     <div className='relative'>
                         <Modal

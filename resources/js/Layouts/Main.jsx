@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getTheme } from '../store/reducers/theme';
 import { usePendingRequestsCounter } from '../store/actions/contacts';
+import { useGetConversations } from '../store/actions/messages';
 import { useListenersLeave } from '../store/actions/listeners';
 import Nav from '../components/MainNav';
 import LeftSidebar from '../components/LeftSidebar';
@@ -11,7 +12,7 @@ import NotificationsPane from '../components/NotificationsPane';
 import ContactsPane from '../components/ContactsPane';
 import SearchPane from '../components/SearchPane';
 
-export default function({auth, title, body}) {
+export default function({auth, host = null, title, body, moment = null}) {
   const messages = useSelector((state) => state.messages)
   const notifications = useSelector((state) => state.notifications)
   const contacts = useSelector((state) => state.contacts)
@@ -25,9 +26,11 @@ export default function({auth, title, body}) {
     incomingFollowListener, 
     cancelFollowRequestListener,
   } = useListenersLeave()
+  const {handleUnreadConversationsCounter} = useGetConversations()
 
 
   useEffect(() => {
+    dispatch(getTheme())
     const checkSmallScreen = () => {
         if (window.innerWidth <= 720) {
             setData({
@@ -39,13 +42,12 @@ export default function({auth, title, body}) {
             }) 
         }
     }
-
+  
     window.addEventListener('resize', checkSmallScreen)
     window.addEventListener('load', checkSmallScreen)
-    
-    dispatch(getTheme())
 
     handlePendingRequestsCounter()
+    handleUnreadConversationsCounter()
 
     return() =>{
       dispatch(getTheme())
@@ -64,11 +66,13 @@ export default function({auth, title, body}) {
         }
         <div className='w-full h-screen relative flex flex-row gap-0 flex-nowrap'>
             {!data.smallScreen ? <LeftSidebar className="xxxl:visible xxl:visible xl:visible lg:visible md:invisible sm:invisible xs:invisible xsm:invisible" /> : ''}
-            { messages.pane ? <MessagesPane /> : '' }
+            { messages.pane ? <MessagesPane moment={moment} auth={auth} /> : '' }
             { notifications.pane ? <NotificationsPane /> : '' }
-            { contacts.pane ? <ContactsPane /> : '' }
+            { contacts.pane ? <ContactsPane moment={moment} /> : '' }
             { search.pane ? <SearchPane /> : '' }
-            {body}
+            <div className='w-full relative h-auto'>
+              {body}
+            </div>
         </div>
       </div>
     </>

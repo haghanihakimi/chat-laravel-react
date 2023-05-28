@@ -24,7 +24,6 @@ import {
     HiArrowRightOnRectangle as SignOut,
 } from "react-icons/hi2";
 import { SiTheconversation } from "react-icons/si";
-import { usePendingRequestsCounter } from "../store/actions/contacts";
 import { useEffect } from "react";
 
 
@@ -69,12 +68,15 @@ export default function({}) {
                         <button onClick={() => { dispatch(MessagesPane(messages.pane ? false : true)); dispatch(NotificationsPane(false)); dispatch(ContactsPane(false)); dispatch(SearchPane(false)); } } 
                         type="button" 
                         className="w-12 h-12 flex justify-center items-center">
+                            <Badge badgeContent={messages.unreadConversations} 
+                            sx={{"& .MuiBadge-badge": {color: "#f3f3f3",backgroundColor: "#ff003b", right: "2px", top: "4px"}}}>
                             {
-                                messages.pane ?
-                                <MessagesFill className={`w-7 h-7 ${messages.pane ? 'text-blue' : 'text-black dark:text-milky-white'}`} />
+                                messages.pane || messages.unreadConversations > 0 ?
+                                <MessagesFill className={`w-7 h-7 ${messages.pane || messages.unreadConversations > 0 ? 'text-blue' : 'text-black dark:text-milky-white'}`} />
                                 :
                                 <MessagesOuline className="w-7 h-7 text-black dark:text-milky-white" />
                             }
+                            </Badge>
                         </button>
                         <span className="inline-block invisible opacity-0 transition duration-150 pointer-events-none w-fit h-fit px-2 py-1 translate-x-[50px] top-0 bottom-0 my-auto absolute rounded bg-white text-black text-sm font-medium shadow-lg border border-black border-opacity-10 dark:text-milky-white dark:bg-black dark:border-milky-white dark:border-opacity-10 group-hover:visible group-hover:opacity-100">
                             Messages

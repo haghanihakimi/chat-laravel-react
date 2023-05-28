@@ -55,12 +55,16 @@ class User extends Authenticatable
 
     public function blocks()
     {
-        return $this->belongsToMany(User::class, Block::class, 'blocked_user_id', 'user_id')->withPivot(['is_blocked', 'created_at', 'updated_at']);
+        return $this->belongsToMany(User::class, Block::class, 'blocked_user_id', 'user_id')
+        ->withPivot(['is_blocked', 'created_at', 'updated_at'])
+        ->wherePivot('is_blocked', true);
     }
 
     public function blockedBy()
     {
-        return $this->belongsToMany(User::class, Block::class, 'user_id', 'blocked_user_id')->withPivot(['is_blocked', 'created_at', 'updated_at']);
+        return $this->belongsToMany(User::class, Block::class, 'user_id', 'blocked_user_id')
+        ->withPivot(['is_blocked', 'created_at', 'updated_at'])
+        ->wherePivot('is_blocked', true);
     }
 
     public function followers()
@@ -87,9 +91,19 @@ class User extends Authenticatable
             ->orWhere('deleter_id', '!=', $this->id);
         })
         ->with(['messages' => function ($query) {
-            $query->orderBy('created_at', 'desc');
+            $query->orderBy('created_at', 'desc')
+                ->with('reactions');
         }])
         ->with('media_forms')
+        ->orderBy('created_at', 'asc');
+    }
+
+    public function conversations() {
+        return $this->hasMany(Conversation::class, 'sender_id')
+        ->orWhere('recipient_id', $this->id)
+        ->with(['users' => function($query) {
+            $query->where('id', '!=', $this->id);
+        }])
         ->orderBy('created_at', 'asc');
     }
 

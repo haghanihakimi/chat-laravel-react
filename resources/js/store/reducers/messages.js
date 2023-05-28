@@ -5,6 +5,8 @@ export const messagesSlice = createSlice({
   initialState: {
     pane: false,
     messages: [],
+    conversations: [],
+    unreadConversations: 0,
     loadingMessages: false,
     sendingMessage: false,
     deletePopup: {popup: false, option: false,},
@@ -18,7 +20,10 @@ export const messagesSlice = createSlice({
       message: '',
       sender: '',
       receiver: '',
-    }
+    },
+    reacting: false,
+    loadingConversations: false,
+    isBlocked: false,
   },
   reducers: {
     setPane: (state, action) => {
@@ -56,12 +61,25 @@ export const messagesSlice = createSlice({
       state.messages.push(action.payload)
     },
     seenMessages: (state, action) => {
-      for(var i = 0;i >= state.messages.length;i++) {
-        console.log(i)
-      }
+      state.messages.forEach(chat => {
+        if(chat.id == action.payload.chat && action.payload.message !== null) {
+          const message = chat.messages.find(message => message.id == action.payload.message)
+          if(message) {
+            message.seen_at = action.payload.seen_at
+          }
+        }
+      })
     },
     setPinneds: (state, action) => {
-      state.pinnedMessages = action.payload
+      action.payload.messages.forEach((item) => {
+        const isPinned = item.messages.filter((message) => {
+          return message.pinned || (message.pinned_by == action.payload.currentUser)
+        }).some(Boolean)
+        
+        if (isPinned) {
+          state.pinnedMessages.push(item);
+        }
+      })
     },
     setPinnedCounter: (state, action) => {
       state.pinnedCounter = action.payload.counter
@@ -69,7 +87,18 @@ export const messagesSlice = createSlice({
         state.messages.map(data => {
           data.messages.map(message => {
             if (message.id == action.payload.messageId) {
-              message.pinned = message.pinned ? false : true
+              const index = state.pinnedMessages.findIndex((message) => message.id == action.payload.messageId);
+              if(message.pinned) {
+                message.pinned = false
+                if (index !== -1) {
+                  state.pinnedMessages.splice(index, 1);
+                }
+                return
+              } else {
+                message.pinned = true
+                state.pinnedMessages.push(data);
+                return
+              }
             }
           })
         })
@@ -80,6 +109,47 @@ export const messagesSlice = createSlice({
     },
     togglePinMessagesPopup: (state, action) => {
       state.pinMessagesPopup = action.payload
+    },
+    reactToMessage: (state, action) => {
+      state.messages
+      .filter(chat => chat.id == action.payload.chat && chat.messages.some(message => message.id == action.payload.message))
+      .forEach(chat => {
+        const message = chat.messages.find(message => message.id == action.payload.message)
+        if (message) {
+          if(action.payload.reaction !== null) {
+            const reaction = message.reactions.find(reaction => reaction.user_id == action.payload.user && reaction.message_id == action.payload.message)
+            if(reaction) {
+              reaction.reaction = action.payload.reaction
+            } else {
+              message.reactions.push(action.payload.reaction)
+            }
+          } else {
+            const index = message.reactions.findIndex((reaction) => reaction.user_id == action.payload.user && reaction.message_id == action.payload.message);
+            if (index !== -1) {
+              message.reactions.splice(index, 1);
+            }
+          }
+        }
+      })
+    },
+    toggleReacting: (state, action) => {
+      state.reacting = action.payload
+    },
+    fetchConversations: (state, action) => {
+      state.conversations = action.payload
+    },
+    toggleLoadingConversations: (state, action) => {
+      state.loadingConversations = action.payload
+    },
+    fillUnreadConversations: (state, action) => {
+      state.unreadConversations = action.payload
+    },
+    emptyConversation: (state, action) => {
+      state.messages = []
+      state.conversations = []
+    },
+    toggleIsBlocked: (state, action) => {
+      state.isBlocked = action.payload
     }
   },
 })
@@ -100,6 +170,13 @@ export const {
   setPinnedCounter,
   togglePinning,
   togglePinMessagesPopup,
+  reactToMessage,
+  toggleReacting,
+  toggleLoadingConversations,
+  fetchConversations,
+  fillUnreadConversations,
+  emptyConversation,
+  toggleIsBlocked,
 } = messagesSlice.actions
 
 export default messagesSlice.reducer

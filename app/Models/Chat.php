@@ -19,6 +19,8 @@ class Chat extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'conversation_id',
+        'chat_id',
         'sender_id',
         'recipient_id',
         'deleter_id',
@@ -27,7 +29,12 @@ class Chat extends Model
     protected $dates = ['deleted_at'];
 
     public function users() {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'recipient_id');
+    }
+
+    public function conversations()
+    {
+        return $this->belongsTo(Conversation::class, 'conversation_id');
     }
 
     public function scopeChats($query, $user, $host) {
@@ -62,10 +69,13 @@ class Chat extends Model
     public function scopePinnedMessages($query, $host, $user) {
         return $query->where(function($query) use ($host, $user) {
             $query->where('sender_id', $user->id)
-            ->where('recipient_id', $host->id);
+            ->where('recipient_id', $host->id)
+            ->whereNull('deleter_id');
         })->orWhere(function($query) use ($host, $user) {
             $query->where('sender_id', $host->id)
-            ->where('recipient_id', $user->id);
+            ->where('recipient_id', $user->id)
+            ->whereNull('deleter_id')
+            ->orWhere('deleter_id', '!=', $user->id);
         })
         ->with(['messages' => function($query) use($user) {
             $query->where('pinned_by', $user->id)

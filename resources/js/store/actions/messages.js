@@ -9,6 +9,12 @@ import {
     setPinnedCounter,
     setPinneds,
     togglePinning, 
+    reactToMessage,
+    toggleReacting,
+    toggleLoadingConversations,
+    fetchConversations,
+    fillUnreadConversations,
+    emptyConversation,
 } from '../reducers/messages'
 import route from 'ziggy-js'
 import axios from 'axios'
@@ -18,11 +24,12 @@ export function useGetMessages(username) {
     const messages = useSelector(state => state.messages)
     const dispatch = useDispatch()
 
-    async function handleGetMessages(input)  {
+    async function handleGetMessages(input) {
         dispatch(toggleLoadingMessages(true))
         try {
             const response = await axios.get(route('get.messages', {username: username}), {params: {keywords: input}})
-            dispatch(setMessages(response.data.messages))
+            dispatch(setMessages(response.data.messages.data))
+            dispatch(setPinneds({messages: response.data.messages.data, currentUser: response.data.currentUser}))
             dispatch(toggleLoadingMessages(false))
         } catch(error) {
             dispatch(toggleLoadingMessages(false))
@@ -31,6 +38,73 @@ export function useGetMessages(username) {
     }
 
     return {handleGetMessages}
+}
+
+// Get all received messages for the current user
+export function useGetConversations() {
+    const messages = useSelector(state => state.messages)
+    const dispatch = useDispatch()
+    const { 
+        data: deleteConversationData, 
+        post: deleteConversation, 
+        processing: deletingConversation, 
+        errors: deleteConversationErrors 
+    } = useForm({})
+
+
+    async function handleGetConversations(input) {
+        dispatch(toggleLoadingConversations(true))
+        try {
+            if(messages.conversations.length <= 0) {
+                const response = await axios.get(route('get.conversations'), 
+                {params: {keywords: input}})
+                dispatch(fetchConversations(response.data.conversations))
+            }
+            
+            dispatch(toggleLoadingConversations(false))
+        } catch(error) {
+            dispatch(toggleLoadingConversations(false))
+            console.log(error)
+        }
+    }
+
+    async function handleUnreadConversationsCounter() {
+        // fillUnreadConversations
+        try {
+            const response = await axios.get(route('count.unread.conversations'))
+            dispatch(fillUnreadConversations(response.data.counter))
+            
+            dispatch(toggleLoadingConversations(false))
+        } catch(error) {
+            dispatch(toggleLoadingConversations(false))
+            console.log(error)
+        }
+    }
+
+    async function handleRemoveConversation(host, conversation) {
+        try {
+            if (!deletingConversation) {
+                deleteConversation(route('remove.conversation', {host: host, conversation: conversation}), {
+                    onSuccess: (response) => {
+                        alert(response.props.flash.message.removeConversation)
+                        dispatch(emptyConversation())
+                    }
+                })
+            }
+        } catch(error) {
+            console.log(error)
+        }
+    }
+
+    return {
+        handleGetConversations, 
+        handleUnreadConversationsCounter,
+        handleRemoveConversation,
+        deleteConversationData,
+        deleteConversation,
+        deletingConversation,
+        deleteConversationErrors,
+    }
 }
 
 //Delete message function
@@ -95,7 +169,6 @@ export function useDeleteMessages(host) {
     }
 }
 
-
 /**
  * handle all send message events including one to one, one to many or vice versa
  * @param {*} host 
@@ -149,7 +222,7 @@ export function useMarkAsSeen() {
         dispatch(toggleLoadingMessages(true))
         try {
             const response = await axios.post(route('seen.one.to.one.message', {username: host}))
-            // console.log(response.data)
+            console.log(response.data)
             dispatch(toggleLoadingMessages(false))
         } catch(error) {
             dispatch(toggleLoadingMessages(false))
@@ -173,7 +246,7 @@ export function usePinOneToOneMessages() {
     const dispatch = useDispatch()
 
     async function pinOneToOneMessages(chat, message, host, isTwoway) {
-        console.log(chat, message, host, isTwoway)
+        console.log(message)
         if (messages.pinnedCounter < 100) {
             try {
                 const response = await axios.patch(route('pin.message', {
@@ -215,19 +288,6 @@ export function usePinOneToOneMessages() {
         }
     }
     
-    async function getPinnedOneToOneMessages(username) {
-        dispatch(togglePinning(true))
-        try {
-            const response = await axios.get(route('get.pinned.messages', {username: username}))
-            console.log(response.data)
-            dispatch(setPinneds(response.data.pinnedMessages))
-            dispatch(togglePinning(false))
-        } catch(error) {
-            dispatch(togglePinning(false))
-            console.log(error)
-        } 
-    }
-    
     async function countPinnedOneToOneMessages(username) {
         dispatch(togglePinning(true))
         try {
@@ -244,7 +304,48 @@ export function usePinOneToOneMessages() {
     return {
         pinOneToOneMessages,
         unPinOneToOneMessages,
-        getPinnedOneToOneMessages,
         countPinnedOneToOneMessages,
+    }
+}
+
+/**
+ * Message reactions
+ * @param {*} host 
+ * @returns
+ */
+export function useMessageReactions() {
+    const messages = useSelector(state => state.messages)
+    const dispatch = useDispatch()
+
+    async function handleMessageReaction(chat, message, host, reaction) {
+        dispatch(toggleReacting(true))
+        if (messages.pinnedCounter < 100) {
+            try {
+                const response = await axios.post(route('like.message', {
+                    chat: chat,
+                    message: message,
+                    host: host,
+                    reaction: reaction
+                }))
+                dispatch(reactToMessage({
+                    'chat': response.data.chat,
+                    'message': response.data.message,
+                    'user': response.data.user,
+                    'host': response.data.host,
+                    'reaction': response.data.reaction
+                }))
+                dispatch(toggleReacting(false))
+            } catch(error) {
+                dispatch(toggleReacting(false))
+                console.log(error)
+            }
+        } else {
+            alert("maximum pins exceeded.")
+            dispatch(toggleReacting(false))
+        }
+    }
+
+    return {
+        handleMessageReaction
     }
 }

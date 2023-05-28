@@ -42,9 +42,9 @@ export default function({request}) {
     const { handleSendRequest, sendingRequest } = useSendRequest(request.username)
     const { handleUnfollow, unFollowing } = useUnfollow(request.username)
     const { handleRemoveFollower, removingFollower } = useRemoveFollower(request.username)
-    const { handleMarkSpamRequest, ignoringRequest } = useMarkSpamRequest(request.username)
+    const { handleMarkSpamRequest, ignoringRequest } = useMarkSpamRequest()
     const { handleBlockUser, blockingUser } = useBlockUser(request.username)
-    const { handleUnBlockUser, unBlockingUser } = useUnBlockUser(request.username)
+    const { handleUnBlockUser, unBlockingUser } = useUnBlockUser()
 
     useEffect(() => {
         function hideMenu(event){
@@ -228,7 +228,7 @@ export default function({request}) {
                                 {
                                     contacts.abilities.ability.canIgnore
                                     ?
-                                    <form method="POST" onSubmit={e => { e.preventDefault();handleMarkSpamRequest() }}>
+                                    <form method="POST" onSubmit={e => { e.preventDefault();handleMarkSpamRequest(request.username) }}>
                                         <button type='submit' disabled={ignoringRequest} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${ignoringRequest ? 'opacity-50' : 'opacity-100'}`}>
                                             <span className='w-4 h-4 inline-block relative shrink-0 p-0 flex justify-center items-center'>
                                                 {
@@ -272,7 +272,7 @@ export default function({request}) {
                                 {
                                     contacts.abilities.ability.canUnblock
                                     ?
-                                    <form method="POST" onSubmit={e => { e.preventDefault();handleUnBlockUser() }}>
+                                    <form method="POST" onSubmit={e => { e.preventDefault();handleUnBlockUser(request.username) }}>
                                         <button type='submit' disabled={unBlockingUser} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${unBlockingUser ? 'opacity-50' : 'opacity-100'}`}>
                                             <span className='w-4 h-4 inline-block relative shrink-0 p-0 flex justify-center items-center'>
                                                 {

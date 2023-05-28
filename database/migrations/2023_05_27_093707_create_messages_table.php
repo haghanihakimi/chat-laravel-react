@@ -24,6 +24,7 @@ return new class extends Migration
             ->default(null)
             ->constrained('users')
             ->onDelete('cascade');
+            $table->timestamp('pinned_at')->nullable()->default(null);
             $table->timestamps();
         });
     }

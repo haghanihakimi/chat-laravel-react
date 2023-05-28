@@ -10,6 +10,7 @@ import {
     HiOutlinePhone as Phone,
     HiUser as User,
 } from "react-icons/hi2";
+import moment from 'moment';
 import { BiMaleSign as Male, BiFemaleSign as Female } from "react-icons/bi";
 import Loading from '../../Partials/Loading';
 import { createRef, useRef, useState } from 'react';
@@ -110,7 +111,7 @@ export default ({user, auth, image, flash}) => {
 
     return(
         <>
-            <Layout title={user.username} auth={auth} body={
+            <Layout title={user.username} moment={moment} auth={auth} body={
                 <div className="w-full h-full relative flex flex-col gap-0 z-10 select-none overflow-hidden">
                     <div className='w-full h-full overflow-auto relative flex flex-row gap-0 justify-center items-center'>
                         <div className='w-full max-w-sm h-auto bg-white flex flex-col mx-auto p-4 rounded-lg border border-black border-opacity-10 shadow-lg dark:border-milky-white dark:border-opacity-5 dark:bg-black'>

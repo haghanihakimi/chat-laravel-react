@@ -8,7 +8,7 @@ import {
  } from "react-icons/ai";
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { toggleDeletePopup, togglePinPopup, setData } from "../store/reducers/messages";
+import { toggleDeletePopup, togglePinPopup, setData, togglePinMessagesPopup } from "../store/reducers/messages";
 import { usePinOneToOneMessages } from "../store/actions/messages";
 import { useState } from 'react';
 import { useDispatch } from "react-redux";
@@ -50,7 +50,7 @@ export default function({ chat, host, message, pinned}) {
                 aria-expanded={open ? 'true' : undefined}
                 onClick={handleClick}
                 className='w-full h-full rounded-full flex justify-center items-center'>
-                    <Options className='w-6 h-6 text-black dark:text-milky-white' />
+                    <Options className='w-6 h-6 text-black text-opacity-70 dark:text-milky-white dark:text-opacity-70' />
                 </button>
                 <Menu
                 id="basic-menu"
@@ -61,7 +61,7 @@ export default function({ chat, host, message, pinned}) {
                 'aria-labelledby': 'basic-button',
                 }}
                 sx={{"& .MuiMenu-paper": {minWidth: '100px', padding: '0', color: "#f3f3f3",backgroundColor: "rgba(97, 97, 97, 1.0   )",boxShadow:"rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px"}}}>
-                    <MenuItem onClick={e => { dispatch(toggleDeletePopup({popup: true, option: false}));handleClose(e) }} className="flex flex-row gap-2 items-center justify-start">
+                    <MenuItem onClick={e => { dispatch(togglePinMessagesPopup(false));dispatch(toggleDeletePopup({popup: true, option: false}));handleClose(e) }} className="flex flex-row gap-2 items-center justify-start">
                         <Delete className="w-5 h-5 text-milky-white" />
                         <span className="text-md">
                             Remove
@@ -75,7 +75,7 @@ export default function({ chat, host, message, pinned}) {
                                 Unpin
                             </span>
                         </MenuItem>
-                        : <MenuItem onClick={e => { dispatch(togglePinPopup(true));handleClose(e) }} className="flex flex-row gap-2 items-center justify-start">
+                        : <MenuItem onClick={e => { dispatch(togglePinMessagesPopup(false));dispatch(togglePinPopup(true));handleClose(e) }} className="flex flex-row gap-2 items-center justify-start">
                             <Pin className="w-5 h-5 text-milky-white animate-bounceBubbles" />
                             <span className="text-md">
                                 Pin

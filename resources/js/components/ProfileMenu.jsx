@@ -20,9 +20,9 @@ export default function({abilities, user}) {
     })
     const wrapper = useRef(null)
     const { handleRejectRequest, rejectingRequest } = useRejectRequest(user.username)
-    const { handleMarkSpamRequest, ignoringRequest } = useMarkSpamRequest(user.username)
+    const { handleMarkSpamRequest, ignoringRequest } = useMarkSpamRequest()
     const { handleBlockUser, blockingUser } = useBlockUser(user.username)
-    const { handleUnBlockUser, unBlockingUser } = useUnBlockUser(user.username)
+    const { handleUnBlockUser, unBlockingUser } = useUnBlockUser()
 
     useEffect(() => {
         function hideMenu(event){
@@ -52,7 +52,6 @@ export default function({abilities, user}) {
                 {
                     data.menu ? 
                     <div ref={wrapper} className="min-w-[120px] h-auto bg-white border border-black border-opacity-10 absolute rounded shadow-lg top-9 -right-1 flex flex-col gap-0 animate-fadeIn dark:border-milky-white dark:border-opacity-10 dark:bg-dark-blue">
-                        
                         {
                             abilities.canReject
                             ? <form onSubmit={e => { e.preventDefault();handleRejectRequest() } }>
@@ -75,7 +74,7 @@ export default function({abilities, user}) {
                         }
                         {
                             abilities.canMarkSpam
-                            ? <form onSubmit={e => { e.preventDefault();handleMarkSpamRequest() } }>
+                            ? <form onSubmit={e => { e.preventDefault();handleMarkSpamRequest(user.username) } }>
                                 <button type='submit' disabled={ignoringRequest} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${ignoringRequest ? 'opacity-50' : 'opacity-100'}`}>
                                     <span className='w-4 h-4 inline-block relative shrink-0 p-0 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
                                         {
@@ -111,7 +110,7 @@ export default function({abilities, user}) {
                                     </span>
                                 </button>
                             </form>
-                            : <form onSubmit={e => { e.preventDefault();handleUnBlockUser() } }>
+                            : <form onSubmit={e => { e.preventDefault();handleUnBlockUser(user.username) } }>
                                 <button type='submit' disabled={unBlockingUser} className={`w-full flex p-2 py-1 text-left flex flex-row gap-2 items-center ${unBlockingUser ? 'opacity-50' : 'opacity-100'}`}>
                                     <span className='w-4 h-4 inline-block relative shrink-0 p-0 border-r border-milky-white border-opacity-20 flex justify-center items-center'>
                                         {
@@ -131,7 +130,6 @@ export default function({abilities, user}) {
                     </div>
                     : ''
                 }
-                
             </div>
         </>
     )

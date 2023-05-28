@@ -13,6 +13,7 @@ use App\Models\Contact;
 use App\Models\Block;
 use App\Events\SendFollowRequest as FollowRequestEvent;
 use App\Events\CancelFollowRequest as CancelFollowRequestEvent;
+use App\Events\BlockEvent;
 
 class ContactsController extends Controller
 {
@@ -83,6 +84,48 @@ class ContactsController extends Controller
         return back()->with('message', ['ignoreRequest' => "OOPS! Sorry, something went wrong with ignoring this user. Please try again later."]);
     }
 
+    public function unSpamFollowRequest($username) {
+        $user = Auth::guard()->user();
+        $host = User::where('username', $username)->first();
+        
+        if(Abilities::canUnspam($host->username)) {
+            $request = Contact::where('user_id', $host->id)
+            ->where('contact_id', $user->id)
+            ->where('status', 'spam')->update(['status' => 'rejected']);
+            if ($request) {
+                return back()->with('message', ['unignoreRequest' => "You successfully removed ".$host->username." from spams list."]);
+            }
+            return back()->with('message', ['unignoreRequest' => "OOPS! Sorry, something went wrong with removing ".$host->username." from spams list. Please try again later."]);
+        }
+        return back()->with('message', ['unignoreRequest' => "OOPS! Sorry, something went wrong with remove this user from spams list. Please try again later."]);
+    }
+
+    public function getSpammedUsers(Request $request) {
+        $user = Auth::user();
+        $ignoredUsers = $user->followers()->wherePivot('status', 'spam')
+        ->get()
+        ->each(function($user) {
+            $user->media_forms = $user->media_forms;
+        });
+
+        $paginator = new Paginator(
+            array_slice($ignoredUsers->toArray(), ($request->input('page') - 1) * 50, 50),
+            $ignoredUsers->count(),
+            15,
+            $request->input('page'),
+            [
+                'path'  => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
+
+        return response()->json([
+            "ignoredUsers" => $paginator,
+        ]);
+
+        return response()->json();
+    }
+
     public function cancelFollowRequest($username) {
         if(!Abilities::isBlocked($username) && Abilities::canCancelRequest($username)) {
             $host = User::where('username', $username)->first();
@@ -151,6 +194,8 @@ class ContactsController extends Controller
                     $this->unFollow($username);
                     $this->removeFollower($username);
 
+                    event(new BlockEvent($user, $host, true));
+
                     return back()->with('message', ['blockUser' => "You just blocked ".$host->username."."]);
                 }
                 return back()->with('message', ['blockUser' => "You cannot block this user at this moment."]);
@@ -166,14 +211,39 @@ class ContactsController extends Controller
             $block = Block::where('user_id', $user->id)->where('blocked_user_id', $host->id)
             ->where('is_blocked', true)->first();
             if ($host && $block) {
-                // event(new FollowRequestEvent(Auth::guard()->user(), $host));
                 $block->is_blocked = false;
                 $block->save();
+
+                event(new FollowRequestEvent(Auth::guard()->user(), $host));
+                event(new BlockEvent($user, $host, false));
+
                 return back()->with('message', ['unBlockUser' => "You just unblocked ".$host->username."."]);
             }
             return back()->with('message', ['unBlockUser' => "You cannot unblock this user at this moment 1."]);
         }
         return back()->with('message', ['unBlockUser' => "You cannot unblock this user at this moment 2."]);
+    }
+
+    public function getBlockedUsers(Request $request) {
+        $blockedUsers = Abilities::blockList()->each(function($user) {
+            $user->media_forms = $user->media_forms;
+        });
+        $paginator = new Paginator(
+            array_slice($blockedUsers->toArray(), ($request->input('page') - 1) * 50, 50),
+            $blockedUsers->count(),
+            15,
+            $request->input('page'),
+            [
+                'path'  => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
+
+        return response()->json([
+            "blockedUsers" => $paginator,
+        ]);
+
+        return response()->json();
     }
 
     public function getFollowers(Request $request) {

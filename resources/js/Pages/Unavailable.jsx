@@ -7,12 +7,13 @@ import {
     HiUserPlus as Follow,
     HiUser as User,
 } from "react-icons/hi2";
+import moment from 'moment';
 
 export default function({auth}) {
 
     return(
         <>
-            <Layout title='Unavailable Page'  auth={auth} body={
+            <Layout title='Unavailable Page' moment={moment}  auth={auth} body={
                 <div className="w-full h-full relative flex flex-col justify-center items-center gap-0 z-10 select-none overflow-hidden">
                     <h2 className='text-black text-lg font-semibold text-opacity-70 text-center dark:text-milky-white dark:text-opacity-70'>
                         This page is either removed or temporarily unavailable. <br />

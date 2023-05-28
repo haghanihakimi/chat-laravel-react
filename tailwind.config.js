@@ -21,20 +21,6 @@ module.exports = {
       xxl: '1920px',
       xxxl: '1440px',
     },
-    colors: {
-      transparent: 'transparent',
-      'dark-blue': '#011f44',
-      'blue': '#006ce0',
-      'yellow': '#ffce4e',
-      'warm-blue': '#107ad8',
-      'black': '#0c172c',
-      'smooth-black': '#10203c',
-      'white': '#FFFFFF',
-      'milky-white': '#f3f3f3',
-      'red': '#ff003b',
-      'orange': '#ff8f05',
-      'green': '#00db6a',
-    },
     fontFamily: {
       sans: ['Graphik', 'Poppins', 'sans-serif'],
       serif: ['Merriweather', 'Noto Serif', 'serif'],
@@ -54,6 +40,20 @@ module.exports = {
       '7xl': '5rem',
     },
     extend: {
+      colors: {
+        transparent: 'transparent',
+        'dark-blue': '#011f44',
+        'blue': '#006ce0',
+        'yellow': '#ffce4e',
+        'warm-blue': '#107ad8',
+        'black': '#0c172c',
+        'smooth-black': '#10203c',
+        'white': '#FFFFFF',
+        'milky-white': '#f3f3f3',
+        'red': '#ff003b',
+        'orange': '#ff8f05',
+        'green': '#00db6a',
+      },
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0' },

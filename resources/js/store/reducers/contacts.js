@@ -19,6 +19,12 @@ export const contactsSlice = createSlice({
     pendingContacts: 0,
     loading: false,
     loadingAbilities: false,
+    blockedUsersPopup: false,
+    ignoredUsersPopup: false,
+    blockedUsers: [],
+    ignoredUsers: [],
+    loadingBlockedUsers: false,
+    loadingIgnoredUsers: false,
   },
   reducers: {
     setPane: (state, action) => {
@@ -97,6 +103,20 @@ export const contactsSlice = createSlice({
     setAbilities: (state, action) => {
       state.abilities = action.payload
     },
+    modifyAbilities: (state, action) => {
+      if(action.payload.username == state.abilities.user) {
+        state.abilities.ability.isBlocked = action.payload.isBlocked
+        state.abilities.ability.canFollow = action.payload.canFollow
+        state.abilities.ability.canUnfollow = action.payload.canUnfollow
+        state.abilities.ability.canBlock = action.payload.canBlock
+        state.abilities.ability.canUnblock = action.payload.canUnblock
+        state.abilities.ability.canReject = action.payload.canReject
+        state.abilities.ability.canAccept = action.payload.canAccept
+        state.abilities.ability.canCancelRequest = action.payload.canCancelRequest
+        state.abilities.ability.canIgnore = action.payload.canIgnore
+        state.abilities.ability.canRemove = action.payload.canRemove
+      }
+    },
     removeFollowerFromList: (state, action) => {
       let i = state.followers.map(user => user.username).indexOf(action.payload)
       state.followers.splice(i, 1)
@@ -113,6 +133,36 @@ export const contactsSlice = createSlice({
       let i = state.sentRequests.map(user => user.username).indexOf(action.payload)
       state.sentRequests.splice(i, 1)
     },
+    fillBlockedUsers: (state, action) => {
+      state.blockedUsers = action.payload
+    },
+    reduceBlockedUsers: (state, action) => {
+      const index = state.blockedUsers.findIndex((user) => user.username == action.payload);
+      if (index !== -1) {
+        state.blockedUsers.splice(index, 1);
+      }
+    },
+    fillIgnoredUsers: (state, action) => {
+      state.ignoredUsers = action.payload
+    },
+    reduceIgnoredUsers: (state, action) => {
+      const index = state.ignoredUsers.findIndex((user) => user.username == action.payload);
+      if (index !== -1) {
+        state.ignoredUsers.splice(index, 1);
+      }
+    },
+    toggleBlockedUsersPopup: (state, action) => {
+      state.blockedUsersPopup = action.payload
+    },
+    toggleIgnoredUsersPopup: (state, action) => {
+      state.ignoredUsersPopup = action.payload
+    },
+    toggleLoadingBlockedUsers: (state, action) => {
+      state.loadingBlockedUsers = action.payload
+    },
+    toggleLoadingIgnoredUsers: (state, action) => {
+      state.loadingIgnoredUsers = action.payload
+    }
   },
 })
 
@@ -127,12 +177,21 @@ export const {
   fillFollowerRequests,
   fillSentRequests,
   setAbilities,
+  modifyAbilities,
   setLoading, 
   toggleLoadingAbilities,
   removeFollowerFromList,
   removeFollowingUserFromList,
   removeFollowerRequest,
   removeFollowingRequest,
+  fillBlockedUsers,
+  reduceBlockedUsers,
+  fillIgnoredUsers,
+  reduceIgnoredUsers,
+  toggleBlockedUsersPopup,
+  toggleIgnoredUsersPopup,
+  toggleLoadingBlockedUsers,
+  toggleLoadingIgnoredUsers,
 } = contactsSlice.actions
 
 export default contactsSlice.reducer

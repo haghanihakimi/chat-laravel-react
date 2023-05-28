@@ -5,8 +5,11 @@ import { setPaneList } from "../store/reducers/contacts"
 import FollowersList from "./Contacts/FollowersList"
 import FollowingsList from "./Contacts/FollowingsList"
 import Requests from "./Contacts/Requests"
+import ContactsPaneMoreMenu from "./ContactsPaneMoreMenu"
+import BlockedUsers from "./Contacts/BlockedUsers"
+import IgnoredUsers from "./Contacts/IgnoredUsers"
 
-export default function({}) {
+export default function({moment}) {
     const contacts = useSelector((state) => state.contacts)
     const dispatch = useDispatch()
 
@@ -17,7 +20,7 @@ export default function({}) {
                 <div className="w-full h-auto relative flex flex-col">
                     {/* List header */}
                     <div className="w-full h-14 flex items-center justify-center relative top-0 left-0 z-10 bg-white border-b border-black border-opacity-10 dark:border-milky-white dark:border-opacity-10 dark:bg-dark-blue">
-                        <div className="text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+                        <div className="w-full flex flex-row gap-0 justify-center items-center text-sm font-medium text-center text-gray-500 dark:text-gray-400">
                             <ul className="flex flex-wrap -mb-px">
                                 <li>
                                     <button 
@@ -44,6 +47,9 @@ export default function({}) {
                                     </button>
                                 </li>
                             </ul>
+                            <div className="w-8 h-full flex justify-center items-center">
+                                <ContactsPaneMoreMenu />
+                            </div>
                         </div>
                     </div>
                     {/* Followers List */}
@@ -60,6 +66,20 @@ export default function({}) {
                     {
                         contacts.paneList.requests ?
                         <Requests /> : ''
+                    }
+                    
+                    {/* Blocked users list popup */}
+                    {
+                        contacts.blockedUsersPopup
+                        ? <BlockedUsers moment={moment} />
+                        : ''
+                    }
+                    
+                    {/* Ignored users list popup */}
+                    {
+                        contacts.ignoredUsersPopup
+                        ? <IgnoredUsers moment={moment} />
+                        : ''
                     }
                 </div>
             </div>

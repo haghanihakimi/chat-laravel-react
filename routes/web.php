@@ -41,9 +41,12 @@ Route::middleware(['auth'])->group(function() {
         Route::patch('/user/remove/follower/{username}', 'removeFollower')->where('username', '[a-zA-Z0-9_]+')->name('remove.follower');
         Route::patch('/user/reject/follower/request/{username}', 'rejectFollowRequest')->where('username', '[a-zA-Z0-9_]+')->name('reject.follower.request');
         Route::patch('/user/ignore/follower/request/{username}', 'spamFollowRequest')->where('username', '[a-zA-Z0-9_]+')->name('ignore.follower.request');
+        Route::patch('/user/unignore/follower/request/{username}', 'unSpamFollowRequest')->where('username', '[a-zA-Z0-9_]+')->name('unignore.follower.request');
         Route::post('/user/block/{username}', 'blockUser')->where('username', '[a-zA-Z0-9_]+')->name('block.user');
         Route::post('/user/unblock/{username}', 'unBlockUser')->where('username', '[a-zA-Z0-9_]+')->name('unblock.user');
         Route::get('/user/abilities/{username}', 'getAbilities')->where('username', '[a-zA-Z0-9_]+')->name('user.abilities');
+        Route::get('/list/blocked/users', 'getBlockedUsers')->name('get.blocked.users');
+        Route::get('/list/spammed/users', 'getSpammedUsers')->name('get.spammed.users');
         Route::get('/list/followers', 'getFollowers')->name('user.followers');
         Route::get('/list/followings', 'getFollowings')->name('user.followings');
         Route::get('/list/requests/follower', 'getFollowerRequests')->name('user.follower.requests');

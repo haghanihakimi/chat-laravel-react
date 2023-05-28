@@ -9,11 +9,9 @@ import {
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useEffect, useState } from 'react';
-import { toggleDeletePopup, setData, togglePinPopup } from "../store/reducers/messages";
+import { toggleDeletePopup, setData, togglePinPopup, togglePinMessagesPopup } from "../store/reducers/messages";
 import { usePinOneToOneMessages } from "../store/actions/messages";
 import { useDispatch, useSelector } from "react-redux";
-import { useListeners } from "../store/actions/listeners";
-import { useListenersLeave } from "../store/actions/listeners";
 
 
 export default function({chat, user, host, message, pinned}) {
@@ -21,8 +19,6 @@ export default function({chat, user, host, message, pinned}) {
     const open = Boolean(anchorEl)
     const messages = useSelector((state) => state.messages)
     const dispatch = useDispatch()
-    const {deleteTwoWayMessage} = useListeners()
-    const {deleteTwoWayMessageLeave} = useListenersLeave()
     const {unPinOneToOneMessages} = usePinOneToOneMessages()
 
 
@@ -51,11 +47,6 @@ export default function({chat, user, host, message, pinned}) {
     }
 
     useEffect(() => {
-        deleteTwoWayMessage(user)
-
-        return() => {
-            deleteTwoWayMessageLeave(user)
-        }
     }, [user])
 
 
@@ -69,7 +60,7 @@ export default function({chat, user, host, message, pinned}) {
                 aria-expanded={open ? 'true' : undefined}
                 onClick={(e) => {handleClick(e);}}
                 className='w-full h-full rounded-full flex justify-center items-center'>
-                    <Options className='w-6 h-6 text-black dark:text-milky-white' />
+                    <Options className='w-6 h-6 text-black text-opacity-70 dark:text-milky-white dark:text-opacity-70' />
                 </button>
                 <Menu
                 id="basic-menu"
@@ -80,7 +71,7 @@ export default function({chat, user, host, message, pinned}) {
                 'aria-labelledby': 'basic-button',
                 }}
                 sx={{"& .MuiMenu-paper": {minWidth: '100px', padding: '0', color: "#f3f3f3",backgroundColor: "rgba(97, 97, 97, 1.0   )",boxShadow:"rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px"}}}>
-                    <MenuItem onClick={(e) => { dispatch(toggleDeletePopup({popup: true, option: true}));handleClose(e) } } className="flex flex-row gap-2 items-center justify-start">
+                    <MenuItem onClick={(e) => { dispatch(togglePinMessagesPopup(false));dispatch(toggleDeletePopup({popup: true, option: true}));handleClose(e) } } className="flex flex-row gap-2 items-center justify-start">
                         <Delete className="w-5 h-5 text-milky-white" />
                         <span className="text-md">
                             Remove
@@ -100,7 +91,7 @@ export default function({chat, user, host, message, pinned}) {
                                 Unpin
                             </span>
                         </MenuItem>
-                        : <MenuItem onClick={() => { dispatch(togglePinPopup(true));handleClose() }} className="flex flex-row gap-2 items-center justify-start">
+                        : <MenuItem onClick={() => { dispatch(togglePinMessagesPopup(false));dispatch(togglePinPopup(true));handleClose() }} className="flex flex-row gap-2 items-center justify-start">
                             <Pin className="w-5 h-5 text-milky-white animate-bounceBubbles" />
                             <span className="text-md">
                                 Pin

@@ -137,4 +137,17 @@ class ProfileRequests
         $canReject = static::followers()->where('id', $host->id)->pluck('pivot.status');
         return $canReject->contains('pending') ? true : false;
     }
+
+    public static function canUnspam($username) {
+        $host = User::where('username', $username)->first();
+        if (!$host) {
+            return false;
+        }
+        
+        $canUnspam = static::followers()
+        ->where('id', $host->id)
+        ->pluck('pivot.status');
+
+        return $canUnspam->contains('spam');
+    }
 }

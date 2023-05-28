@@ -8,11 +8,18 @@ import { setActionOutput,
     fillFollowers, 
     fillFollowings, 
     setAbilities,
+    modifyAbilities,
     removeFollowerFromList,
     removeFollowingUserFromList,
     removeFollowerRequest, 
     removeFollowingRequest,
     setPendingContacts,
+    fillBlockedUsers,
+    reduceBlockedUsers,
+    fillIgnoredUsers,
+    reduceIgnoredUsers,
+    toggleLoadingBlockedUsers,
+    toggleLoadingIgnoredUsers,
 } from '../reducers/contacts'
 import route from 'ziggy-js'
 import axios from 'axios'
@@ -41,6 +48,7 @@ export function useMenuAbilities(username) {
 
 // Accept incoming follow request
 export function useAcceptRequest(username) {
+    const contacts = useSelector(state => state.contacts)
     const dispatch = useDispatch()
     const { data: acceptRequestData, patch: acceptRequest, processing: acceptingRequest, errors: acceptRequestErrors } = useForm({})
 
@@ -49,6 +57,19 @@ export function useAcceptRequest(username) {
             acceptRequest(route('accept.follow.request', {username: username}), {
                 onSuccess: (response) => {
                     dispatch(removeFollowerRequest(username))
+                    dispatch(modifyAbilities({
+                        username: username,
+                        isBlocked: contacts.abilities.ability.isBlocked,
+                        canFollow: contacts.abilities.ability.canFollow,
+                        canUnfollow: contacts.abilities.ability.canUnfollow,
+                        canBlock: true,
+                        canUnblock: false,
+                        canReject: false,
+                        canAccept: false,
+                        canCancelRequest: false,
+                        canIgnore: false,
+                        canRemove: true,
+                    }))
                     dispatch(setActionOutput({
                         open: true,
                         header: '',
@@ -64,6 +85,7 @@ export function useAcceptRequest(username) {
 
 // Reject incoming follow request
 export function useRejectRequest(username) {
+    const contacts = useSelector(state => state.contacts)
     const dispatch = useDispatch()
     const { data: rejectRequestData, patch: rejectRequest, processing: rejectingRequest, errors: rejectRequestErrors } = useForm({})
 
@@ -72,6 +94,19 @@ export function useRejectRequest(username) {
             rejectRequest(route('reject.follower.request', {username: username}), {
                 onSuccess: (response) => {
                     dispatch(removeFollowerRequest(username))
+                    dispatch(modifyAbilities({
+                        username: username,
+                        isBlocked: contacts.abilities.ability.isBlocked,
+                        canFollow: contacts.abilities.ability.canFollow,
+                        canUnfollow: contacts.abilities.ability.canUnfollow,
+                        canBlock: contacts.abilities.ability.canBlock,
+                        canUnblock: contacts.abilities.ability.canUnblock,
+                        canReject: false,
+                        canAccept: false,
+                        canCancelRequest: false,
+                        canIgnore: false,
+                        canRemove: false,
+                    }))
                     dispatch(setActionOutput({
                         open: true,
                         header: '',
@@ -86,15 +121,30 @@ export function useRejectRequest(username) {
 }
 
 // Mark the incoming follow request as spam
-export function useMarkSpamRequest(username) {
+export function useMarkSpamRequest() {
+    const contacts = useSelector(state => state.contacts)
     const dispatch = useDispatch()
     const { data: ignoreRequestData, patch: ignoreRequest, processing: ignoringRequest, errors: ignoreRequestErrors } = useForm({})
+    const { data: unIgnoreRequestData, patch: unIgnoreRequest, processing: unIgnoringRequest, errors: unIgnoreRequestErrors } = useForm({})
 
-    function handleMarkSpamRequest (){ 
+    function handleMarkSpamRequest (username){ 
         if (!ignoringRequest) {
             ignoreRequest(route('ignore.follower.request', {username: username}), {
                 onSuccess: (response) => {
                     dispatch(removeFollowerRequest(username))
+                    dispatch(modifyAbilities({
+                        username: username,
+                        isBlocked: contacts.abilities.ability.isBlocked,
+                        canFollow: false,
+                        canUnfollow: false,
+                        canBlock: true,
+                        canUnblock: false,
+                        canReject: false,
+                        canAccept: false,
+                        canCancelRequest: false,
+                        canIgnore: false,
+                        canRemove: false,
+                    }))
                     dispatch(setActionOutput({
                         open: true,
                         header: '',
@@ -105,11 +155,61 @@ export function useMarkSpamRequest(username) {
         }
     }
 
-    return { handleMarkSpamRequest, ignoringRequest, ignoreRequestErrors }
+    function handleUnMarkSpamRequest (username){ 
+        if (!unIgnoringRequest) {
+            unIgnoreRequest(route('unignore.follower.request', {username: username}), {
+                onSuccess: (response) => {
+                    dispatch(removeFollowerRequest(username))
+                    dispatch(modifyAbilities({
+                        username: username,
+                        isBlocked: contacts.abilities.ability.isBlocked,
+                        canFollow: false,
+                        canUnfollow: false,
+                        canBlock: true,
+                        canUnblock: false,
+                        canReject: false,
+                        canAccept: false,
+                        canCancelRequest: false,
+                        canIgnore: false,
+                        canRemove: false,
+                    }))
+                    dispatch(reduceIgnoredUsers(username))
+                    dispatch(setActionOutput({
+                        open: true,
+                        header: '',
+                        body: response.props.flash.message.unignoreRequest
+                    }))
+                }
+            })
+        }
+    }
+    
+    async function handleGetIgnoredUsers (page = 1){ 
+        dispatch(toggleLoadingIgnoredUsers(true))
+        try {
+            if(contacts.ignoredUsers && contacts.ignoredUsers.length <= 0) {
+                const response = await axios.get(route('get.spammed.users'), {params: {page: page}})
+                dispatch(fillIgnoredUsers(response.data.ignoredUsers.data))
+            }
+            dispatch(toggleLoadingIgnoredUsers(false))
+        } catch (error) {
+            console.log(error)
+            dispatch(toggleLoadingIgnoredUsers(false))
+        }
+    }
+
+    return { 
+        handleMarkSpamRequest, 
+        handleUnMarkSpamRequest,
+        handleGetIgnoredUsers, 
+        ignoringRequest, 
+        unIgnoringRequest,
+    }
 }
 
 // Send follow Request
 export function useSendRequest(username) {
+    const contacts = useSelector(state => state.contacts)
     const dispatch = useDispatch()
     const { data: sendRequestData, post: sendRequest, processing: sendingRequest, errors: sendRequestErrors } = useForm({})
 
@@ -117,6 +217,19 @@ export function useSendRequest(username) {
         if (!sendingRequest) {
             sendRequest(route('send.follow.request', {username: username}), {
                 onSuccess: (response) => {
+                    dispatch(modifyAbilities({
+                        username: username,
+                        isBlocked: contacts.abilities.ability.isBlocked,
+                        canFollow: false,
+                        canUnfollow: true,
+                        canBlock: true,
+                        canUnblock: false,
+                        canReject: false,
+                        canAccept: false,
+                        canCancelRequest: false,
+                        canIgnore: false,
+                        canRemove: false,
+                    }))
                     dispatch(setActionOutput({
                         open: true,
                         header: '',
@@ -141,6 +254,19 @@ export function useCancelRequest(username) {
             cancelRequest(route('cancel.follow.request', {username: username}), {
                 onSuccess: (response) => {
                     dispatch(removeFollowingRequest(username))
+                    dispatch(modifyAbilities({
+                        username: username,
+                        isBlocked: contacts.abilities.ability.isBlocked,
+                        canFollow: true,
+                        canUnfollow: false,
+                        canBlock: true,
+                        canUnblock: false,
+                        canReject: false,
+                        canAccept: false,
+                        canCancelRequest: false,
+                        canIgnore: false,
+                        canRemove: false,
+                    }))
                     dispatch(setActionOutput({
                         open: true,
                         header: '',
@@ -156,6 +282,7 @@ export function useCancelRequest(username) {
 
 // Unfollow the following user
 export function useUnfollow(username) {
+    const contacts = useSelector(state => state.contacts)
     const dispatch = useDispatch()
     const { data: unFollowData, patch: unFollowRequest, processing: unFollowing, errors: unFollowErrors } = useForm({})
 
@@ -164,6 +291,19 @@ export function useUnfollow(username) {
             unFollowRequest(route('unfollow.following', {username: username}), {
                 onSuccess: (response) => {
                     dispatch(removeFollowingUserFromList(username))
+                    dispatch(modifyAbilities({
+                        username: username,
+                        isBlocked: contacts.abilities.ability.isBlocked,
+                        canFollow: true,
+                        canUnfollow: false,
+                        canBlock: true,
+                        canUnblock: false,
+                        canReject: false,
+                        canAccept: false,
+                        canCancelRequest: false,
+                        canIgnore: false,
+                        canRemove: false,
+                    }))
                     dispatch(setActionOutput({
                         open: true,
                         header: '',
@@ -179,6 +319,7 @@ export function useUnfollow(username) {
 
 // Remove the user who's following the current user
 export function useRemoveFollower(username) {
+    const contacts = useSelector(state => state.contacts)
     const dispatch = useDispatch()
     const { patch: removeFollower, processing: removingFollower, errors: removeFollowerErrors } = useForm({})
 
@@ -187,6 +328,19 @@ export function useRemoveFollower(username) {
             removeFollower(route('remove.follower', {username: username}), {
                 onSuccess: (response) => {
                     dispatch(removeFollowerFromList(username))
+                    dispatch(modifyAbilities({
+                        username: username,
+                        isBlocked: contacts.abilities.ability.isBlocked,
+                        canFollow: contacts.abilities.ability.canFollow,
+                        canUnfollow: contacts.abilities.ability.canUnfollow,
+                        canBlock: true,
+                        canUnblock: false,
+                        canReject: false,
+                        canAccept: false,
+                        canCancelRequest: false,
+                        canIgnore: false,
+                        canRemove: false,
+                    }))
                     dispatch(setActionOutput({
                         open: true,
                         header: '',
@@ -202,6 +356,7 @@ export function useRemoveFollower(username) {
 
 // Block the user
 export function useBlockUser(username) {
+    const contacts = useSelector(state => state.contacts)
     const dispatch = useDispatch()
     const { data: blockUserData, post: blockUser, processing: blockingUser, errors: blockUserErrors } = useForm({})
 
@@ -212,6 +367,19 @@ export function useBlockUser(username) {
                     dispatch(removeFollowerRequest(username))
                     dispatch(removeFollowerFromList(username))
                     dispatch(removeFollowingRequest(username))
+                    dispatch(modifyAbilities({
+                        username: username,
+                        isBlocked: contacts.abilities.ability.isBlocked,
+                        canFollow: false,
+                        canUnfollow: false,
+                        canBlock: false,
+                        canUnblock: true,
+                        canReject: false,
+                        canAccept: false,
+                        canCancelRequest: false,
+                        canIgnore: false,
+                        canRemove: false,
+                    }))
                     dispatch(setActionOutput({
                         open: true,
                         header: '',
@@ -226,14 +394,29 @@ export function useBlockUser(username) {
 }
 
 // Unblock the user
-export function useUnBlockUser(username) {
+export function useUnBlockUser() {
+    const contacts = useSelector(state => state.contacts)
     const dispatch = useDispatch()
     const { data: unBlockUserData, post: unBlockUser, processing: unBlockingUser, errors: unBlockUserErrors } = useForm({})
 
-    function handleUnBlockUser (){ 
+    function handleUnBlockUser (username){ 
         if (!unBlockingUser) {
             unBlockUser(route('unblock.user', {username: username}), {
                 onSuccess: (response) => {
+                    dispatch(modifyAbilities({
+                        username: username,
+                        isBlocked: false,
+                        canFollow: true,
+                        canUnfollow: false,
+                        canBlock: true,
+                        canUnblock: false,
+                        canReject: false,
+                        canAccept: false,
+                        canCancelRequest: false,
+                        canIgnore: false,
+                        canRemove: false,
+                    }))
+                    dispatch(reduceBlockedUsers(username))
                     dispatch(setActionOutput({
                         open: true,
                         header: '',
@@ -245,6 +428,28 @@ export function useUnBlockUser(username) {
     }
 
     return { handleUnBlockUser, unBlockingUser, unBlockUserErrors }
+}
+
+//get all blocked users
+export function useGetBlockedUsers(page = 1) {
+    const contacts = useSelector((state) => state.contacts)
+    const dispatch = useDispatch()
+
+    async function handleGetBlockedUsers () {
+        dispatch(toggleLoadingBlockedUsers(true))
+        try {
+            if(contacts.blockedUsers && contacts.blockedUsers.length <= 0) {
+                const response = await axios.get(route('get.blocked.users'), {params: {page: page}})
+                dispatch(fillBlockedUsers(response.data.blockedUsers.data))
+            }
+            dispatch(toggleLoadingBlockedUsers(false))
+        } catch (error) {
+            console.log(error)
+            dispatch(toggleLoadingBlockedUsers(false))
+        }
+    }
+
+    return { handleGetBlockedUsers }
 }
 
 // Get and collect list of user's followers
