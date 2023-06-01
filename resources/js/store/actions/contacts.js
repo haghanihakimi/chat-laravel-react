@@ -59,7 +59,7 @@ export function useAcceptRequest(username) {
                     dispatch(removeFollowerRequest(username))
                     dispatch(modifyAbilities({
                         username: username,
-                        isBlocked: contacts.abilities.ability.isBlocked,
+                        isBlocked: false,
                         canFollow: contacts.abilities.ability.canFollow,
                         canUnfollow: contacts.abilities.ability.canUnfollow,
                         canBlock: true,
@@ -96,7 +96,7 @@ export function useRejectRequest(username) {
                     dispatch(removeFollowerRequest(username))
                     dispatch(modifyAbilities({
                         username: username,
-                        isBlocked: contacts.abilities.ability.isBlocked,
+                        isBlocked: false,
                         canFollow: contacts.abilities.ability.canFollow,
                         canUnfollow: contacts.abilities.ability.canUnfollow,
                         canBlock: contacts.abilities.ability.canBlock,
@@ -134,7 +134,7 @@ export function useMarkSpamRequest() {
                     dispatch(removeFollowerRequest(username))
                     dispatch(modifyAbilities({
                         username: username,
-                        isBlocked: contacts.abilities.ability.isBlocked,
+                        isBlocked: false,
                         canFollow: false,
                         canUnfollow: false,
                         canBlock: true,
@@ -162,7 +162,7 @@ export function useMarkSpamRequest() {
                     dispatch(removeFollowerRequest(username))
                     dispatch(modifyAbilities({
                         username: username,
-                        isBlocked: contacts.abilities.ability.isBlocked,
+                        isBlocked: false,
                         canFollow: false,
                         canUnfollow: false,
                         canBlock: true,
@@ -219,7 +219,7 @@ export function useSendRequest(username) {
                 onSuccess: (response) => {
                     dispatch(modifyAbilities({
                         username: username,
-                        isBlocked: contacts.abilities.ability.isBlocked,
+                        isBlocked: false,
                         canFollow: false,
                         canUnfollow: true,
                         canBlock: true,
@@ -256,7 +256,7 @@ export function useCancelRequest(username) {
                     dispatch(removeFollowingRequest(username))
                     dispatch(modifyAbilities({
                         username: username,
-                        isBlocked: contacts.abilities.ability.isBlocked,
+                        isBlocked: false,
                         canFollow: true,
                         canUnfollow: false,
                         canBlock: true,
@@ -293,7 +293,7 @@ export function useUnfollow(username) {
                     dispatch(removeFollowingUserFromList(username))
                     dispatch(modifyAbilities({
                         username: username,
-                        isBlocked: contacts.abilities.ability.isBlocked,
+                        isBlocked: false,
                         canFollow: true,
                         canUnfollow: false,
                         canBlock: true,
@@ -330,7 +330,7 @@ export function useRemoveFollower(username) {
                     dispatch(removeFollowerFromList(username))
                     dispatch(modifyAbilities({
                         username: username,
-                        isBlocked: contacts.abilities.ability.isBlocked,
+                        isBlocked: false,
                         canFollow: contacts.abilities.ability.canFollow,
                         canUnfollow: contacts.abilities.ability.canUnfollow,
                         canBlock: true,
@@ -369,7 +369,7 @@ export function useBlockUser(username) {
                     dispatch(removeFollowingRequest(username))
                     dispatch(modifyAbilities({
                         username: username,
-                        isBlocked: contacts.abilities.ability.isBlocked,
+                        isBlocked: false,
                         canFollow: false,
                         canUnfollow: false,
                         canBlock: false,
