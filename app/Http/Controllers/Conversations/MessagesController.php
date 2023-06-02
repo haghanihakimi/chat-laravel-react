@@ -31,7 +31,7 @@ class MessagesController extends Controller
     public function index($username) {
         if($username !== Auth::guard('web')->user()->username && !Abilities::isBlocked($username) && Abilities::canBlock($username)) {
             $host = new HostResource(User::where('username', $username)->first());
-            $this->seenOneToOneMessage($username);
+            // $this->seenOneToOneMessage($username);
 
             // Conversations/Conversation
             return Inertia::render('Conversations/Conversation', [
