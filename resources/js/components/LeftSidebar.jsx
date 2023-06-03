@@ -83,7 +83,7 @@ export default function({}) {
                         </span>
                     </div>
                     {/* Notifications */}
-                    <div className="w-12 h-12 shrink-0 cursor-pointer relative group">
+                    {/* <div className="w-12 h-12 shrink-0 cursor-pointer relative group">
                         <button onClick={() => { dispatch(NotificationsPane(notifications.pane ? false : true)); dispatch(ContactsPane(false)); dispatch(MessagesPane(false)); dispatch(SearchPane(false)); } } 
                         type="button" 
                         className="w-12 h-12 flex justify-center items-center">
@@ -100,7 +100,7 @@ export default function({}) {
                         <span className="inline-block invisible opacity-0 transition duration-150 pointer-events-none w-fit h-fit px-2 py-1 translate-x-[50px] top-0 bottom-0 my-auto absolute rounded bg-white text-black text-sm font-medium shadow-lg border border-black border-opacity-10 dark:text-milky-white dark:bg-black dark:border-milky-white dark:border-opacity-10 group-hover:visible group-hover:opacity-100">
                             Messages
                         </span>
-                    </div>
+                    </div> */}
                     {/* Contacts */}
                     <div className="w-12 h-12 shrink-0 cursor-pointer relative group">
                         <button 

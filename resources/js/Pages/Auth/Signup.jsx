@@ -40,37 +40,11 @@ export default function({flash}) {
                                             <Checkbox className='w-5 h-5 rounded-full text-warm-blue' />
                                         </span>
                                         <span className='inline-block w-fit'>
-                                            Get started quickly
+                                            Brings people together.
                                         </span>
                                     </h2>
                                     <p className='w-full text-base text-black text-opacity-75 font-medium tracking-wide dark:text-milky-white dark:text-opacity-75 pl-7'>
-                                        Integrate with developer-friendly APIs or choose low-code.
-                                    </p>
-                                </div>
-                                <div className='w-full shrink-0 relative flex flex-col gap-2'>
-                                    <h2 className='w-full relative text-black font-bold tracking-wider text-xl flex flex-row gap-2 justify-start items-center dark:text-milky-white'>
-                                        <span className='inline-block w-fit h-fit rounded-full bg-white p-0 m-0 border-0 outline-none'>
-                                            <Checkbox className='w-5 h-5 rounded-full text-warm-blue' />
-                                        </span>
-                                        <span className='inline-block w-fit'>
-                                            Support any business model
-                                        </span>
-                                    </h2>
-                                    <p className='w-full text-base text-black text-opacity-75 font-medium tracking-wide dark:text-milky-white dark:text-opacity-75 pl-7'>
-                                        Host code that you don't want to share with the world in private.
-                                    </p>
-                                </div>
-                                <div className='w-full shrink-0 relative flex flex-col gap-2'>
-                                    <h2 className='w-full relative text-black font-bold tracking-wider text-xl flex flex-row gap-2 justify-start items-center dark:text-milky-white'>
-                                        <span className='inline-block w-fit h-fit rounded-full bg-white p-0 m-0 border-0 outline-none'>
-                                            <Checkbox className='w-5 h-5 rounded-full text-warm-blue' />
-                                        </span>
-                                        <span className='inline-block w-fit'>
-                                            Millions of active users
-                                        </span>
-                                    </h2>
-                                    <p className='w-full text-base text-black text-opacity-75 font-medium tracking-wide dark:text-milky-white dark:text-opacity-75 pl-7'>
-                                        Millions of monthly active users
+                                        Get closer to your friends, no matter where they are.
                                     </p>
                                 </div>
                             </div>
