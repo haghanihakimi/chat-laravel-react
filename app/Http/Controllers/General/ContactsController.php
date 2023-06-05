@@ -248,13 +248,19 @@ class ContactsController extends Controller
 
     public function getFollowers(Request $request) {
         $followers = Abilities::followers()
-        ->where('pivot.status', 'accepted')->each(function($user) {
+        ->where('pivot.status', 'accepted')
+        ->sortBy('first_name')
+        ->each(function($user) {
             $user->media_forms = $user->media_forms;
         });
+
+        $perPage = 25;
+        $page = $request->input('page') ?? 1;
+
         $paginator = new Paginator(
-            array_slice($followers->toArray(), ($request->input('page') - 1) * 50, 50),
+            array_slice($followers->toArray(), ($request->input('page') - 1) * 25, 25),
             $followers->count(),
-            15,
+            25,
             $request->input('page'),
             [
                 'path'  => $request->url(),
@@ -268,13 +274,17 @@ class ContactsController extends Controller
     }
 
     public function getFollowings(Request $request) {
-        $followings = Abilities::followings()->where('pivot.status', 'accepted')->each(function($user) {
+        $followings = Abilities::followings()
+        ->where('pivot.status', 'accepted')
+        ->sortBy('first_name')
+        ->each(function($user) {
             $user->media_forms = $user->media_forms;
         });
+
         $paginator = new Paginator(
-            array_slice($followings->toArray(), ($request->input('page') - 1) * 50, 50),
+            array_slice($followings->toArray(), ($request->input('page') - 1) * 25, 25),
             $followings->count(),
-            15,
+            25,
             $request->input('page'),
             [
                 'path'  => $request->url(),
@@ -287,13 +297,16 @@ class ContactsController extends Controller
     }
 
     public function getFollowerRequests(Request $request) {
-        $followerRequests = Abilities::followers()->where('pivot.status', 'pending')->each(function($user) {
+        $followerRequests = Abilities::followers()
+        ->where('pivot.status', 'pending')
+        // ->orderBy('created_at', 'asc')
+        ->each(function($user) {
             $user->media_forms = $user->media_forms;
         });
         $paginator = new Paginator(
-            array_slice($followerRequests->toArray(), ($request->input('page') - 1) * 50, 50),
+            array_slice($followerRequests->toArray(), ($request->input('page') - 1) * 25, 25),
             $followerRequests->count(),
-            15,
+            25,
             $request->input('page'),
             [
                 'path'  => $request->url(),
@@ -306,13 +319,15 @@ class ContactsController extends Controller
     }
 
     public function getFollowingRequests(Request $request) {
-        $followingRequests = Abilities::followings()->where('pivot.status', 'pending')->each(function($user) {
+        $followingRequests = Abilities::followings()
+        ->where('pivot.status', 'pending')
+        ->each(function($user) {
             $user->media_forms = $user->media_forms;
         });
         $paginator = new Paginator(
-            array_slice($followingRequests->toArray(), ($request->input('page') - 1) * 50, 50),
+            array_slice($followingRequests->toArray(), ($request->input('page') - 1) * 25, 25),
             $followingRequests->count(),
-            15,
+            25,
             $request->input('page'),
             [
                 'path'  => $request->url(),

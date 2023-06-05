@@ -25,6 +25,22 @@ export const contactsSlice = createSlice({
     ignoredUsers: [],
     loadingBlockedUsers: false,
     loadingIgnoredUsers: false,
+    getFollowersPagination: {
+      last_page: 0,
+      page: 1,
+    },
+    getFollowingsPagination: {
+      last_page: 0,
+      page: 1,
+    },
+    getFollowerRequestsPagination: {
+      last_page: 0,
+      page: 1
+    },
+    getFollowingRequestsPagination: {
+      last_page: 0,
+      page: 1
+    }
   },
   reducers: {
     setPane: (state, action) => {
@@ -89,17 +105,51 @@ export const contactsSlice = createSlice({
       state.pendingContacts = action.payload
     },
     fillFollowers: (state, action) => {
-      state.followers = action.payload
+      state.followers = action.payload.data
+      state.getFollowersPagination.last_page = action.payload.last_page
+    },
+    fillPaginatedFollowers: (state, action) => {
+      state.followers.push(...action.payload.data)
+      state.getFollowersPagination.last_page = action.payload.last_page
+    },
+    countFollowersPaginationPage: (state, action) => {
+      state.getFollowersPagination.page = action.payload
     },
     fillFollowings: (state, action) => {
-      state.followings = action.payload
+      state.followings = action.payload.data
+      state.getFollowingsPagination.last_page = action.payload.last_page
+    },
+    fillPaginatedFollowings: (state, action) => {
+      state.followings.push(...action.payload.data)
+      state.getFollowingsPagination.last_page = action.payload.last_page
+    },
+    countFollowingsPaginationPage: (state, action) => {
+      state.getFollowingsPagination.page = action.payload
     },
     fillFollowerRequests: (state, action) => {
-      state.incomingRequests = action.payload
+      state.incomingRequests = action.payload.data
+      state.getFollowerRequestsPagination.last_page = action.payload.last_page
     },
+    fillPaginatedFollowerRequests: (state, action) => {
+      state.incomingRequests.push(...action.payload.data)
+      state.getFollowerRequestsPagination.last_page = action.payload.last_page
+    },
+    countFollowerRequestsPaginationPage: (state, action) => {
+      state.getFollowerRequestsPagination.page = action.payload
+    },
+
     fillSentRequests: (state, action) => {
-      state.sentRequests = action.payload
+      state.sentRequests = action.payload.data
+      state.getFollowingRequestsPagination.last_page = action.payload.last_page
     },
+    fillPaginatedFollowingRequests: (state, action) => {
+      state.sentRequests.push(...action.payload.data)
+      state.getFollowingRequestsPagination.last_page = action.payload.last_page
+    },
+    countFollowingRequestsPaginationPage: (state, action) => {
+      state.getFollowingRequestsPagination.page = action.payload
+    },
+
     setAbilities: (state, action) => {
       state.abilities = action.payload
     },
@@ -173,6 +223,7 @@ export const {
   setActionOutput,
   setPendingContacts,
   fillFollowers, 
+  fillPaginatedFollowers,
   fillFollowings, 
   fillFollowerRequests,
   fillSentRequests,
@@ -192,6 +243,13 @@ export const {
   toggleIgnoredUsersPopup,
   toggleLoadingBlockedUsers,
   toggleLoadingIgnoredUsers,
+  countFollowersPaginationPage,
+  fillPaginatedFollowings,
+  countFollowingsPaginationPage,
+  fillPaginatedFollowerRequests,
+  countFollowerRequestsPaginationPage,
+  fillPaginatedFollowingRequests,
+  countFollowingRequestsPaginationPage,
 } = contactsSlice.actions
 
 export default contactsSlice.reducer

@@ -55,7 +55,7 @@ export default function({moment}) {
                     {/* Followers List */}
                     {
                         contacts.paneList.followers ?
-                        <FollowersList /> : ''
+                        <FollowersList moment={moment} /> : ''
                     }
                     {/* Followers List */}
                     {

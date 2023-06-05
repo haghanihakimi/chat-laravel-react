@@ -29,7 +29,7 @@ import { useMenuAbilities,
 } from "../store/actions/contacts";
 import { useSelector } from "react-redux";
 
-export default function({request}) {
+export default function({request, isLast = false}) {
     let [data, setData] = useState({
         menu: false,
     })
@@ -73,7 +73,7 @@ export default function({request}) {
                 </button>
                 {
                     data.menu ? 
-                    <div ref={wrapper} className="min-w-[140px] z-10 h-auto bg-white border border-black border-opacity-10 absolute rounded shadow-lg top-7 right-0 flex flex-col gap-0 dark:border-milky-white dark:border-opacity-10 dark:bg-dark-blue">
+                    <div ref={wrapper} className={`min-w-[140px] z-10 h-auto bg-white border border-black border-opacity-10 absolute rounded shadow-lg ${isLast ? 'bottom-7 right-2' : 'top-7 right-0'} flex flex-col gap-0 dark:border-milky-white dark:border-opacity-10 dark:bg-dark-blue`}>
                         {
                             !contacts.loadingAbilities
                             ?

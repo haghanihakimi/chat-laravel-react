@@ -6,6 +6,7 @@ import { setActionOutput,
     fillFollowerRequests, 
     fillSentRequests, 
     fillFollowers, 
+    fillPaginatedFollowers,
     fillFollowings, 
     setAbilities,
     modifyAbilities,
@@ -20,6 +21,9 @@ import { setActionOutput,
     reduceIgnoredUsers,
     toggleLoadingBlockedUsers,
     toggleLoadingIgnoredUsers,
+    fillPaginatedFollowings,
+    fillPaginatedFollowerRequests,
+    fillPaginatedFollowingRequests,
 } from '../reducers/contacts'
 import route from 'ziggy-js'
 import axios from 'axios'
@@ -453,91 +457,115 @@ export function useGetBlockedUsers(page = 1) {
 }
 
 // Get and collect list of user's followers
-export function useGetFollowers(page = 1) {
+export function useGetFollowers() {
     const contacts = useSelector((state) => state.contacts)
     const dispatch = useDispatch()
 
-    async function handleGetFollowers () {
-        dispatch(setLoading(true))
+    async function handleGetFollowers (page = 1) {
         try {
-            if(contacts.followers && contacts.followers.length <= 0) {
+            if(contacts.followers.length <= 0) {
                 const response = await axios.get(route('user.followers'), {params: {page: page}})
-                dispatch(fillFollowers(response.data.followers.data))
+                dispatch(fillFollowers(response.data.followers)) 
             }
-            dispatch(setLoading(false))
         } catch (error) {
             console.log(error)
-            dispatch(setLoading(false))
         }
     }
 
-    return { handleGetFollowers }
+    async function handleGetPaginatedFollowers(page = 1) {
+        try {
+            const response = await axios.get(route('user.followers'), {params: {page: page}})
+            dispatch(fillPaginatedFollowers (response.data.followers))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    return { handleGetFollowers, handleGetPaginatedFollowers }
 }
 
 // Get and collect list of users that current user follows
-export function useGetFollowings(page = 1) {
+export function useGetFollowings() {
     const contacts = useSelector((state) => state.contacts)
     const dispatch = useDispatch()
 
-    async function handleGetFollowings () {
-        dispatch(setLoading(true))
+    async function handleGetFollowings (page = 1) {
         try {
             if(contacts.followings && contacts.followings.length <= 0) {
                 const response = await axios.get(route('user.followings'), {params: {page: page}})
-                dispatch(fillFollowings(response.data.followings.data))
+                dispatch(fillFollowings(response.data.followings))
             }
-            dispatch(setLoading(false))
         } catch (error) {
             console.log(error)
-            dispatch(setLoading(false))
         }
     }
 
-    return { handleGetFollowings }
+    async function handleGetPaginatedFollowings (page = 1) {
+        try {
+            const response = await axios.get(route('user.followings'), {params: {page: page}})
+            dispatch(fillPaginatedFollowings(response.data.followings))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    return { handleGetFollowings, handleGetPaginatedFollowings }
 }
 
 // Get and collect incoming follower request
-export function useFollowerRequests(page = 1) {
+export function useFollowerRequests() {
     const contacts = useSelector((state) => state.contacts)
     const dispatch = useDispatch()
 
-    async function handleFollowerRequests () {
-        dispatch(setLoading(true))
+    async function handleFollowerRequests (page = 1) {
         try {
             if(contacts.incomingRequests && contacts.incomingRequests.length <= 0) {
                 const response = await axios.get(route('user.follower.requests'), {params: {page: page}});
-                dispatch(fillFollowerRequests(response.data.incomingRequests.data))
+                dispatch(fillFollowerRequests(response.data.incomingRequests))
             }
-            dispatch(setLoading(false))
         } catch (error) {
             console.log(error)
-            dispatch(setLoading(false))
         }
     }
 
-    return { handleFollowerRequests }
+    async function handlePaginatedFollowerRequests (page = 1) {
+        try {
+            const response = await axios.get(route('user.follower.requests'), {params: {page: page}});
+            dispatch(fillPaginatedFollowerRequests(response.data.incomingRequests))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    return { handleFollowerRequests, handlePaginatedFollowerRequests }
 }
 
 // Get and collect sent follower request
-export function useSentRequests(page = 1) {
+export function useSentRequests() {
     const contacts = useSelector((state) => state.contacts)
     const dispatch = useDispatch()
 
-    async function handleSentRequests () {
-        dispatch(setLoading(true))
+    async function handleSentRequests (page = 1) {
         try {
             if(contacts.sentRequests && contacts.sentRequests.length <= 0) {
                 const response = await axios.get(route('user.following.requests'), {params: {page: page}});
-                dispatch(fillSentRequests(response.data.sentRequests.data))
+                dispatch(fillSentRequests(response.data.sentRequests))
             }
-            dispatch(setLoading(false))
         } catch (error) {
-            dispatch(setLoading(false))
             console.log(error)
         }
     }
 
-    return { handleSentRequests }
+    async function handlePaginatedSentRequests (page = 1) {
+        try {
+            const response = await axios.get(route('user.following.requests'), {params: {page: page}});
+            dispatch(fillPaginatedFollowingRequests(response.data.sentRequests))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    return { handleSentRequests, handlePaginatedSentRequests }
 }
 
 // Get number of pending incoming requests
