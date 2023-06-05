@@ -13,6 +13,7 @@ import {
     toggleReacting,
     toggleLoadingConversations,
     fetchConversations,
+    fetchPaginatedConversations,
     fillUnreadConversations,
     emptyConversation,
 } from '../reducers/messages'
@@ -53,17 +54,25 @@ export function useGetConversations() {
 
 
     async function handleGetConversations(input) {
-        dispatch(toggleLoadingConversations(true))
         try {
             if(messages.conversations.length <= 0) {
                 const response = await axios.get(route('get.conversations'), 
-                {params: {keywords: input}})
+                {params: {page: input}})
                 dispatch(fetchConversations(response.data.conversations))
             }
-            
-            dispatch(toggleLoadingConversations(false))
         } catch(error) {
-            dispatch(toggleLoadingConversations(false))
+            console.log(error)
+        }
+    }
+
+    async function handleGetPaginatedConversations(input) {
+        try {
+            const response = await axios.get(route('get.conversations'), 
+                {params: {page: input}
+            })
+            dispatch(fetchPaginatedConversations(response.data.conversations))
+            console.log(input)
+        } catch(error) {
             console.log(error)
         }
     }
@@ -98,6 +107,7 @@ export function useGetConversations() {
 
     return {
         handleGetConversations, 
+        handleGetPaginatedConversations,
         handleUnreadConversationsCounter,
         handleRemoveConversation,
         deleteConversationData,

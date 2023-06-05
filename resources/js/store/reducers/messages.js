@@ -24,6 +24,10 @@ export const messagesSlice = createSlice({
     reacting: false,
     loadingConversations: false,
     isBlocked: false,
+    getPaginatedConversation: {
+      page: 1,
+      last_page: 0
+    }
   },
   reducers: {
     setPane: (state, action) => {
@@ -135,9 +139,19 @@ export const messagesSlice = createSlice({
     toggleReacting: (state, action) => {
       state.reacting = action.payload
     },
+
     fetchConversations: (state, action) => {
-      state.conversations = action.payload
+      state.conversations = action.payload.data
+      state.getPaginatedConversation.last_page = action.payload.last_page
     },
+    fetchPaginatedConversations: (state, action) => {
+      state.conversations.push(...action.payload.data)
+      state.getPaginatedConversation.last_page = action.payload.last_page
+    },
+    countConversationPaginationPage: (state, action) => {
+      state.getPaginatedConversation.page = action.payload + 1
+    },
+
     toggleLoadingConversations: (state, action) => {
       state.loadingConversations = action.payload
     },
@@ -173,7 +187,11 @@ export const {
   reactToMessage,
   toggleReacting,
   toggleLoadingConversations,
+
   fetchConversations,
+  fetchPaginatedConversations,
+  countConversationPaginationPage,
+
   fillUnreadConversations,
   emptyConversation,
   toggleIsBlocked,

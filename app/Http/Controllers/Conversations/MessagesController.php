@@ -73,8 +73,8 @@ class MessagesController extends Controller
         }, 'chats' => function ($query) {
             $query->with('messages');
         }])
-        ->latest()
-        ->get();
+        ->orderBy('updated_at', 'desc')
+        ->paginate(25);
 
         return response()->json([
             "conversations" => $conversations
@@ -117,9 +117,9 @@ class MessagesController extends Controller
             });
 
             $messages = new Paginator(
-                array_slice($messages->toArray(), ($request->input('page') - 1) * 15, 15),
+                array_slice($messages->toArray(), ($request->input('page') - 1) * 50, 50),
                 $messages->count(),
-                15,
+                50,
                 $request->input('page'),
                 [
                     'path'  => $request->url(),
